@@ -87,6 +87,11 @@ ol.numbers{
     padding-left: 34px;
     margin-bottom: 20px;
     margin-top: 10px;
+    flex:1;
+}
+
+ol li::marker{
+    font-weight: bold;
 }
 
 .redCheckBox{
@@ -110,6 +115,7 @@ ol[type = "a"].withoutPeriod{
     padding-left: 17px;
     margin-bottom: 20px;
     margin-top: 10px;
+    flex:1
   }
 
 li.withoutPeriod{
@@ -121,4 +127,31 @@ li.withoutPeriod::before {
     counter-increment: item;
     color: #ED1A33;
     margin-right: 1.5%;
+    font-weight: bold;
+}
+
+.dottedLine {
+    display: flex;
+    border-style: dotted;
+    border-width: 1px;
+    height: 0;
+}
+
+li.dottedLineLi{
+    padding-right: 84px;
+}
+
+#rightPageGrammer{
+    display: flex;
+    justify-content: start;
+}
+
+.flexible{
+    flex:1
+}
+
+#rightPageBox{
+    background-color: #E3F4F5;
+    padding: 8px 15px 15px 15px;
+    clip-path: polygon( 3% 0%, 97% 0%, 100% 5%, 100% 95%, 97% 100%, 3% 100%, 0% 95%, 0% 5%);
 }
