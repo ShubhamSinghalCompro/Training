@@ -1,6 +1,25 @@
+:root {
+    --pg10-11-redColor: #ED1A33 ;
+    --pg10-11-whiteColor: #FFFFFF;
+    --pg10-11-rBoxHexagonColor: #3FC1C9;
+    --pg10-11-lHeaderHRColor: #BFE5E9;
+    --pg10-11-circleShadowColor: #C40F1F;
+    --pg10-11-blueColor: #42C2C9;
+    --pg10-11-rightPageBoxColor: #E3F4F5;
+
+
+    --page10-11-agendaSize10: 0.68rem;
+}
+@font-face {
+    font-family: 'Agenda';
+    src: url('https://drive.google.com/uc?export=download&id=1YhPJ06LDsjNY98j9f6MQhjLJ7YxPxl2o') format('opentype');
+}  
+
+
 *{
     margin: 0;
     padding: 0;
+    font-family: 'Agenda', serif;
 }
 
 .pages{
@@ -26,8 +45,8 @@
 }
 
 #headerFull{
-    background-color: #ED1A33;
-    color: white;
+    background-color: var(--pg10-11-redColor);
+    color: var(--pg10-11-whiteColor);
     height: 70px;
 }
 
@@ -41,11 +60,12 @@
     border-radius: 50%;
     width: 100px;
     height: 100px;
-    background-color: #ED1A33;
+    background-color: var(--pg10-11-redColor);
     align-items:center;
     text-align: center;
     display: flex;
     justify-content:flex-end;
+    z-index: 2;
 }
 
 #lHeaderRight{
@@ -57,29 +77,33 @@
 
 #lHeaderRightTitle{
     font-weight: bold;
+    font-size: 1.2rem;
 }
 
 #lHeaderLeftDiv{
     text-align: center;
     padding: 15px 20px 0px 0px;
+    font-size: 0.7rem;
 }
 
 #lHeaderLeftHR{
-    color: #BFE5E9;
+    color: var(--pg10-11-lHeaderHRColor);
 }
 
 #lHeaderChapterNo{
-    font-size: 24px;
+    font-size: 1.8rem;
     font-weight: bold;
+    font-family: 'Libre Baskerville' serif;
 }
 
 .mainSent{
     font-weight: bold;
     padding-right: 48px;
+    font-size: 0.68rem;
 }
 
 .sentStart{
-    color: #ED1A33;
+    color: var(--pg10-11-redColor);
 }
 
 ol.numbers{
@@ -87,6 +111,7 @@ ol.numbers{
     margin-bottom: 20px;
     margin-top: 10px;
     flex:1;
+    
 }
 
 ol li::marker{
@@ -94,7 +119,7 @@ ol li::marker{
 }
 
 .redCheckBox{
-    border-color: #ED1A33;
+    border-color: var(--pg10-11-redColor);
     border-width: 1px;
     border-style: solid;
     width: 12px;
@@ -125,13 +150,17 @@ li.withoutPeriod{
 li.withoutPeriod::before {
     content: counter(item, lower-alpha);
     counter-increment: item;
-    color: #ED1A33;
+    color: var(--pg10-11-redColor);
     font-weight: bold;
-    display: inline-block;
-    width: 20px; 
-    height: 20px;
+    display: block;
     text-align: center;
+    height: 20px;
+    width: 20px;
+    padding-right: 0.5em;
 }
+/* div.withoutPeriod{
+    display: inline-flex;
+} */
 
 .dottedLine {
     display: inline-block;
@@ -158,18 +187,18 @@ li.dottedLineLi{
 }
 
 #rightPageBox{
-    background-color: #E3F4F5;
+    background-color: var(--pg10-11-rightPageBoxColor);
     padding: 8px 15px 15px 7px;
     clip-path: polygon( 3% 0%, 97% 0%, 100% 5%, 100% 95%, 97% 100%, 3% 100%, 0% 95%, 0% 5%);
 }
 
 .redColorTexts{
-    color: #ED1A33;
+    color: var(--pg10-11-redColor);
     font-size: large;
     margin-left: 8px;
 }
 .blueColorTexts{
-    color: #42C2C9;
+    color: var(--pg10-11-blueColor);
     font-style: italic;
     font-weight: bold;
 }
@@ -188,8 +217,8 @@ li.dottedLineLi{
     height: 2px; /* height of the pseudo-element */
     background: repeating-linear-gradient(
         to right,
-        #42C2C9,
-        #42C2C9 2px, 
+        var(--pg10-11-blueColor),
+        var(--pg10-11-blueColor) 2px, 
         transparent 1px,
         transparent 5px 
     );
@@ -206,7 +235,7 @@ li.dottedLineLi{
 }
 
 .red-bullets{
-    color:#ED1A33;
+    color:var(--pg10-11-redColor);
 }
 #boldWords{
     font-weight: bold;
@@ -216,7 +245,7 @@ li.dottedLineLi{
 .hexagon {
     height: 20px;
     width: 80px;
-    background-color:#3FC1C9;
+    background-color:var(--pg10-11-rBoxHexagonColor);
     clip-path: polygon(
         5% 0%, 95% 0%, 
         100% 50%, 
@@ -226,12 +255,12 @@ li.dottedLineLi{
     display: inline-block;
     text-align: center;
     vertical-align: bottom;
-    color: white;
+    color: var(--pg10-11-whiteColor);
     position: relative;
 }
 
 .redColorWords{
-    color: #ED1A33;
+    color: var(--pg10-11-redColor);
     font-style:italic;
     font-weight:bolder;
 }
@@ -239,7 +268,7 @@ li.dottedLineLi{
 #beCarefulText{
     font-weight: bold;
     font-size:14px;
-    color: white;
+    color: var(--pg10-11-whiteColor);
     padding-right: 8px;
 }
 
@@ -288,13 +317,14 @@ li.dottedLineLi{
 
 .circleShadow{
     position: absolute;
-    top: 100px;
-    left: 0;
-    width:190px;
+    background-color: var(--pg10-11-circleShadowColor);
     height: 70px;
-    border-top-right-radius: 50%;
-    border-bottom-right-radius: 50%;
-    color: #3FC1C9;
+    width: 50px;
+    left: 60px;
+    top: 0;;
+    border-top-right-radius: 70%;
+    border-bottom-right-radius: 20%;
+    z-index: 1;
 }
 
 
@@ -318,6 +348,9 @@ li.dottedLineLi{
         margin-left: auto;
         margin-right: auto;
         margin-top: 5%;
+    }
+    .rightPageGrammer{
+        flex-direction: column;
     }
 
 }
