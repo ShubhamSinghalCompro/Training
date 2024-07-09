@@ -46,7 +46,6 @@
     text-align: center;
     display: flex;
     justify-content:flex-end;
-    
 }
 
 #lHeaderRight{
@@ -76,7 +75,7 @@
 
 .mainSent{
     font-weight: bold;
-    padding-right: 84px;
+    padding-right: 48px;
 }
 
 .sentStart{
@@ -101,7 +100,7 @@ ol li::marker{
     width: 12px;
     height: 12px;
     display: inline-block;
-    margin-right: 1%;
+    margin-right: 8px;
     margin-left: 1%;
 }
 
@@ -119,31 +118,39 @@ ol[type = "a"].withoutPeriod{
   }
 
 li.withoutPeriod{
-    display: block;
+    display: flex;
+    
 }
 
 li.withoutPeriod::before {
     content: counter(item, lower-alpha);
     counter-increment: item;
     color: #ED1A33;
-    margin-right: 1.5%;
     font-weight: bold;
+    display: inline-block;
+    width: 20px; 
+    height: 20px;
+    text-align: center;
 }
 
 .dottedLine {
-    display: flex;
+    display: inline-block;
     border-style: dotted;
     border-width: 1px;
+    width: 100%;
     height: 0;
 }
 
 li.dottedLineLi{
-    padding-right: 84px;
+    padding-right: 48px;
 }
 
-#rightPageGrammer{
+.rightPageGrammer{
     display: flex;
     justify-content: start;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    font-weight: normal;
 }
 
 .flexible{
@@ -152,6 +159,165 @@ li.dottedLineLi{
 
 #rightPageBox{
     background-color: #E3F4F5;
-    padding: 8px 15px 15px 15px;
+    padding: 8px 15px 15px 7px;
     clip-path: polygon( 3% 0%, 97% 0%, 100% 5%, 100% 95%, 97% 100%, 3% 100%, 0% 95%, 0% 5%);
+}
+
+.redColorTexts{
+    color: #ED1A33;
+    font-size: large;
+    margin-left: 8px;
+}
+.blueColorTexts{
+    color: #42C2C9;
+    font-style: italic;
+    font-weight: bold;
+}
+
+.blueDottedLine {
+    position: relative;
+    height: 0px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    margin-right: 8px;
+}
+
+.blueDottedLine::before {
+    content: "";
+    display: block;
+    height: 2px; /* height of the pseudo-element */
+    background: repeating-linear-gradient(
+        to right,
+        #42C2C9,
+        #42C2C9 2px, 
+        transparent 1px,
+        transparent 5px 
+    );
+    width: 100%; /* full width of the parent element */
+}
+
+
+.redBulletRightPoints{
+    font-weight: bold;
+    margin-bottom: 8px ;
+    margin-top: 8px;
+    display: flex;
+
+}
+
+.red-bullets{
+    color:#ED1A33;
+}
+#boldWords{
+    font-weight: bold;
+}
+
+
+.hexagon {
+    height: 20px;
+    width: 80px;
+    background-color:#3FC1C9;
+    clip-path: polygon(
+        5% 0%, 95% 0%, 
+        100% 50%, 
+        95% 100%, 5% 100%, 
+        0% 50% 
+    );
+    display: inline-block;
+    text-align: center;
+    vertical-align: bottom;
+    color: white;
+    position: relative;
+}
+
+.redColorWords{
+    color: #ED1A33;
+    font-style:italic;
+    font-weight:bolder;
+}
+
+#beCarefulText{
+    font-weight: bold;
+    font-size:14px;
+    color: white;
+    padding-right: 8px;
+}
+
+.rightBoxMargin{
+    margin-left: 8px;
+}
+
+
+.rightBoxRedBulletDiv{
+    display: inline-block;
+    margin-left: 6px;
+}
+
+.olNumbersDiv{
+    display: inline-block;
+    flex:1;
+}
+
+.olNumbersOuterDiv{
+    display: flex;
+}
+
+#lastWords{
+    margin-left: 10px;
+    margin-top: 8px;
+    padding-top: 12px;
+    
+}
+
+.lastRightPoint{
+    font-weight: bold;
+    margin-bottom: 8px ;
+    margin-top: 8px;
+    display: inline;
+}
+
+.innerdiv { 
+    position: absolute; 
+    top: 0; 
+    left: 10px; 
+}
+
+.outerdiv{
+    position: relative;
+}
+
+.circleShadow{
+    position: absolute;
+    top: 100px;
+    left: 0;
+    width:190px;
+    height: 70px;
+    border-top-right-radius: 50%;
+    border-bottom-right-radius: 50%;
+    color: #3FC1C9;
+}
+
+
+@media (max-width: 600px) {
+    .pages {
+        flex-direction: column;
+    }
+
+    .page {
+        width: 100%;
+    }
+
+    .pagesMain {
+        flex-direction: column;
+        justify-content: space-between;
+        padding-top: 10%;
+    }
+
+    .pageSection {
+        width: 90%;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 5%;
+    }
+
 }
