@@ -12,6 +12,7 @@
     margin: 0;
     padding: 0;
     font-family: 'Agenda';
+    max-width: 1200;
 }
 
 #fullHeader{
@@ -57,7 +58,7 @@
 
 #lHeaderChapterNo{
     font-weight: bold;
-    font-family: 'Libre Baskerville' serif;
+    font-family: 'Libre Baskerville';
 }
 
 
@@ -271,8 +272,8 @@ li.withoutPeriod::before {
 
 
 .page67 .hexagon {
-    height: 1.25rem;
-    width: 5rem;
+    height: 1.25em;
+    width: 5.5em;
     background-color:var(--pg10-11-rBoxHexagonColor);
     clip-path: polygon(
         5% 0%, 95% 0%, 
@@ -400,6 +401,7 @@ li.withoutPeriod::before {
         padding-top: 1.5rem;
         
     }
+    
 
     
 }
@@ -417,4 +419,7 @@ li.withoutPeriod::before {
         padding-top: 5%;
     }
     
+    .page67 .hexagon {
+        width: 5em;
+    }
 }
