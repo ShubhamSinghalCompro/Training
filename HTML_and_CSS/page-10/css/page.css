@@ -9,6 +9,7 @@
 
 
     --page10-11-agendaSize10: 0.68rem;
+    --page10-11-agendaSize: 0.68rem;
 }
 @font-face {
     font-family: 'Agenda';
@@ -22,34 +23,20 @@
     font-family: 'Agenda', serif;
 }
 
-.pages{
-    display: flex;
-    align-items: center;
-}
-
-.page{
-    width: 50%;
-}
-
-.pagesMain{
-    display: flex;
-    justify-content: space-between;
-    padding-top: 5%;
-}
-
-
-.pageSection{
-    width: 50%;
-    margin-left: 27px;
-    margin-right: 53px;
-}
-
-#headerFull{
+#fullHeader{
     background-color: var(--pg10-11-redColor);
     color: var(--pg10-11-whiteColor);
     height: 70px;
 }
 
+.pagesHeader{
+    display: flex;
+    align-items: center;
+}
+
+.pageHeader{
+    width: 50%;
+}
 
 #lHeader{
     display:flex;
@@ -68,19 +55,7 @@
     z-index: 2;
 }
 
-#lHeaderRight{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex: 1;
-}
-
-#lHeaderRightTitle{
-    font-weight: bold;
-    font-size: 1.2rem;
-}
-
-#lHeaderLeftDiv{
+#lHeaderLeftContent{
     text-align: center;
     padding: 15px 20px 0px 0px;
     font-size: 0.7rem;
@@ -96,10 +71,37 @@
     font-family: 'Libre Baskerville' serif;
 }
 
+#lHeaderRight{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+}
+
+#lHeaderRightTitle{
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+
+.pagesBody{
+    display: flex;
+    justify-content: space-between;
+    padding-top: 5%;
+}
+
+
+.pageSection{
+    width: 50%;
+    margin-left: 27px;
+    margin-right: 53px;
+}
+
+
+
 .mainSent{
     font-weight: bold;
     padding-right: 48px;
-    font-size: 0.68rem;
 }
 
 .sentStart{
@@ -315,7 +317,7 @@ li.dottedLineLi{
     position: relative;
 }
 
-.circleShadow{
+#circleShadow{
     position: absolute;
     background-color: var(--pg10-11-circleShadowColor);
     height: 70px;
