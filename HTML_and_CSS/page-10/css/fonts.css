@@ -1,0 +1,51 @@
+@font-face {
+    font-family: 'Agenda';
+    src: url('https://drive.google.com/uc?export=download&id=1YhPJ06LDsjNY98j9f6MQhjLJ7YxPxl2o') format('opentype');
+}
+
+:root {
+    /* Font size variables */
+    --base-font-size: 16;
+    --font-device-val: 1.1;
+
+
+    /* font-sizes 1.1 */
+    --font-10pt: calc(1rem * ((10 * var(--font-device-val)) / var(--base-font-size)));
+    --font-17pt: calc(1rem * ((17 * var(--font-device-val)) / var(--base-font-size)));
+    --font-9pt: calc(1rem * ((9 * var(--font-device-val)) / var(--base-font-size)));
+}
+
+
+@media only screen and (max-width: 576px) {
+    :root {
+        --font-device-val: 1;
+    }
+}
+
+
+@media only screen and (min-width: 576px) and (max-width: 768px) {
+    :root {
+        --font-device-val: 1.3;
+    }
+}
+
+
+@media only screen and (min-width: 768px) and (max-width: 992px) {
+    :root {
+        --font-device-val: 1.6;
+    }
+}
+
+
+.font-10pt {
+    font-size: var(--font-10pt);
+}
+
+.font-17pt {
+    font-size: var(--font-17pt);
+}
+
+.font-9pt {
+    font-size: var(--font-9pt);
+}
+
