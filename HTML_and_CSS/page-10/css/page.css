@@ -90,14 +90,14 @@
     padding-top: 5%;
 }
 
-
-.pageSection{
-    width: 50%;
-    margin-left: 27px;
-    margin-right: 53px;
+.page66, .page67 {
+    flex: 1;
+    padding: 20px; 
 }
 
-
+.page66, .page67 .pageSection {
+    width: 100%;
+}
 
 .mainSent{
     font-weight: bold;
