@@ -371,7 +371,7 @@ li.withoutPeriod::before {
     #lastWords{
         margin-left: 0.8rem;
         margin-top: 0.5rem;
-        padding-top: 1rem;
+        padding-top: 0.5rem;
         
     }
 
@@ -401,7 +401,7 @@ li.withoutPeriod::before {
     #lastWords{
         margin-left: 0.8rem;
         margin-top: 0.5rem;
-        padding-top: 0.75rem;
+        padding-top: 0.25rem;
         
     }
     
