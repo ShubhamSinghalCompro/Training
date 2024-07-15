@@ -6,16 +6,24 @@
     --pg10-11-circleShadowColor: #C40F1F;
     --pg10-11-blueColor: #42C2C9;
     --pg10-11-rightPageBoxColor: #E3F4F5;
+    --page-border-color: rgba(220, 220, 220); ;
+
 }
 
 *{
     margin: 0;
     padding: 0;
     font-family: 'Agenda';
-    max-width: 1200;
+   
+}
+
+.container{
+    max-width: 1200px;
+    margin: auto;
 }
 
 #fullHeader{
+    position: relative;
     background-color: var(--pg10-11-redColor);
     color: var(--pg10-11-whiteColor);
     height: 4.5rem;
@@ -106,7 +114,7 @@
 }
 
 .page67 .pageSection {
-    padding: 0 6rem 0 2.5rem; 
+    padding: 0 4rem 0 2.5rem; 
 }
 
 
@@ -144,6 +152,7 @@
     display: inline-block;
     margin-right: 0.5rem;
     margin-left: 1%;
+    align-self: center;
 }
 
 
@@ -165,6 +174,7 @@
     display: inline-block;
     margin-right: 0.5rem;
     margin-left: 1%;
+    align-self: center;
 }
 
 
@@ -266,7 +276,7 @@ li.withoutPeriod::before {
 .page67 .red-bullets{
     color:var(--pg10-11-redColor);
 }
-.page67 #boldWords{
+.page67 .boldWords{
     font-weight: bold;
 }
 
@@ -317,9 +327,10 @@ li.withoutPeriod::before {
 
 .olNumbersOuterDiv{
     display: flex;
+    margin-bottom: 0.25rem;
 }
 
-#lastWords{
+.page67 #lastWords{
     margin-left: 0.8rem;
     margin-top: 0.5rem;
     padding-top: 0.75rem;
@@ -368,12 +379,25 @@ li.withoutPeriod::before {
     }
     
 
-    #lastWords{
+    .page67 #lastWords{
         margin-left: 0.8rem;
         margin-top: 0.5rem;
-        padding-top: 0.5rem;
+        padding-top: 0.3rem;
         
     }
+    #lHeaderRightTitle {
+        font-size: 1rem;
+        text-align: center;
+        padding: 0.5rem;
+    }
+
+    @media only screen and (max-width: 330px){
+        .page67 #lastWords{
+            padding-top: 1.5rem;
+            
+        }
+    }
+
 
 }
 
@@ -404,7 +428,6 @@ li.withoutPeriod::before {
         padding-top: 0.25rem;
         
     }
-    
 
     
 }
@@ -425,4 +448,37 @@ li.withoutPeriod::before {
     .page67 .hexagon {
         width: 5em;
     }
+    .olNumbersOuterDiv{
+        margin-bottom: 0rem;
+    }
 }
+
+@media only screen and (min-width: 993px) {
+
+    /* style for adding border */
+    .container {
+       border-left: 1px solid var(--page-border-color);
+       border-right: 1px solid var(--page-border-color);
+    }
+  
+    main article:nth-of-type(1){
+       border-right: 1px solid var(--page-border-color);
+    }
+      
+    main article:nth-of-type(2){
+       border-left: 1px solid var(--page-border-color);
+    }
+  }
+  
+  
+  @media only screen and (max-width: 992px) {
+  
+    /* style for adding border on second article */
+    main article:nth-of-type(2){
+       border-top: 2px solid var(--page-border-color);
+       padding-top: 24px;
+    }
+    
+  
+  }
+  
