@@ -18,7 +18,7 @@
 }
 
 .container{
-    max-width: 1200px;
+    max-width: 85rem;
     margin: auto;
 }
 
@@ -53,6 +53,7 @@
     display: flex;
     justify-content:flex-end;
     z-index: 2;
+    left: 0;
 }
 
 #lHeaderLeftContent{
@@ -60,13 +61,11 @@
     padding: 1rem 1.5rem 0 0;
 }
 
-#lHeaderLeftHR{
-    color: var(--pg10-11-lHeaderHRColor);
-}
-
 #lHeaderChapterNo{
     font-weight: bold;
     font-family: 'Libre Baskerville';
+    border-top: 3px solid var(--pg10-11-lHeaderHRColor);
+    margin-top: 2px;
 }
 
 
@@ -77,8 +76,8 @@
     width: 3rem;
     left: 4rem;
     top: 0;;
-    border-top-right-radius: 70%;
-    border-bottom-right-radius: 20%;
+    border-top-right-radius: 65%;
+    border-bottom-right-radius: 30%;
     z-index: 1;
 }
 
@@ -97,7 +96,6 @@
 .pagesBody{
     display: flex;
     justify-content: space-between;
-    padding-top: 5%;
 }
 
 .page66 {
@@ -105,7 +103,7 @@
 }
 
 .page66 .pageSection {
-    padding: 0 8rem 0 2.5rem; 
+    padding: 4rem 8rem 0 2.5rem; 
 }
 
 .page67 {
@@ -114,7 +112,7 @@
 }
 
 .page67 .pageSection {
-    padding: 0 4rem 0 2.5rem; 
+    padding: 4rem 4rem 0 2.5rem; 
 }
 
 
@@ -151,7 +149,7 @@
     height: 12px;
     display: inline-block;
     margin-right: 0.5rem;
-    margin-left: 1%;
+    margin-left: 0.5rem;
     align-self: center;
 }
 
@@ -159,7 +157,7 @@
 
 .page67 ol.numbers{
     padding-left: 2rem;
-    margin-bottom: 1.25rem;
+    margin-bottom: 0.25rem;
     margin-top: 0.6rem;
     flex:1;
     
@@ -182,11 +180,19 @@ ol li::marker{
     font-weight: bold;
 }
 
-ol.withoutPeriod{
+.page66 ol.withoutPeriod{
     counter-reset: item;
     list-style-type: none;
     padding-left: 1rem;
     margin-bottom: 1.25rem;
+    margin-top: 0.6rem;
+    flex:1
+}
+.page67 ol.withoutPeriod{
+    counter-reset: item;
+    list-style-type: none;
+    padding-left: 1rem;
+    margin-bottom: 0.25rem;
     margin-top: 0.6rem;
     flex:1
 }
@@ -203,9 +209,9 @@ li.withoutPeriod::before {
     font-weight: bold;
     display: block;
     text-align: center;
-    height: 1.25rem;
-    width: 1.25rem;
-    margin-right: 0.5rem;
+    height: 1rem;
+    width: 1rem;
+    margin-right: 0.3rem;
     flex-shrink: 0;
 }
 
@@ -296,6 +302,7 @@ li.withoutPeriod::before {
     vertical-align: bottom;
     color: var(--pg10-11-whiteColor);
     position: relative;
+    margin-left: -0.5rem;
 }
 
 .page67 .redColorItalicWords{
@@ -307,7 +314,7 @@ li.withoutPeriod::before {
 .page67 #insideHexagonText{
     font-weight: bold;
     color: var(--pg10-11-whiteColor);
-    padding-right: 8px;
+    padding-left: 4px;
 }
 
 .page67 .rightBoxMargin{
@@ -320,10 +327,10 @@ li.withoutPeriod::before {
     margin-left: 0.5rem;
 }
 
-.olNumbersDiv{
+ .olNumbersDiv{
     display: inline-block;
     flex:1;
-}
+} 
 
 .olNumbersOuterDiv{
     display: flex;
@@ -332,31 +339,30 @@ li.withoutPeriod::before {
 
 .page67 #lastWords{
     margin-left: 0.8rem;
-    margin-top: 0.5rem;
-    padding-top: 0.75rem;
     
 }
 
-.innerdiv { 
-    position: absolute; 
-    top: 0; 
+.innerdiv {  
     margin-left: 0.5rem;
-}
-
-.outerdiv{
-    position: relative;
-
+    margin-bottom: 0.5rem;
 }
 
 .page67 .paddingLast{
     padding-right: 2rem;
 }
 
+.blueLine {
+    bottom: 0;
+    left: 0;
+    width: 4rem; /* Width of the blue line */
+    height: 2px; /* Thickness of the blue line */
+    background-color:var(--pg10-11-lHeaderHRColor); /* Blue color */
+    margin-bottom: 0.75rem;
+}
 
 @media only screen and (max-width: 576px) {
     .pagesBody{
         flex-direction: column;
-        padding-top: 10%;
     }
     .pagesHeader {
         flex-direction: column;
@@ -367,11 +373,11 @@ li.withoutPeriod::before {
     }
 
     .page66 .pageSection{
-        padding: 0 1.5rem 0 1.5rem;
+        padding: 3rem 1.5rem 0 1.5rem;
     }
 
     .page67 .pageSection{
-        padding: 0 1.5rem 0 1.5rem;
+        padding: 3rem 1.5rem 0 1.5rem;
     }
 
     .page67 #secondPoint{
@@ -381,8 +387,6 @@ li.withoutPeriod::before {
 
     .page67 #lastWords{
         margin-left: 0.8rem;
-        margin-top: 0.5rem;
-        padding-top: 0.3rem;
         
     }
     #lHeaderRightTitle {
@@ -390,21 +394,11 @@ li.withoutPeriod::before {
         text-align: center;
         padding: 0.5rem;
     }
-
-    @media only screen and (max-width: 330px){
-        .page67 #lastWords{
-            padding-top: 1.5rem;
-            
-        }
-    }
-
-
 }
 
 @media only screen and (min-width: 577px) and (max-width: 768px) {
     .pagesBody{
         flex-direction: column;
-        padding-top: 10%;
     }
     .pagesHeader {
         flex-direction: column;
@@ -415,17 +409,15 @@ li.withoutPeriod::before {
     }
 
     .page66 .pageSection{
-        padding: 0 1.5rem 0 1.5rem;
+        padding: 3rem 1.5rem 0 1.5rem;
     }
 
     .page67 .pageSection{
-        padding: 0 1.5rem 0 1.5rem;
+        padding: 3rem 1.5rem 0 1.5rem;
     }
 
     #lastWords{
         margin-left: 0.8rem;
-        margin-top: 0.5rem;
-        padding-top: 0.25rem;
         
     }
 
@@ -442,7 +434,6 @@ li.withoutPeriod::before {
     }
     .pagesBody{
         flex-direction: column;
-        padding-top: 5%;
     }
     
     .page67 .hexagon {
@@ -476,9 +467,12 @@ li.withoutPeriod::before {
     /* style for adding border on second article */
     main article:nth-of-type(2){
        border-top: 2px solid var(--page-border-color);
-       padding-top: 24px;
+       /* padding-top: 24px; */
     }
-    
-  
+
+    .rightHeader{
+        height: 4.5rem;
+        background-color: var(--pg10-11-redColor);
+    }
   }
   
