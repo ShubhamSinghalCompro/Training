@@ -13,7 +13,7 @@
 *{
     margin: 0;
     padding: 0;
-    font-family: 'Agenda';
+    font-family: 'Agenda', sans-serif;;
    
 }
 
@@ -75,7 +75,7 @@
     height: 4.5rem;
     width: 3rem;
     left: 4rem;
-    top: 0;;
+    top: 0;
     border-top-right-radius: 65%;
     border-bottom-right-radius: 30%;
     z-index: 1;
@@ -86,6 +86,7 @@
     align-items: center;
     justify-content: center;
     flex: 1;
+    text-align: center;
 }
 
 #lHeaderRightTitle{
@@ -363,7 +364,19 @@ li.withoutPeriod::before {
 @media only screen and (max-width: 576px) {
     .pagesBody{
         flex-direction: column;
+        flex-wrap: nowrap;
     }
+
+    .pagesBody{
+        display: flex;
+        justify-content: space-between;
+    }
+    
+    .page66 {
+        width: 100%;
+    }
+
+
     .pagesHeader {
         flex-direction: column;
     }
@@ -459,6 +472,21 @@ li.withoutPeriod::before {
     main article:nth-of-type(2){
        border-left: 1px solid var(--page-border-color);
     }
+
+    .pagesBody{
+        flex-wrap: wrap;
+    }
+
+    .page66{
+        flex:1;
+        min-width: 31rem;
+    }
+
+    .page67{
+        flex:1;
+        min-width: 31rem;
+    }
+
   }
   
   
