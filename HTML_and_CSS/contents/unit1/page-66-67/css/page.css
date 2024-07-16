@@ -18,25 +18,36 @@
 }
 
 .container{
+    display: flex;
+    justify-content: space-between;
     max-width: 85rem;
     margin: auto;
+    flex-wrap: wrap;
 }
 
-#fullHeader{
+.page66 {
+    width: 100%;
+    flex:1;
+    min-width: 31rem;
+}
+
+.page67 {
+    width: 100%;
+    flex:1;
+    min-width: 31rem;
+    
+}
+
+
+
+#leftHeader{
     position: relative;
     background-color: var(--pg10-11-redColor);
     color: var(--pg10-11-whiteColor);
     height: 4.5rem;
-}
-
-.pagesHeader{
-    display: flex;
-    align-items: center;
-}
-
-#lHeader{
     display:flex;
     align-items: center;
+    justify-content: flex-start;
 }
 
 #lHeaderLeft{
@@ -72,8 +83,8 @@
     width: 3rem;
     left: 4rem;
     top: 0;
-    border-top-right-radius: 65%;
-    border-bottom-right-radius: 30%;
+    border-top-right-radius: 42%;
+    border-bottom-right-radius: 47%;
     z-index: 1;
 }
 
@@ -89,29 +100,18 @@
     font-weight: bold;
 }
 
-
-.pagesBody{
-    display: flex;
-    justify-content: space-between;
-}
-
-.page66 {
-    width: 100%;
+.rightHeader{
+    height: 4.5rem;
+    background-color: var(--pg10-11-redColor);
 }
 
 .page66 .pageSection {
     padding: 4rem 8rem 0 2.5rem; 
 }
 
-.page67 {
-    width: 100%;
-    
-}
-
 .page67 .pageSection {
-    padding: 4rem 4rem 0 2.5rem; 
+    padding: 4rem 5rem 0 4rem; 
 }
-
 
 .page66 .mainSent{
     font-weight: bold;
@@ -356,38 +356,37 @@ li.withoutPeriod::before {
     background-color:var(--pg10-11-lHeaderHRColor); /* Blue color */
     margin-bottom: 0.75rem;
 }
+.lastPointsAlignment{
+    margin-left: 0.5rem;
+}
 
 @media only screen and (max-width: 576px) {
-    .pagesBody{
+    .container{
         flex-direction: column;
-        flex-wrap: nowrap;
     }
 
-    .pagesBody{
-        display: flex;
-        justify-content: space-between;
+    .page66{
+        min-width: 0rem;
+    }
+
+    .page67{
+        min-width: 0rem;
+    }
+
+    .page66 .pageSection {
+        padding: 4rem 2rem 0 1.5rem; 
     }
     
-    .page66 {
-        width: 100%;
+    .page67 .pageSection {
+        padding: 4rem 2rem 0 1.5rem; 
     }
+    
 
 
-    .pagesHeader {
+    .leftHeader {
         flex-direction: column;
     }
 
-    .pageHeader {
-        width: 100%;
-    }
-
-    .page66 .pageSection{
-        padding: 3rem 1.5rem 0 1.5rem;
-    }
-
-    .page67 .pageSection{
-        padding: 3rem 1.5rem 0 1.5rem;
-    }
 
     .page67 #secondPoint{
         flex-direction: column;
@@ -406,23 +405,11 @@ li.withoutPeriod::before {
 }
 
 @media only screen and (min-width: 577px) and (max-width: 768px) {
-    .pagesBody{
+    .container{
         flex-direction: column;
     }
-    .pagesHeader {
+    .leftHeader {
         flex-direction: column;
-    }
-
-    .pageHeader {
-        width: 100%;
-    }
-
-    .page66 .pageSection{
-        padding: 3rem 1.5rem 0 1.5rem;
-    }
-
-    .page67 .pageSection{
-        padding: 3rem 1.5rem 0 1.5rem;
     }
 
     #lastWords{
@@ -434,14 +421,11 @@ li.withoutPeriod::before {
 }
 
 @media only screen and (min-width: 769px) and (max-width:992px) {
-    .pagesHeader {
+    .leftHeader {
         flex-direction: column;
     }
 
-    .pageHeader {
-        width: 100%;
-    }
-    .pagesBody{
+    .container{
         flex-direction: column;
     }
     
@@ -469,20 +453,6 @@ li.withoutPeriod::before {
        border-left: 1px solid var(--page-border-color);
     }
 
-    .pagesBody{
-        flex-wrap: wrap;
-    }
-
-    .page66{
-        flex:1;
-        min-width: 31rem;
-    }
-
-    .page67{
-        flex:1;
-        min-width: 31rem;
-    }
-
   }
   
   
@@ -491,12 +461,7 @@ li.withoutPeriod::before {
     /* style for adding border on second article */
     main article:nth-of-type(2){
        border-top: 2px solid var(--page-border-color);
-       /* padding-top: 24px; */
-    }
-
-    .rightHeader{
-        height: 4.5rem;
-        background-color: var(--pg10-11-redColor);
+       padding-top: 24px;
     }
   }
   
