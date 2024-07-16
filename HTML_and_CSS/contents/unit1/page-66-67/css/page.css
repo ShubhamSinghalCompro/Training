@@ -29,12 +29,16 @@
     width: 100%;
     flex:1;
     min-width: 31rem;
+    display: flex;
+    flex-direction: column;
 }
 
 .page67 {
     width: 100%;
     flex:1;
     min-width: 31rem;
+    display: flex;
+    flex-direction: column;
     
 }
 
@@ -107,10 +111,12 @@
 
 .page66 .pageSection {
     padding: 4rem 8rem 0 2.5rem; 
+    flex: 1;
 }
 
 .page67 .pageSection {
     padding: 4rem 5rem 0 4rem; 
+    flex: 1;
 }
 
 .page66 .mainSent{
@@ -360,6 +366,15 @@ li.withoutPeriod::before {
     margin-left: 0.5rem;
 }
 
+.left-page-footer{
+    padding: 2rem 8rem 0 2.5rem;
+}
+.right-page-footer{
+    padding: 2rem 5rem 0 4rem; 
+    text-align: end;
+}
+
+
 @media only screen and (max-width: 576px) {
     .container{
         flex-direction: column;
@@ -379,6 +394,14 @@ li.withoutPeriod::before {
     
     .page67 .pageSection {
         padding: 4rem 2rem 0 1.5rem; 
+    }
+
+    .left-page-footer{
+        padding: 2rem 2rem 0 1.5rem;
+    }
+    .right-page-footer{
+        padding: 2rem 2rem 0 1.5rem; 
+        text-align: end;
     }
     
 
