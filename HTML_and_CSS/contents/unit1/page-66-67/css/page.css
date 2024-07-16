@@ -34,10 +34,6 @@
     align-items: center;
 }
 
-.pageHeader{
-    width: 50%;
-}
-
 #lHeader{
     display:flex;
     align-items: center;
