@@ -6,33 +6,48 @@
     --pg10-11-circleShadowColor: #C40F1F;
     --pg10-11-blueColor: #42C2C9;
     --pg10-11-rightPageBoxColor: #E3F4F5;
+    --page-border-color: rgba(220, 220, 220); ;
+
 }
 
 *{
     margin: 0;
     padding: 0;
-    font-family: 'Agenda';
-    max-width: 1200;
+    font-family: 'Agenda', sans-serif;;
+   
 }
 
-#fullHeader{
+.container{
+    display: flex;
+    justify-content: space-between;
+    max-width: 85rem;
+    margin: auto;
+    flex-wrap: wrap;
+}
+
+.page66 {
+    width: 100%;
+    flex:1;
+    min-width: 31rem;
+}
+
+.page67 {
+    width: 100%;
+    flex:1;
+    min-width: 31rem;
+    
+}
+
+
+
+#leftHeader{
+    position: relative;
     background-color: var(--pg10-11-redColor);
     color: var(--pg10-11-whiteColor);
     height: 4.5rem;
-}
-
-.pagesHeader{
-    display: flex;
-    align-items: center;
-}
-
-.pageHeader{
-    width: 50%;
-}
-
-#lHeader{
     display:flex;
     align-items: center;
+    justify-content: flex-start;
 }
 
 #lHeaderLeft{
@@ -45,6 +60,7 @@
     display: flex;
     justify-content:flex-end;
     z-index: 2;
+    left: 0;
 }
 
 #lHeaderLeftContent{
@@ -52,13 +68,11 @@
     padding: 1rem 1.5rem 0 0;
 }
 
-#lHeaderLeftHR{
-    color: var(--pg10-11-lHeaderHRColor);
-}
-
 #lHeaderChapterNo{
     font-weight: bold;
     font-family: 'Libre Baskerville';
+    border-top: 3px solid var(--pg10-11-lHeaderHRColor);
+    margin-top: 2px;
 }
 
 
@@ -68,9 +82,9 @@
     height: 4.5rem;
     width: 3rem;
     left: 4rem;
-    top: 0;;
-    border-top-right-radius: 70%;
-    border-bottom-right-radius: 20%;
+    top: 0;
+    border-top-right-radius: 42%;
+    border-bottom-right-radius: 47%;
     z-index: 1;
 }
 
@@ -79,36 +93,25 @@
     align-items: center;
     justify-content: center;
     flex: 1;
+    text-align: center;
 }
 
 #lHeaderRightTitle{
     font-weight: bold;
 }
 
-
-.pagesBody{
-    display: flex;
-    justify-content: space-between;
-    padding-top: 5%;
-}
-
-.page66 {
-    width: 100%;
+.rightHeader{
+    height: 4.5rem;
+    background-color: var(--pg10-11-redColor);
 }
 
 .page66 .pageSection {
-    padding: 0 8rem 0 2.5rem; 
-}
-
-.page67 {
-    width: 100%;
-    
+    padding: 4rem 8rem 0 2.5rem; 
 }
 
 .page67 .pageSection {
-    padding: 0 6rem 0 2.5rem; 
+    padding: 4rem 5rem 0 4rem; 
 }
-
 
 .page66 .mainSent{
     font-weight: bold;
@@ -143,14 +146,15 @@
     height: 12px;
     display: inline-block;
     margin-right: 0.5rem;
-    margin-left: 1%;
+    margin-left: 0.5rem;
+    align-self: center;
 }
 
 
 
 .page67 ol.numbers{
     padding-left: 2rem;
-    margin-bottom: 1.25rem;
+    margin-bottom: 0.25rem;
     margin-top: 0.6rem;
     flex:1;
     
@@ -165,6 +169,7 @@
     display: inline-block;
     margin-right: 0.5rem;
     margin-left: 1%;
+    align-self: center;
 }
 
 
@@ -172,11 +177,19 @@ ol li::marker{
     font-weight: bold;
 }
 
-ol.withoutPeriod{
+.page66 ol.withoutPeriod{
     counter-reset: item;
     list-style-type: none;
     padding-left: 1rem;
     margin-bottom: 1.25rem;
+    margin-top: 0.6rem;
+    flex:1
+}
+.page67 ol.withoutPeriod{
+    counter-reset: item;
+    list-style-type: none;
+    padding-left: 1rem;
+    margin-bottom: 0.25rem;
     margin-top: 0.6rem;
     flex:1
 }
@@ -193,9 +206,9 @@ li.withoutPeriod::before {
     font-weight: bold;
     display: block;
     text-align: center;
-    height: 1.25rem;
-    width: 1.25rem;
-    margin-right: 0.5rem;
+    height: 1rem;
+    width: 1rem;
+    margin-right: 0.3rem;
     flex-shrink: 0;
 }
 
@@ -266,7 +279,7 @@ li.withoutPeriod::before {
 .page67 .red-bullets{
     color:var(--pg10-11-redColor);
 }
-.page67 #boldWords{
+.page67 .boldWords{
     font-weight: bold;
 }
 
@@ -286,6 +299,7 @@ li.withoutPeriod::before {
     vertical-align: bottom;
     color: var(--pg10-11-whiteColor);
     position: relative;
+    margin-left: -0.5rem;
 }
 
 .page67 .redColorItalicWords{
@@ -297,7 +311,7 @@ li.withoutPeriod::before {
 .page67 #insideHexagonText{
     font-weight: bold;
     color: var(--pg10-11-whiteColor);
-    padding-right: 8px;
+    padding-left: 4px;
 }
 
 .page67 .rightBoxMargin{
@@ -310,119 +324,144 @@ li.withoutPeriod::before {
     margin-left: 0.5rem;
 }
 
-.olNumbersDiv{
+ .olNumbersDiv{
     display: inline-block;
     flex:1;
-}
+} 
 
 .olNumbersOuterDiv{
     display: flex;
+    margin-bottom: 0.25rem;
 }
 
-#lastWords{
+.page67 #lastWords{
     margin-left: 0.8rem;
-    margin-top: 0.5rem;
-    padding-top: 0.75rem;
     
 }
 
-.innerdiv { 
-    position: absolute; 
-    top: 0; 
+.innerdiv {  
     margin-left: 0.5rem;
-}
-
-.outerdiv{
-    position: relative;
-
+    margin-bottom: 0.5rem;
 }
 
 .page67 .paddingLast{
     padding-right: 2rem;
 }
 
+.blueLine {
+    bottom: 0;
+    left: 0;
+    width: 4rem; /* Width of the blue line */
+    height: 2px; /* Thickness of the blue line */
+    background-color:var(--pg10-11-lHeaderHRColor); /* Blue color */
+    margin-bottom: 0.75rem;
+}
+.lastPointsAlignment{
+    margin-left: 0.5rem;
+}
 
 @media only screen and (max-width: 576px) {
-    .pagesBody{
-        flex-direction: column;
-        padding-top: 10%;
-    }
-    .pagesHeader {
+    .container{
         flex-direction: column;
     }
 
-    .pageHeader {
-        width: 100%;
+    .page66{
+        min-width: 0rem;
     }
 
-    .page66 .pageSection{
-        padding: 0 1.5rem 0 1.5rem;
+    .page67{
+        min-width: 0rem;
     }
 
-    .page67 .pageSection{
-        padding: 0 1.5rem 0 1.5rem;
+    .page66 .pageSection {
+        padding: 4rem 2rem 0 1.5rem; 
     }
+    
+    .page67 .pageSection {
+        padding: 4rem 2rem 0 1.5rem; 
+    }
+    
+
+
+    .leftHeader {
+        flex-direction: column;
+    }
+
 
     .page67 #secondPoint{
         flex-direction: column;
     }
     
 
-    #lastWords{
+    .page67 #lastWords{
         margin-left: 0.8rem;
-        margin-top: 0.5rem;
-        padding-top: 0.5rem;
         
     }
-
+    #lHeaderRightTitle {
+        font-size: 1rem;
+        text-align: center;
+        padding: 0.5rem;
+    }
 }
 
 @media only screen and (min-width: 577px) and (max-width: 768px) {
-    .pagesBody{
-        flex-direction: column;
-        padding-top: 10%;
-    }
-    .pagesHeader {
+    .container{
         flex-direction: column;
     }
-
-    .pageHeader {
-        width: 100%;
-    }
-
-    .page66 .pageSection{
-        padding: 0 1.5rem 0 1.5rem;
-    }
-
-    .page67 .pageSection{
-        padding: 0 1.5rem 0 1.5rem;
+    .leftHeader {
+        flex-direction: column;
     }
 
     #lastWords{
         margin-left: 0.8rem;
-        margin-top: 0.5rem;
-        padding-top: 0.25rem;
         
     }
-    
 
     
 }
 
 @media only screen and (min-width: 769px) and (max-width:992px) {
-    .pagesHeader {
+    .leftHeader {
         flex-direction: column;
     }
 
-    .pageHeader {
-        width: 100%;
-    }
-    .pagesBody{
+    .container{
         flex-direction: column;
-        padding-top: 5%;
     }
     
     .page67 .hexagon {
         width: 5em;
     }
+    .olNumbersOuterDiv{
+        margin-bottom: 0rem;
+    }
 }
+
+@media only screen and (min-width: 993px) {
+
+    /* style for adding border */
+    .container {
+       border-left: 1px solid var(--page-border-color);
+       border-right: 1px solid var(--page-border-color);
+    }
+  
+    main article:nth-of-type(1){
+       border-right: 1px solid var(--page-border-color);
+    }
+      
+    main article:nth-of-type(2){
+       border-left: 1px solid var(--page-border-color);
+    }
+
+  }
+  
+  
+  @media only screen and (max-width: 992px) {
+  
+    /* style for adding border on second article */
+    main article:nth-of-type(2){
+       border-top: 2px solid var(--page-border-color);
+       padding-top: 24px;
+    }
+  }
+  
