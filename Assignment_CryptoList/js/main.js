@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Fetch and display all coins
     const coinsFetch = await fetchAllCoins(1);
     if(coinsFetch){
-        displayAllCoins(allCoins);
+        displayAllCoins();
     }
     else{
         console.log("Error while fetching coins");

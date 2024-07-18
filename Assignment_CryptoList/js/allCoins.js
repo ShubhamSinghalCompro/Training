@@ -37,7 +37,7 @@ async function fetchAllCoins(currPage){
 }
 
 // display all coins data
-function displayAllCoins(data){
+function displayAllCoins(){
     const container = document.querySelector("#all-coins-data");
     console.log(container);
     container.innerHTML = '';
