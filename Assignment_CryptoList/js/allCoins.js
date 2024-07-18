@@ -2,9 +2,7 @@ let allCoins = [];
 let lastCoinIndex = -1;
 
 //fetch all coins data
-async function fetchAllCoins(){
-    //current page number
-    let currPage = 1;
+async function fetchAllCoins(currPage){
 
     // API URL to fetch Coins Data
     const COINS_API_URL = "https://api.coingecko.com/api/v3/coins/markets"; 
@@ -18,25 +16,21 @@ async function fetchAllCoins(){
     });
 
     try {
-          //while(true){
-            const response = await fetch(`${COINS_API_URL}?${queryParams}`);
-            if(!response.ok){
-                throw new Error("Failed to fetch Data");
-            }
+        const response = await fetch(`${COINS_API_URL}?${queryParams}`);
+        if(!response.ok){
+            throw new Error("Failed to fetch Data");
+        }
 
-            const data = await response.json();
-            if(data.length > 0){
-                //using spread operator to get elements of data
-                allCoins.push(...data);
-                currPage++;
-                queryParams.set("page", currPage);
-                displayAllCoins(allCoins);
-            }
-        //     else{
-        //         displayAllCoins(allCoins);
-        //         break;
-        //     }
-        // }
+        const data = await response.json();
+        if(data.length > 0){
+            //using spread operator to get elements of data
+            allCoins.push(...data);
+            currPage++;
+            queryParams.set("page", currPage);
+            return true;  
+        }
+        return false;
+        
     } catch (e) {
         console.error(e);
     }
@@ -77,13 +71,26 @@ function displayAllCoins(data){
     createNextCoinsList(allCoinTable);
 }
 
-function createNextCoinsList(allCoinTable){
+async function createNextCoinsList(allCoinTable){
     if(lastCoinIndex != allCoins.length-1){
         const startIndex = lastCoinIndex + 1;
-        const endIndex = Math.min(startIndex + 10, allCoins.length -1);
-        const nextCoins = allCoins.slice(startIndex, endIndex);
+        const endIndex = Math.min(startIndex + 9, allCoins.length -1);
+        const nextCoins = allCoins.slice(startIndex, endIndex + 1);
         lastCoinIndex = endIndex;
         displayCoins(nextCoins, allCoinTable);
+    }
+    else{
+
+        //calculating current page of API
+        let currPage = allCoins.length / 100;
+        currPage = currPage + 1;
+        const fetchNewCoins = await fetchAllCoins(currPage);
+        if(fetchNewCoins){
+            createNextCoinsList(allCoinTable);
+        }
+        else{
+            console.log("no More Coins Left");
+        }
     }
 }
 
