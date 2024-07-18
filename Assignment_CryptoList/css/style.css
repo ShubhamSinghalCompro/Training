@@ -1,0 +1,70 @@
+.coin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.coin-table th, .coin-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.coin-table th {
+    background-color: #f2f2f2;
+}
+
+.coin-item {
+    background-color: #fff;
+}
+
+.coin-item:hover {
+    background-color: #f9f9f9;
+}
+
+.favorite-item {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.favorite-item button {
+    background-color: #dc3545; /* Red color for remove button */
+    border: none;
+    color: #fff;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.favorite-item button:hover {
+    background-color: hsl(354, 70%, 46%); /* Darker red color on hover */
+}
+
+.favorite-coins-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.favorite-coins-table th, .favorite-coins-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.favorite-coins-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.remove-favorite-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.remove-favorite-btn:hover {
+    background-color: #c82333;
+}
