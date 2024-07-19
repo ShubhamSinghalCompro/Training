@@ -49,14 +49,45 @@ function createAllCoinTable(){
     //creating table header
     const headerRow = document.createElement("tr");
     headerRow.innerHTML = `
-        <th>Name<button id="searchAllCoins">🔍</button></th>
-        <th>Symbol</th>
-        <th>Current Price</th>
-        <th>Market Cap</th>
-        <th>24h Change</th>
+        <th>
+            Name
+            <button id="searchAllCoins">🔍</button>
+            <button class="sort-btn all-coins" data-column="name" data-order="asc">⬆️</button>
+            <button class="sort-btn all-coins" data-column="name" data-order="desc">⬇️</button>
+        </th>
+        <th>
+            Symbol
+            <button class="sort-btn all-coins" data-column="symbol" data-order="asc">⬆️</button>
+            <button class="sort-btn all-coins" data-column="symbol" data-order="desc">⬇️</button>
+        </th>
+        <th>
+            Current Price
+            <button class="sort-btn all-coins" data-column="current_price" data-order="asc">⬆️</button>
+            <button class="sort-btn all-coins" data-column="current_price" data-order="desc">⬇️</button>
+        </th>
+        <th>
+            Market Cap
+            <button class="sort-btn all-coins" data-column="market_cap" data-order="asc">⬆️</button>
+            <button class="sort-btn all-coins" data-column="market_cap" data-order="desc">⬇️</button>
+        </th>
+        <th>
+            24h Change
+            <button class="sort-btn all-coins" data-column="price_change_percentage_24h" data-order="asc">⬆️</button>
+            <button class="sort-btn all-coins" data-column="price_change_percentage_24h" data-order="desc">⬇️</button>
+        </th>
         <th>Action</th>
     `;
     allCoinTable.append(headerRow);
+
+     // Add event listeners for sorting buttons
+     const sortButtons = headerRow.querySelectorAll('.sort-btn.all-coins');
+     sortButtons.forEach(button => {
+         button.addEventListener('click', () => {
+             const column = button.dataset.column;
+             const order = button.dataset.order;
+             sortAllCoinsTable(column, order);
+         });
+     });
 
     //creating viewMore Button
     const viewMoreButton = document.createElement("button");
@@ -174,4 +205,20 @@ function hideUnfilteredRows(filteredCoins){
             row.classList.remove("hidden-row");
         }
     });
+}
+
+// Function to sort table based on column
+function sortAllCoinsTable(column, order) {
+    const isAsc = order === 'asc';
+
+    filteredCoins.sort((a, b) => {
+        if (a[column] < b[column]) {
+            return isAsc ? -1 : 1;
+        }
+        if (a[column] > b[column]) {
+            return isAsc ? 1 : -1;
+        }
+        return 0;
+    });
+    displayAllCoins(filteredCoins);
 }

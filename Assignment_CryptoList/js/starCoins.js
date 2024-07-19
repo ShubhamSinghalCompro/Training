@@ -1,6 +1,7 @@
 let starCoins = [];
 let starCoinIds = [];
 let filterStarCoins = [];
+// let sortOrder = {}; // To track sorting order for each column
 
 // to show pagination in filters
 let currentPage = 1;
@@ -19,7 +20,7 @@ async function loadStarCoins() {
         starCoins = allCoins.filter(coin => starCoinIds.includes(coin.id));
         const existingCoinIds = starCoins.map(coin => coin.id);
         const missingCoinIds = starCoinIds.filter(id => !existingCoinIds.includes(id));
-        if(missingCoinIds.length > 0){
+        if (missingCoinIds.length > 0) {
             await fetchMissigIdsData(missingCoinIds, starCoins);
         }
         filterStarCoins = starCoins;
@@ -29,8 +30,8 @@ async function loadStarCoins() {
 }
 
 //toFetch missing coins data
-async function fetchMissigIdsData(missingCoinIds, starCoins){
-    const COINS_API_URL = "https://api.coingecko.com/api/v3/coins/markets"; 
+async function fetchMissigIdsData(missingCoinIds, starCoins) {
+    const COINS_API_URL = "https://api.coingecko.com/api/v3/coins/markets";
     const queryParams = new URLSearchParams({
         vs_currency: 'usd',
         ids: missingCoinIds.join(',')
@@ -38,12 +39,12 @@ async function fetchMissigIdsData(missingCoinIds, starCoins){
 
     try {
         const response = await fetch(`${COINS_API_URL}?${queryParams}`);
-        if(!response.ok){
+        if (!response.ok) {
             throw new Error("Failed to fetch Data");
         }
 
         const data = await response.json();
-        if(data.length > 0){
+        if (data.length > 0) {
             starCoins.push(...data);
             return true;
         }
@@ -53,8 +54,8 @@ async function fetchMissigIdsData(missingCoinIds, starCoins){
     }
 }
 
-// to save coins in local
-function saveStarCoins(){
+// to save coins in local storage
+function saveStarCoins() {
     localStorage.setItem('starCoinIds', JSON.stringify(starCoinIds));
 }
 
@@ -80,8 +81,7 @@ function removeFromStarCoins(coinId) {
     displayStarCoins(filterStarCoins);
 }
 
-//create starred coins table
-function createStarCoinTable(){
+function createStarCoinTable() {
     const container = document.querySelector('#star-coins-data');
     container.innerHTML = '';
 
@@ -94,17 +94,48 @@ function createStarCoinTable(){
     // Create the table header row
     const headerRow = document.createElement('tr');
     headerRow.innerHTML = `
-        <th>Name<button id="searchStarCoins">🔍</button></th>
-        <th>Symbol</th>
-        <th>Current Price</th>
-        <th>Market Cap</th>
-        <th>24h Change</th>
+        <th>
+            Name
+            <button id="searchStarCoins">🔍</button>
+            <button class="sort-btn" data-column="name" data-order="asc">⬆️</button>
+            <button class="sort-btn" data-column="name" data-order="desc">⬇️</button>
+        </th>
+        <th>
+            Symbol
+            <button class="sort-btn" data-column="symbol" data-order="asc">⬆️</button>
+            <button class="sort-btn" data-column="symbol" data-order="desc">⬇️</button>
+        </th>
+        <th>
+            Current Price
+            <button class="sort-btn" data-column="current_price" data-order="asc">⬆️</button>
+            <button class="sort-btn" data-column="current_price" data-order="desc">⬇️</button>
+        </th>
+        <th>
+            Market Cap
+            <button class="sort-btn" data-column="market_cap" data-order="asc">⬆️</button>
+            <button class="sort-btn" data-column="market_cap" data-order="desc">⬇️</button>
+        </th>
+        <th>
+            24h Change
+            <button class="sort-btn" data-column="price_change_percentage_24h" data-order="asc">⬆️</button>
+            <button class="sort-btn" data-column="price_change_percentage_24h" data-order="desc">⬇️</button>
+        </th>
         <th>Action</th>
     `;
 
     starCoinsTable.append(headerRow);
 
-    // selecting search button
+    // Add event listeners for sorting buttons
+    const sortButtons = headerRow.querySelectorAll('.sort-btn');
+    sortButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const column = button.dataset.column;
+            const order = button.dataset.order;
+            sortStarCoinsTable(column, order);
+        });
+    });
+
+    // Selecting search button
     const searchStarCoinsBtn = document.getElementById("searchStarCoins");
     searchStarCoinsBtn.addEventListener('click', () => {
         const searchInput = document.createElement('input');
@@ -115,14 +146,12 @@ function createStarCoinTable(){
         headerRow.children[0].append(searchInput);
         autocomplete(searchInput, starCoins, displayStarCoinsAfterFilteration);
     });
-
 }
 
-//Display Star Coins After Filteration
-function displayStarCoinsAfterFilteration(data){
+// Display Star Coins After Filteration
+function displayStarCoinsAfterFilteration(data) {
     currentPage = 1;
     displayStarCoins(data);
-
 }
 
 // display star coins
@@ -141,7 +170,7 @@ function displayStarCoins(data) {
 
     // Populate the table with favorite coins
     paginatedData.forEach(coin => {
-        //creating coin row
+        // creating coin row
         const row = createRow(coin);
         starCoinsTable.append(row);
     });
@@ -151,13 +180,12 @@ function displayStarCoins(data) {
 
 }
 
-
-function onPressRemoveStarBtn(coinId){
+function onPressRemoveStarBtn(coinId) {
     removeFromStarCoins(coinId);
 
-    //fetch button with class str-btn and attribut data-id = coinId
+    // fetch button with class str-btn and attribute data-id = coinId
     const button = document.querySelector(`.star-btn[data-id="${coinId}"]`);
-    if(button){
+    if (button) {
         button.textContent = 'Add to Favorites';
     }
 }
@@ -182,23 +210,22 @@ function isStarred(coinId) {
     }
 }
 
-function checkFilteration(){
+function checkFilteration() {
     const searchField = document.querySelector(".myInputStar");
     let data = [];
-    if(searchField && searchField.value){
-        data = starCoins.filter(coin => coin.name.substr(0, searchField.value.length).toUpperCase() == searchField.value.toUpperCase());   
-    }
-    else{
+    if (searchField && searchField.value) {
+        data = starCoins.filter(coin => coin.name.substr(0, searchField.value.length).toUpperCase() == searchField.value.toUpperCase());
+    } else {
         data = starCoins;
     }
     return data;
 }
 
-function createRow(coin){
+function createRow(coin) {
     const row = document.createElement('tr');
     row.classList.add('star-coin-item');
 
-    //adding data to row
+    // adding data to row
     row.innerHTML = `
         <td>${coin.name}</td>
         <td>${coin.symbol.toUpperCase()}</td>
@@ -211,7 +238,7 @@ function createRow(coin){
     // Event listener for removing from favorites
     const removeButton = row.querySelector('.remove-star-btn');
     removeButton.addEventListener('click', () => onPressRemoveStarBtn(coin.id));
-    return row;    
+    return row;
 }
 
 function createPaginationControls(totalItems) {
@@ -243,4 +270,22 @@ function createPaginationControls(totalItems) {
         }
     });
     container.appendChild(nextButton);
+}
+
+// Function to sort table based on column
+function sortStarCoinsTable(column, order) {
+    const isAsc = order === 'asc';
+
+    filterStarCoins.sort((a, b) => {
+        if (a[column] < b[column]) {
+            return isAsc ? -1 : 1;
+        }
+        if (a[column] > b[column]) {
+            return isAsc ? 1 : -1;
+        }
+        return 0;
+    });
+
+    currentPage = 1;
+    displayStarCoins(filterStarCoins);
 }
