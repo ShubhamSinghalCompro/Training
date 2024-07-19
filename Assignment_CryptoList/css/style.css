@@ -1,3 +1,10 @@
+.hidden-row{
+    display: none;
+}
+
+
+
+
 .coin-table {
     width: 100%;
     border-collapse: collapse;

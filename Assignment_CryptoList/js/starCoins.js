@@ -62,7 +62,7 @@ function displayStarCoins() {
     starCoins.forEach(coin => {
         //creating coin row
         const row = document.createElement('tr');
-        row.classList.add('coin-item');
+        row.classList.add('star-coin-item');
 
         //adding data to row
         row.innerHTML = `

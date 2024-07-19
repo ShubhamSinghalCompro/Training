@@ -1,4 +1,5 @@
 let allCoins = [];
+let filteredCoins = [];
 let lastCoinIndex = -1;
 
 //fetch all coins data
@@ -38,6 +39,7 @@ async function fetchAllCoins(currPage){
 
 // display all coins data
 function displayAllCoins(){
+    filteredCoins = allCoins;
     const container = document.querySelector("#all-coins-data");
     console.log(container);
     container.innerHTML = '';
@@ -51,7 +53,7 @@ function displayAllCoins(){
     //creating table header
     const headerRow = document.createElement("tr");
     headerRow.innerHTML = `
-        <th>Name</th>
+        <th>Name<button id="searchAllCoins">🔍</button></th>
         <th>Symbol</th>
         <th>Current Price</th>
         <th>Market Cap</th>
@@ -69,6 +71,18 @@ function displayAllCoins(){
     //adding event listner to view more button
     viewMoreButton.addEventListener('click', () => createNextCoinsList(allCoinTable));
     createNextCoinsList(allCoinTable);
+
+    // selecting search button
+    const searchAllCoinsBtn = document.getElementById("searchAllCoins");
+    searchAllCoinsBtn.addEventListener('click', () => {
+        const searchInput = document.createElement('input');
+        searchInput.setAttribute('type', 'text');
+        searchInput.setAttribute('placeholder', 'Search by name...');
+        searchInput.setAttribute('id', 'myInput');
+        searchInput.classList.add("myInput");
+        headerRow.children[0].append(searchInput);
+        autocomplete(searchInput, allCoins);
+    });
 }
 
 async function createNextCoinsList(allCoinTable){
@@ -120,5 +134,31 @@ function displayCoins(data, allCoinTable){
 
         //appending row
         allCoinTable.append(row);
+
+        //checking if coinName is in filter and showing row accordingly
+        const coinName = coin.name;
+        console.log(coinName);
+        const isCoinInFilteredList = filteredCoins.some(filteredCoin => filteredCoin.name === coinName);
+        
+        if (!isCoinInFilteredList) {
+            row.classList.add("hidden-row");
+        }
+    });
+}
+
+function hideUnfilteredRows(filteredCoins){
+    const allRows = document.querySelectorAll('.coin-item');
+    console.log(allRows);
+    allRows.forEach(row => {
+        const coinNameElement = row.querySelector('td:first-child');
+        const coinName = coinNameElement.textContent.trim();
+        console.log(coinName);
+        const isCoinInFilteredList = filteredCoins.some(filteredCoin => filteredCoin.name === coinName);
+        
+        if (!isCoinInFilteredList) {
+            row.classList.add("hidden-row");
+        } else {
+            row.classList.remove("hidden-row");
+        }
     });
 }
