@@ -1,7 +1,7 @@
 let starCoins = [];
 let starCoinIds = [];
 let filterStarCoins = [];
-// let sortOrder = {}; // To track sorting order for each column
+let sortOrderStar = {}; // To track sorting order for each column
 
 // to show pagination in filters
 let currentPage = 1;
@@ -81,6 +81,7 @@ function removeFromStarCoins(coinId) {
     displayStarCoins(filterStarCoins);
 }
 
+// create starred coins table
 function createStarCoinTable() {
     const container = document.querySelector('#star-coins-data');
     container.innerHTML = '';
@@ -94,48 +95,24 @@ function createStarCoinTable() {
     // Create the table header row
     const headerRow = document.createElement('tr');
     headerRow.innerHTML = `
-        <th>
-            Name
-            <button id="searchStarCoins">🔍</button>
-            <button class="sort-btn" data-column="name" data-order="asc">⬆️</button>
-            <button class="sort-btn" data-column="name" data-order="desc">⬇️</button>
-        </th>
-        <th>
-            Symbol
-            <button class="sort-btn" data-column="symbol" data-order="asc">⬆️</button>
-            <button class="sort-btn" data-column="symbol" data-order="desc">⬇️</button>
-        </th>
-        <th>
-            Current Price
-            <button class="sort-btn" data-column="current_price" data-order="asc">⬆️</button>
-            <button class="sort-btn" data-column="current_price" data-order="desc">⬇️</button>
-        </th>
-        <th>
-            Market Cap
-            <button class="sort-btn" data-column="market_cap" data-order="asc">⬆️</button>
-            <button class="sort-btn" data-column="market_cap" data-order="desc">⬇️</button>
-        </th>
-        <th>
-            24h Change
-            <button class="sort-btn" data-column="price_change_percentage_24h" data-order="asc">⬆️</button>
-            <button class="sort-btn" data-column="price_change_percentage_24h" data-order="desc">⬇️</button>
-        </th>
+        <th>Name<button id="searchStarCoins">🔍</button></th>
+        <th>Symbol</th>
+        <th>Current Price</th>
+        <th>Market Cap</th>
+        <th>24h Change</th>
         <th>Action</th>
     `;
 
+    // Add event listeners to headers for sorting
+    headerRow.children[0].addEventListener('click', () => sortTable('name'));
+    headerRow.children[1].addEventListener('click', () => sortTable('symbol'));
+    headerRow.children[2].addEventListener('click', () => sortTable('current_price'));
+    headerRow.children[3].addEventListener('click', () => sortTable('market_cap'));
+    headerRow.children[4].addEventListener('click', () => sortTable('price_change_percentage_24h'));
+
     starCoinsTable.append(headerRow);
 
-    // Add event listeners for sorting buttons
-    const sortButtons = headerRow.querySelectorAll('.sort-btn');
-    sortButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const column = button.dataset.column;
-            const order = button.dataset.order;
-            sortStarCoinsTable(column, order);
-        });
-    });
-
-    // Selecting search button
+    // selecting search button
     const searchStarCoinsBtn = document.getElementById("searchStarCoins");
     searchStarCoinsBtn.addEventListener('click', () => {
         const searchInput = document.createElement('input');
@@ -146,6 +123,7 @@ function createStarCoinTable() {
         headerRow.children[0].append(searchInput);
         autocomplete(searchInput, starCoins, displayStarCoinsAfterFilteration);
     });
+
 }
 
 // Display Star Coins After Filteration
@@ -273,8 +251,9 @@ function createPaginationControls(totalItems) {
 }
 
 // Function to sort table based on column
-function sortStarCoinsTable(column, order) {
-    const isAsc = order === 'asc';
+function sortTable(column) {
+    const isAsc = sortOrderStar[column] === 'asc';
+    sortOrderStar[column] = isAsc ? 'desc' : 'asc';
 
     filterStarCoins.sort((a, b) => {
         if (a[column] < b[column]) {
@@ -286,6 +265,5 @@ function sortStarCoinsTable(column, order) {
         return 0;
     });
 
-    currentPage = 1;
     displayStarCoins(filterStarCoins);
 }
