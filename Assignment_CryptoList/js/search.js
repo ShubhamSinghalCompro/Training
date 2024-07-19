@@ -1,21 +1,17 @@
-function autocomplete(inp, arr) {
+function autocomplete(inp, arr, displayCoins) {
     var currentFocus;
-    console.log(this.value);
     inp.addEventListener("input", function(e) {
         let val = this.value;
-        console.log(this);
-        console.log(val);
         closeAllLists();
         if (!val) {
-            filteredCoins = arr;
-            displayAllCoins(filteredCoins); 
+            const filteredCoins = arr;
+            displayCoins(filteredCoins); 
+            return;
             // hideUnfilteredRows(filteredCoins);
         }
         currentFocus = -1;
-        console.log("arr",arr);
-        filteredCoins = arr.filter(coin => coin.name.substr(0, val.length).toUpperCase() == val.toUpperCase());
-        console.log(filteredCoins);
-        displayAllCoins(filteredCoins);
+        const filteredCoins = arr.filter(coin => coin.name.substr(0, val.length).toUpperCase() == val.toUpperCase());
+        displayCoins(filteredCoins);
         // hideUnfilteredRows(filteredCoins);
     });
 

@@ -3,8 +3,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const coinsFetch = await fetchAllCoins(1);
     
     if(coinsFetch){
+        loadStarCoins();
         filteredCoins = allCoins;
-        const isTableCreated = await createAllCoinTable(filteredCoins);
+        const isTableCreated = createAllCoinTable(filteredCoins);
         if(isTableCreated){
             displayAllCoins(filteredCoins);
         } 
@@ -13,7 +14,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.log("Error while fetching coins");
     }
     // Load and display star coins
-    loadStarCoins();
 });
 
 

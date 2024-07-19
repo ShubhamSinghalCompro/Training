@@ -37,9 +37,8 @@ async function fetchAllCoins(currPage){
     }
 }
 
-async function createAllCoinTable(){
+function createAllCoinTable(){
     const container = document.querySelector("#all-coins-data");
-    console.log(container);
     container.innerHTML = '';
 
     //creating allCoinsTable
@@ -77,7 +76,7 @@ async function createAllCoinTable(){
         searchInput.setAttribute('id', 'myInput');
         searchInput.classList.add("myInput");
         headerRow.children[0].append(searchInput);
-        autocomplete(searchInput, allCoins);
+        autocomplete(searchInput, allCoins, displayAllCoins);
     });
 
     return true;
@@ -86,7 +85,7 @@ async function createAllCoinTable(){
 // display all coins data
 function displayAllCoins(data){
     lastCoinIndex = -1;
-
+    filteredCoins = data;
     //fetching allCoin Table
     const allCoinTable = document.querySelector(".all-coin-table");
 
@@ -115,8 +114,14 @@ async function createNextCoinsList(allCoinTable, data){
         let currPage = allCoins.length / 100;
         currPage = currPage + 1;
         const fetchNewCoins = await fetchAllCoins(currPage);
-        const val = document.querySelector(".myInput").value;
-        filteredCoins = allCoins.filter(coin => coin.name.substr(0, val.length).toUpperCase() == val.toUpperCase());
+        const searchField = document.querySelector(".myInput");
+        if(searchField && searchField.value){
+            filteredCoins = allCoins.filter(coin => coin.name.substr(0, searchField.value.length).toUpperCase() == searchField.value.toUpperCase());
+            
+        }
+        else{
+            filteredCoins = allCoins;
+        }
         data = filteredCoins;
         if(fetchNewCoins){
             createNextCoinsList(allCoinTable, data);
@@ -128,7 +133,6 @@ async function createNextCoinsList(allCoinTable, data){
 }
 
 function displayCoins(data, allCoinTable){
-    console.log(allCoinTable);
     data.forEach(coin => {
         //creating coin row
         const row = document.createElement('tr');
@@ -154,26 +158,14 @@ function displayCoins(data, allCoinTable){
 
         //appending row
         allCoinTable.append(row);
-        console.log(allCoinTable);
-
-        // //checking if coinName is in filter and showing row accordingly
-        // const coinName = coin.name;
-        // console.log(coinName);
-        // const isCoinInFilteredList = filteredCoins.some(filteredCoin => filteredCoin.name === coinName);
-        
-        // if (!isCoinInFilteredList) {
-        //     row.classList.add("hidden-row");
-        // }
     });
 }
 
 function hideUnfilteredRows(filteredCoins){
     const allRows = document.querySelectorAll('.coin-item');
-    console.log(allRows);
     allRows.forEach(row => {
         const coinNameElement = row.querySelector('td:first-child');
         const coinName = coinNameElement.textContent.trim();
-        console.log(coinName);
         const isCoinInFilteredList = filteredCoins.some(filteredCoin => filteredCoin.name === coinName);
         
         if (!isCoinInFilteredList) {
