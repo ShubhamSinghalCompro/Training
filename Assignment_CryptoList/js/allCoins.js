@@ -37,9 +37,7 @@ async function fetchAllCoins(currPage){
     }
 }
 
-// display all coins data
-function displayAllCoins(){
-    filteredCoins = allCoins;
+async function createAllCoinTable(){
     const container = document.querySelector("#all-coins-data");
     console.log(container);
     container.innerHTML = '';
@@ -48,7 +46,6 @@ function displayAllCoins(){
     const allCoinTable = document.createElement("table");
     allCoinTable.classList.add("all-coin-table");
     container.append(allCoinTable);
-
 
     //creating table header
     const headerRow = document.createElement("tr");
@@ -69,8 +66,7 @@ function displayAllCoins(){
     container.append(viewMoreButton);
 
     //adding event listner to view more button
-    viewMoreButton.addEventListener('click', () => createNextCoinsList(allCoinTable));
-    createNextCoinsList(allCoinTable);
+    viewMoreButton.addEventListener('click', () => createNextCoinsList(allCoinTable, filteredCoins));
 
     // selecting search button
     const searchAllCoinsBtn = document.getElementById("searchAllCoins");
@@ -83,13 +79,33 @@ function displayAllCoins(){
         headerRow.children[0].append(searchInput);
         autocomplete(searchInput, allCoins);
     });
+
+    return true;
 }
 
-async function createNextCoinsList(allCoinTable){
-    if(lastCoinIndex != allCoins.length-1){
+// display all coins data
+function displayAllCoins(data){
+    lastCoinIndex = -1;
+
+    //fetching allCoin Table
+    const allCoinTable = document.querySelector(".all-coin-table");
+
+    //fetching all the rows to remove
+    const allRows = document.querySelectorAll(".coin-item");
+    allRows.forEach(row => {
+        row.remove();
+    });
+
+    // printing first 10 elements
+    createNextCoinsList(allCoinTable, data); 
+
+}
+
+async function createNextCoinsList(allCoinTable, data){
+    if(lastCoinIndex != data.length-1){
         const startIndex = lastCoinIndex + 1;
-        const endIndex = Math.min(startIndex + 9, allCoins.length -1);
-        const nextCoins = allCoins.slice(startIndex, endIndex + 1);
+        const endIndex = Math.min(startIndex + 9, data.length -1);
+        const nextCoins = data.slice(startIndex, endIndex + 1);
         lastCoinIndex = endIndex;
         displayCoins(nextCoins, allCoinTable);
     }
@@ -99,8 +115,11 @@ async function createNextCoinsList(allCoinTable){
         let currPage = allCoins.length / 100;
         currPage = currPage + 1;
         const fetchNewCoins = await fetchAllCoins(currPage);
+        const val = document.querySelector(".myInput").value;
+        filteredCoins = allCoins.filter(coin => coin.name.substr(0, val.length).toUpperCase() == val.toUpperCase());
+        data = filteredCoins;
         if(fetchNewCoins){
-            createNextCoinsList(allCoinTable);
+            createNextCoinsList(allCoinTable, data);
         }
         else{
             console.log("no More Coins Left");
@@ -109,6 +128,7 @@ async function createNextCoinsList(allCoinTable){
 }
 
 function displayCoins(data, allCoinTable){
+    console.log(allCoinTable);
     data.forEach(coin => {
         //creating coin row
         const row = document.createElement('tr');
@@ -134,15 +154,16 @@ function displayCoins(data, allCoinTable){
 
         //appending row
         allCoinTable.append(row);
+        console.log(allCoinTable);
 
-        //checking if coinName is in filter and showing row accordingly
-        const coinName = coin.name;
-        console.log(coinName);
-        const isCoinInFilteredList = filteredCoins.some(filteredCoin => filteredCoin.name === coinName);
+        // //checking if coinName is in filter and showing row accordingly
+        // const coinName = coin.name;
+        // console.log(coinName);
+        // const isCoinInFilteredList = filteredCoins.some(filteredCoin => filteredCoin.name === coinName);
         
-        if (!isCoinInFilteredList) {
-            row.classList.add("hidden-row");
-        }
+        // if (!isCoinInFilteredList) {
+        //     row.classList.add("hidden-row");
+        // }
     });
 }
 

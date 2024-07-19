@@ -6,14 +6,17 @@ function autocomplete(inp, arr) {
         console.log(this);
         console.log(val);
         closeAllLists();
-        if (!val) { 
-            hideUnfilteredRows(arr);
+        if (!val) {
+            filteredCoins = arr;
+            displayAllCoins(filteredCoins); 
+            // hideUnfilteredRows(filteredCoins);
         }
         currentFocus = -1;
         console.log("arr",arr);
         filteredCoins = arr.filter(coin => coin.name.substr(0, val.length).toUpperCase() == val.toUpperCase());
         console.log(filteredCoins);
-        hideUnfilteredRows(filteredCoins);
+        displayAllCoins(filteredCoins);
+        // hideUnfilteredRows(filteredCoins);
     });
 
     inp.addEventListener("keydown", function(e) {
