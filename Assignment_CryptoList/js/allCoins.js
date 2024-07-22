@@ -18,7 +18,13 @@ async function fetchAllCoins(currPage){
     });
 
     try {
-        const response = await fetch(`${COINS_API_URL}?${queryParams}`);
+        const response = await fetch(`${COINS_API_URL}?${queryParams}`, {
+            mode: 'cors',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        });
         if(!response.ok){
             throw new Error("Failed to fetch Data");
         }
