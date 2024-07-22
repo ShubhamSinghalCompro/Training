@@ -1,0 +1,193 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+
+body {
+    background-color: #F8F9FA;
+    color: #333;
+    font-size: 16px;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #1E293B;
+    color: #35A226;
+    padding: 20px;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2rem;
+}
+
+main {
+    padding: 20px;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.subHeadings {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.subHeadings h2 {
+    margin: 0;
+}
+
+.subHeadings button {
+    background-color: #35A226;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.subHeadings button:hover {
+    background-color: #2a7d1f;
+}
+
+#searchAllCoins, #searchStarCoins {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-right: 10px;
+}
+
+#searchAllCoins:hover, #searchStarCoins:hover {
+    background-color: #0056b3;
+}
+
+#myInput, #myInputStar {
+    padding: 10px;
+    width: calc(100% - 70px);
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.coin-table, .favorite-coins-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.coin-table th, .coin-table td, .favorite-coins-table th, .favorite-coins-table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+.coin-table th, .favorite-coins-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.coin-item, .favorite-item {
+    background-color: #fff;
+}
+
+.coin-item:hover, .favorite-item:hover {
+    background-color: #f9f9f9;
+}
+
+.favorite-item button {
+    background-color: #dc3545;
+    border: none;
+    color: #fff;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.favorite-item button:hover {
+    background-color: #c82333;
+}
+
+.hidden-row {
+    display: none;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover, .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#view-more-btn {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 1rem;
+    display: block;
+    margin: 20px auto;
+}
+
+#view-more-btn:hover {
+    background-color: #0056b3;
+}
+
+#pagination-controls {
+    text-align: center;
+    margin-top: 20px;
+}
+
+#pagination-controls button {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 1rem;
+    margin: 0 5px;
+}
+
+#pagination-controls button:disabled {
+    background-color: #ddd;
+    cursor: not-allowed;
+}
+
+#pagination-controls button:hover:not(:disabled) {
+    background-color: #0056b3;
+}

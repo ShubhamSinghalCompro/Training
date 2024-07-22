@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Data</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <h1 class="mainHeading">Crypto - World</h1>
+  </header>
+  <main>
+    <div class="subHeadings">
+      <h2>Cryptocurrency Data</h2>
+      <h2><button id="myBtn">Favorites</button></h2>
+    </div>
+    <div>
+      <button id="searchAllCoins">🔍</button>
+      <input type="text" placeholder="Search by name..." id="myInput">
+    </div>
+    <div id="all-coins-data"></div>
+
+    
+    <div id="myModal" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <div>
+            <button id="searchStarCoins">🔍</button>
+            <input type="text" placeholder="Search by name..." id="myInputStar">
+          </div>
+          <div id="star-coins-data"></div>
+          <div id="pagination-controls"></div>
+        </div>
+      
+      </div>
+    </main>
+    <footer></footer>
+    
+
+    <script src="js/allCoins.js"></script>
+    <script src="js/starCoins.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/search.js"></script>
+</body>
+</html>
