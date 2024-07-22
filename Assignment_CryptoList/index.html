@@ -8,11 +8,28 @@
 </head>
 <body>
     <h1>Cryptocurrency Data</h1>
+    <div>
+      <button id="searchAllCoins">🔍</button>
+      <input type="text" placeholder="Search by name..." id="myInput">
+    </div>
     <div id="all-coins-data"></div>
 
-    <h2>Favorites</h2>
-    <div id="star-coins-data"></div>
-    <div id="pagination-controls"></div>
+    <h2><button id="myBtn">Favorites</button></h2>
+    <div id="myModal" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <div>
+            <button id="searchStarCoins">🔍</button>
+            <input type="text" placeholder="Search by name..." id="myInputStar">
+          </div>
+          <div id="star-coins-data"></div>
+          <div id="pagination-controls"></div>
+        </div>
+      
+      </div>
+    
 
     <script src="js/allCoins.js"></script>
     <script src="js/starCoins.js"></script>

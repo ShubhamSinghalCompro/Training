@@ -56,7 +56,7 @@ function createAllCoinTable(){
     //creating table header
     const headerRow = document.createElement("tr");
     headerRow.innerHTML = `
-        <th>Name<button id="searchAllCoins">🔍</button></th>
+        <th>Name</th>
         <th>Symbol</th>
         <th>Current Price</th>
         <th>Market Cap</th>
@@ -82,22 +82,15 @@ function createAllCoinTable(){
     viewMoreButton.addEventListener('click', () => createNextCoinsList(allCoinTable, filteredCoins));
 
     // selecting search button
-    const searchAllCoinsBtn = document.getElementById("searchAllCoins");
-    searchAllCoinsBtn.addEventListener('click', () => {
-        const searchInput = document.createElement('input');
-        searchInput.setAttribute('type', 'text');
-        searchInput.setAttribute('placeholder', 'Search by name...');
-        searchInput.setAttribute('id', 'myInput');
-        searchInput.classList.add("myInput");
-        headerRow.children[0].append(searchInput);
-        autocomplete(searchInput, allCoins, displayAllCoins);
-    });
+    const searchInput = document.getElementById('myInput');  
+    searchInput.classList.add("myInput");
+    autocomplete(searchInput, allCoins, displayAllCoins);
 
     return true;
 }
 
 // display all coins data
-function displayAllCoins(data){
+function displayAllCoins(data, numberRows = 9){
     lastCoinIndex = -1;
     filteredCoins = data;
     //fetching allCoin Table
@@ -110,14 +103,14 @@ function displayAllCoins(data){
     });
 
     // printing first 10 elements
-    createNextCoinsList(allCoinTable, data); 
+    createNextCoinsList(allCoinTable, data, numberRows); 
 
 }
 
-async function createNextCoinsList(allCoinTable, data){
+async function createNextCoinsList(allCoinTable, data, numberRows = 9){
     if(lastCoinIndex != data.length-1){
         const startIndex = lastCoinIndex + 1;
-        const endIndex = Math.min(startIndex + 9, data.length -1);
+        const endIndex = Math.min(startIndex + numberRows, data.length -1);
         const nextCoins = data.slice(startIndex, endIndex + 1);
         lastCoinIndex = endIndex;
         displayCoins(nextCoins, allCoinTable);
@@ -138,7 +131,7 @@ async function createNextCoinsList(allCoinTable, data){
         }
         data = filteredCoins;
         if(fetchNewCoins){
-            createNextCoinsList(allCoinTable, data);
+            createNextCoinsList(allCoinTable, data, numberRows);
         }
         else{
             console.log("no More Coins Left");
@@ -204,5 +197,5 @@ function sortAllCoinsTable(column) {
         }
         return 0;
     });
-    displayAllCoins(filteredCoins);
+    displayAllCoins(filteredCoins, lastCoinIndex);
 }

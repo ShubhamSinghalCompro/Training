@@ -95,7 +95,7 @@ function createStarCoinTable() {
     // Create the table header row
     const headerRow = document.createElement('tr');
     headerRow.innerHTML = `
-        <th>Name<button id="searchStarCoins">🔍</button></th>
+        <th>Name</th>
         <th>Symbol</th>
         <th>Current Price</th>
         <th>Market Cap</th>
@@ -113,16 +113,11 @@ function createStarCoinTable() {
     starCoinsTable.append(headerRow);
 
     // selecting search button
-    const searchStarCoinsBtn = document.getElementById("searchStarCoins");
-    searchStarCoinsBtn.addEventListener('click', () => {
-        const searchInput = document.createElement('input');
-        searchInput.setAttribute('type', 'text');
-        searchInput.setAttribute('placeholder', 'Search by name...');
-        searchInput.setAttribute('id', 'myInputStar');
-        searchInput.classList.add("myInputStar");
-        headerRow.children[0].append(searchInput);
-        autocomplete(searchInput, starCoins, displayStarCoinsAfterFilteration);
-    });
+    
+    
+    const searchInput = document.getElementById('myInputStar');
+    searchInput.classList.add("myInputStar"); 
+    autocomplete(searchInput, starCoins, displayStarCoinsAfterFilteration);
 
 }
 
