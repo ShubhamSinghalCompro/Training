@@ -235,7 +235,7 @@ function createPaginationControls(totalItems) {
     // Create Next button
     const nextButton = document.createElement('button');
     nextButton.textContent = 'Next';
-    nextButton.disabled = currentPage === totalPages;
+    nextButton.disabled = currentPage === totalPages || totalPages === 1;
     nextButton.addEventListener('click', () => {
         if (currentPage < totalPages) {
             currentPage++;
