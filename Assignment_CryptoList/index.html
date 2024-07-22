@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crypto Data</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
   <header>
@@ -15,8 +16,8 @@
       <h2>Cryptocurrency Data</h2>
       <h2><button id="myBtn">Favorites</button></h2>
     </div>
-    <div>
-      <button id="searchAllCoins">🔍</button>
+    <div class="searchBar">
+      <button class="searchCoins">🔍</button>
       <input type="text" placeholder="Search by name..." id="myInput">
     </div>
     <div id="all-coins-data"></div>
@@ -27,8 +28,8 @@
         <!-- Modal content -->
         <div class="modal-content">
           <span class="close">&times;</span>
-          <div>
-            <button id="searchStarCoins">🔍</button>
+          <div class="searchBar">
+            <button class="searchCoins">🔍</button>
             <input type="text" placeholder="Search by name..." id="myInputStar">
           </div>
           <div id="star-coins-data"></div>

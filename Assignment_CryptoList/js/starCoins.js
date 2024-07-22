@@ -117,7 +117,7 @@ function createStarCoinTable() {
     
     const searchInput = document.getElementById('myInputStar');
     searchInput.classList.add("myInputStar"); 
-    autocomplete(searchInput, starCoins, displayStarCoinsAfterFilteration);
+    autocomplete(searchInput, () => starCoins, displayStarCoinsAfterFilteration);
 
 }
 
@@ -159,28 +159,26 @@ function onPressRemoveStarBtn(coinId) {
     // fetch button with class str-btn and attribute data-id = coinId
     const button = document.querySelector(`.star-btn[data-id="${coinId}"]`);
     if (button) {
-        button.textContent = 'Add to Favorites';
+        button.classList.remove('filled');
+        button.classList.add('empty');
     }
 }
 
 function toggleStar(coinId, button) {
-    const isStar = starCoinIds.some(starId => starId === coinId);
+    const isStar = starCoinIds.includes(coinId);
     if (isStar) {
         removeFromStarCoins(coinId);
-        button.textContent = 'Add to Favorites';
+        button.classList.remove('filled');
+        button.classList.add('empty');
     } else {
         addToStarCoins(coinId);
-        button.textContent = 'Remove from Favorites';
+        button.classList.remove('empty');
+        button.classList.add('filled');
     }
 }
 
 function isStarred(coinId) {
-    const isStar = starCoinIds.some(starId => starId === coinId);
-    if (isStar) {
-        return true;
-    } else {
-        return false;
-    }
+    return starCoinIds.includes(coinId);
 }
 
 function checkFilteration() {
@@ -205,11 +203,11 @@ function createRow(coin) {
         <td>$${coin.current_price}</td>
         <td>$${coin.market_cap}</td>
         <td>${coin.price_change_percentage_24h}%</td>
-        <td><button class="remove-star-btn" data-id="${coin.id}">Remove</button></td>
+        <td><button class="remove-btn star-btn  filled" data-id="${coin.id}"><i class="fas fa-star"></i></button></td>
     `;
 
     // Event listener for removing from favorites
-    const removeButton = row.querySelector('.remove-star-btn');
+    const removeButton = row.querySelector('.remove-btn');
     removeButton.addEventListener('click', () => onPressRemoveStarBtn(coin.id));
     return row;
 }

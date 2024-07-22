@@ -1,7 +1,8 @@
-function autocomplete(inp, arr, displayCoins) {
+function autocomplete(inp, getArray, displayCoins) {
     var currentFocus;
     inp.addEventListener("input", function(e) {
         let val = this.value;
+        const arr = getArray(); 
         //closeAllLists();
         if (!val) {
             const filteredCoins = arr;

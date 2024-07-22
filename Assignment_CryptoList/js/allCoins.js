@@ -84,7 +84,7 @@ function createAllCoinTable(){
     // selecting search button
     const searchInput = document.getElementById('myInput');  
     searchInput.classList.add("myInput");
-    autocomplete(searchInput, allCoins, displayAllCoins);
+    autocomplete(searchInput, () => allCoins, displayAllCoins);
 
     return true;
 }
@@ -142,12 +142,14 @@ async function createNextCoinsList(allCoinTable, data, numberRows = 9){
 function displayCoins(data, allCoinTable){
     data.forEach(coin => {
         //creating coin row
+        console.log(coin);
         const row = document.createElement('tr');
         row.classList.add('coin-item');
 
         //check if button exists in starred
         const isStar = isStarred(coin.id);
         const buttonText = isStar ? 'Remove from Favorites' : 'Add to Favorites';
+        const buttonClass = isStar ? 'filled' : 'empty';
 
         //adding data to row
         row.innerHTML = `
@@ -156,7 +158,7 @@ function displayCoins(data, allCoinTable){
             <td>$${coin.current_price}</td>
             <td>$${coin.market_cap}</td>
             <td>${coin.price_change_percentage_24h}%</td>
-            <td><button class="star-btn" data-id="${coin.id}">${buttonText}</button></td>
+            <td><button class="star-btn ${buttonClass}" data-id="${coin.id}"><i class="fas fa-star"></i></button></td>
         `;
 
         // Event listener for the favorite button
