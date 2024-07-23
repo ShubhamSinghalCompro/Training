@@ -56,12 +56,13 @@ function createAllCoinTable(){
     //creating table header
     const headerRow = document.createElement("tr");
     headerRow.innerHTML = `
+        <th>Action</th>
         <th>Name</th>
         <th>Symbol</th>
         <th>Current Price</th>
         <th>Market Cap</th>
         <th>24h Change</th>
-        <th>Action</th>
+        <th>Details</th>
     `;
     allCoinTable.append(headerRow);
 
@@ -73,11 +74,7 @@ function createAllCoinTable(){
     headerRow.children[4].addEventListener('click', () => sortAllCoinsTable('price_change_percentage_24h'));
 
     //creating viewMore Button
-    const viewMoreButton = document.createElement("button");
-    viewMoreButton.setAttribute('id', "view-more-btn");
-    viewMoreButton.textContent = "View More";
-    container.append(viewMoreButton);
-
+    const viewMoreButton = document.getElementById("view-more-btn");
     //adding event listner to view more button
     viewMoreButton.addEventListener('click', () => createNextCoinsList(allCoinTable, filteredCoins));
 
@@ -139,36 +136,38 @@ async function createNextCoinsList(allCoinTable, data, numberRows = 9){
     }
 }
 
-function displayCoins(data, allCoinTable){
+function displayCoins(data, allCoinTable) {
     data.forEach(coin => {
-        //creating coin row
-        console.log(coin);
         const row = document.createElement('tr');
         row.classList.add('coin-item');
+        row.id = `coin-${coin.id}`;
 
-        //check if button exists in starred
         const isStar = isStarred(coin.id);
-        const buttonText = isStar ? 'Remove from Favorites' : 'Add to Favorites';
         const buttonClass = isStar ? 'filled' : 'empty';
 
-        //adding data to row
         row.innerHTML = `
-            <td>${coin.name}</td>
+            <td><button class="star-btn ${buttonClass}" data-id="${coin.id}"><i class="fas fa-star"></i></button></td>
+            <td><img src="${coin.image}" alt="${coin.name}" class="coin-image" />
+                ${coin.name}</td>
             <td>${coin.symbol.toUpperCase()}</td>
             <td>$${coin.current_price}</td>
             <td>$${coin.market_cap}</td>
-            <td>${coin.price_change_percentage_24h}%</td>
-            <td><button class="star-btn ${buttonClass}" data-id="${coin.id}"><i class="fas fa-star"></i></button></td>
+            <td class="change-24h">${coin.price_change_percentage_24h}</td>
+            <td><button class="details-btn" data-id="${coin.id}"><i class="fa fa-eye" aria-hidden="true"></i></button></td>
         `;
 
-        // Event listener for the favorite button
         const starButton = row.querySelector('.star-btn');
         starButton.addEventListener('click', () => toggleStar(coin.id, starButton));
 
-        //appending row
+        const detailsButton = row.querySelector('.details-btn');
+        detailsButton.addEventListener('click', () => openModal(coin));
+
         allCoinTable.append(row);
+
+        updateChange24h(coin.id, coin.price_change_percentage_24h, false);
     });
 }
+
 
 function hideUnfilteredRows(filteredCoins){
     const allRows = document.querySelectorAll('.coin-item');
@@ -200,4 +199,47 @@ function sortAllCoinsTable(column) {
         return 0;
     });
     displayAllCoins(filteredCoins, lastCoinIndex);
+}
+
+
+function openModal(coin) {
+    const modal = document.getElementById('coinModal');
+    const modalImage = document.getElementById('modalCoinImage');
+    const modalName = document.getElementById('modalCoinName');
+    const modalDetails = document.getElementById('modalCoinDetails');
+    const closeBtn = document.getElementById('modalClose');
+
+    modalImage.src = coin.image;
+    modalName.innerHTML = `
+        ${coin.name}
+        <i class="fas fa-info-circle info-icon" title="How is the price of ${coin.name} (${coin.symbol.toUpperCase()}) calculated?"></i>
+        <span class="tooltip-text">The price of ${coin.name} (${coin.symbol.toUpperCase()}) is calculated in real-time by aggregating the latest data across 29 exchanges and 31 markets, using a global volume-weighted average formula. Learn more about how crypto prices are calculated on CoinGecko.</span>
+    `;
+
+    modalDetails.innerHTML = `
+        <div><strong>Symbol:</strong> ${coin.symbol.toUpperCase()}</div>
+        <div><strong>Current Price:</strong> $${coin.current_price}</div>
+        <div><strong>Market Cap:</strong> $${coin.market_cap}</div>
+        <div><strong>24h Change:</strong> ${coin.price_change_percentage_24h}%</div>
+        <div><strong>All-Time High:</strong> $${coin.ath}</div>
+        <div><strong>All-Time Low:</strong> $${coin.atl}</div>
+        <div><strong>Circulating Supply:</strong> ${coin.circulating_supply}</div>
+        <div><strong>Max Supply:</strong> ${coin.max_supply ?? 0}</div>
+        <div><strong>Total Supply:</strong> ${coin.total_supply}</div>
+        <div><strong>Last Updated:</strong> ${new Date(coin.last_updated).toLocaleString()}</div>
+    `;
+
+    modal.style.display = "block";
+
+    // Close modal when clicking on <span> (x)
+    closeBtn.onclick = function () {
+        modal.style.display = "none";
+    }
+
+    // Close modal when clicking outside of the modal content
+    window.onclick = function (event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
 }

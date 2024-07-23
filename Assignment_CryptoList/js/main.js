@@ -25,23 +25,44 @@ function modalFunction(modalId, openBtnId, closeBtn){
     var btn = document.getElementById(openBtnId);
 
     // Get the <span> element that closes the modal
-    var span = document.getElementsByClassName(closeBtn)[0];
+    var span = document.querySelector(`.${closeBtn}`);
 
     // When the user clicks on the button, open the modal
     btn.onclick = function() {
-    modal.style.display = "block";
+        modal.style.display = "block";
     }
 
     // When the user clicks on <span> (x), close the modal
     span.onclick = function() {
-    modal.style.display = "none";
+        modal.style.display = "none";
     }
 
     // When the user clicks anywhere outside of the modal, close it
     window.onclick = function(event) {
-    if (event.target == modal) {
-        modal.style.display = "none";
-    }
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
     }
 
+}
+const updateChange24h = (coinId, change, isStarTable) => {
+    const changeElement = isStarTable ? document.querySelector(`#starcoin-${coinId} .change-24h`) : document.querySelector(`#coin-${coinId} .change-24h`);
+    if (changeElement) {
+        changeElement.innerHTML = '';
+
+        const icon = document.createElement('i');
+        icon.classList.add('fas', 'fa-fw');
+
+        if (change > 0) {
+            icon.classList.add('fa-caret-up');
+            changeElement.style.color = 'green';
+        } else {
+            icon.classList.add('fa-caret-down');
+            changeElement.style.color = 'red';
+            change =  -change;
+        }
+
+        changeElement.appendChild(icon);
+        changeElement.append(` ${change.toFixed(2)}%`);
+    }
 }

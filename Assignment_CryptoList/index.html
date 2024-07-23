@@ -21,10 +21,10 @@
       <input type="text" placeholder="Search by name..." id="myInput">
     </div>
     <div id="all-coins-data"></div>
+    <div><button id = "view-more-btn">View More</button></div>
 
     
     <div id="myModal" class="modal">
-
         <!-- Modal content -->
         <div class="modal-content">
           <span class="close">&times;</span>
@@ -35,16 +35,25 @@
           <div id="star-coins-data"></div>
           <div id="pagination-controls"></div>
         </div>
-      
       </div>
-    </main>
-    <footer></footer>
+    <div id="coinModal" class="modal">
+      <div class="modal-content">
+        <span class="close" id="modalClose">&times;</span>
+        <div class="modal-body">
+          <img id="modalCoinImage" class="modal-coin-image" />
+          <h2 id="modalCoinName"></h2>
+          <p id="modalCoinDetails"></p>
+        </div>
+      </div>
+    </div>
+  </main>
+  <footer></footer>
     
 
-    <script src="js/allCoins.js"></script>
-    <script src="js/starCoins.js"></script>
-    <script src="js/main.js"></script>
-    <script src="js/search.js"></script>
-    <script src="js/searchByAPI.js"></script>
+  <script src="js/allCoins.js"></script>
+  <script src="js/starCoins.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/search.js"></script>
+  <script src="js/searchByAPI.js"></script>
 </body>
 </html>

@@ -63,5 +63,6 @@ function autocompleteByAPI(inp, displayCoins) {
 async function fetchFilteredCoins(name){
     const response = await fetch(`https://api.coingecko.com/api/v3/search?query=${name}`);
     const data = await response.json();
+    console.log(data);
     return data.coins;
 }
