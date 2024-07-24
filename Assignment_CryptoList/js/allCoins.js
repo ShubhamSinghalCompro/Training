@@ -213,14 +213,14 @@ function openModal(coin) {
     const chartBtns = document.querySelectorAll(".updateChart");
     chartBtns.forEach(btn => {
         console.log(btn.id);
-        btn.addEventListener('click', () => updateChart(btn.id, coin.id));
+        btn.addEventListener('click', () => updateChart(btn, coin.id));
     });
 
     modalImage.src = coin.image;
 
     modalName.innerHTML = `
-    ${coin.name} (<span class="superscript">${coin.symbol.toUpperCase()}<i class="fas fa-info-circle info-icon" title="How is the price of ${coin.name} (${coin.symbol.toUpperCase()}) calculated?"></i></span>)
-    <span class="tooltip-text">The price of ${coin.name} (${coin.symbol.toUpperCase()}) is calculated in real-time by aggregating the latest data across 29 exchanges and 31 markets, using a global volume-weighted average formula. Learn more about how crypto prices are calculated on CoinGecko.</span>
+    ${coin.name} (<span class="superscript">${coin.symbol.toUpperCase()}<i class="fas fa-info-circle info-icon"> <span class="tooltip-text">How is the price of ${coin.name} (${coin.symbol.toUpperCase()}) calculated? The price of ${coin.name} (${coin.symbol.toUpperCase()}) is calculated in real-time by aggregating the latest data across 29 exchanges and 31 markets, using a global volume-weighted average formula. Learn more about how crypto prices are calculated on CoinGecko.</span></i></span>)
+    
     `;
 
     modalDetails.innerHTML = `
@@ -254,11 +254,18 @@ function openModal(coin) {
     }
 
     // Initialize chart with default view (24h)
-    updateChart(1, coin.id);
+    updateChart(chartBtns[0], coin.id);
 }
 
-function updateChart(days, coinId) {
+function updateChart(btn, coinId) {
     const loader = document.getElementById('loader');
+    const days = btn.id;
+    const prevSelectedBtn = document.querySelector(".isSelected");
+    if(prevSelectedBtn){
+        prevSelectedBtn.classList.remove("isSelected");
+    }
+     
+    btn.classList.add("isSelected");
 
     // Show the loader
     loader.style.display = 'block';
@@ -266,7 +273,11 @@ function updateChart(days, coinId) {
     fetch(`https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=${days}`)
         .then(response => response.json())
         .then(data => {
-            const labels = data.prices.map(price => new Date(price[0]).toLocaleTimeString());
+            const labels = data.prices.map(price => {
+                const date = new Date(price[0]);
+                return (days == 1 || days == 7) ? date.toLocaleTimeString() : date.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+            });
+            
             const prices = data.prices.map(price => price[1]);
 
             const initialPrice = prices[0];
@@ -302,7 +313,8 @@ function updateChart(days, coinId) {
                         borderColor: borderColor,
                         backgroundColor: backgroundColor,
                         borderWidth: 1,
-                        fill: true
+                        fill: true,
+                        pointRadius: 0
                     }]
                 },
                 options: {

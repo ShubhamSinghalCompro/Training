@@ -65,3 +65,4 @@ const updateChange24h = (changeElement, change) => {
         changeElement.append(`${change.toFixed(2)}%`);
     }
 }
+
