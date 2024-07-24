@@ -6,6 +6,7 @@
     <title>Crypto Data</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <header>
@@ -21,8 +22,7 @@
       <input type="text" placeholder="Search by name..." id="myInput">
     </div>
     <div id="all-coins-data"></div>
-    <div><button id = "view-more-btn">View More</button></div>
-
+    <div><button id="view-more-btn">View More</button></div>
     
     <div id="myModal" class="modal">
         <!-- Modal content -->
@@ -36,16 +36,23 @@
           <div id="pagination-controls"></div>
         </div>
       </div>
-    <div id="coinModal" class="modal">
-      <div class="modal-content">
-        <span class="close" id="modalClose">&times;</span>
-        <div class="modal-body">
-          <img id="modalCoinImage" class="modal-coin-image" />
-          <h2 id="modalCoinName"></h2>
-          <p id="modalCoinDetails"></p>
+      <div id="coinModal" class="modal">
+        <div class="modal-content">
+          <span class="close" id="modalClose">&times;</span>
+          <div class="modal-body">
+            <img id="modalCoinImage" class="modal-coin-image" />
+            <h2 id="modalCoinName"></h2>
+            <p id="modalCoinDetails"></p>
+            <div class="chart-controls">
+              <button class="updateChart" id="1">24h</button>
+              <button class="updateChart" id="7">7d</button>
+              <button class="updateChart" id="30">1 Month</button>
+          </div>
+            <canvas id="coinChart"></canvas> <!-- Add this line -->
+          </div>
+          <div id="loader" class="loader"></div>
         </div>
       </div>
-    </div>
   </main>
   <footer></footer>
     

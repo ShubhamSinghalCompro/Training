@@ -4,12 +4,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     if(coinsFetch){
         modalFunction("myModal", "myBtn", "close");
-        loadStarCoins();
         filteredCoins = allCoins;
         const isTableCreated = createAllCoinTable(filteredCoins);
         if(isTableCreated){
             displayAllCoins(filteredCoins);
-        } 
+        }
+        loadStarCoins(); 
     }
     else{
         console.log("Error while fetching coins");

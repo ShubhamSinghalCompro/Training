@@ -67,11 +67,11 @@ function createAllCoinTable(){
     allCoinTable.append(headerRow);
 
     // Add event listeners to headers for sorting
-    headerRow.children[0].addEventListener('click', () => sortAllCoinsTable('name'));
-    headerRow.children[1].addEventListener('click', () => sortAllCoinsTable('symbol'));
-    headerRow.children[2].addEventListener('click', () => sortAllCoinsTable('current_price'));
-    headerRow.children[3].addEventListener('click', () => sortAllCoinsTable('market_cap'));
-    headerRow.children[4].addEventListener('click', () => sortAllCoinsTable('price_change_percentage_24h'));
+    headerRow.children[1].addEventListener('click', () => sortAllCoinsTable('name'));
+    headerRow.children[2].addEventListener('click', () => sortAllCoinsTable('symbol'));
+    headerRow.children[3].addEventListener('click', () => sortAllCoinsTable('current_price'));
+    headerRow.children[4].addEventListener('click', () => sortAllCoinsTable('market_cap'));
+    headerRow.children[5].addEventListener('click', () => sortAllCoinsTable('price_change_percentage_24h'));
 
     //creating viewMore Button
     const viewMoreButton = document.getElementById("view-more-btn");
@@ -202,12 +202,20 @@ function sortAllCoinsTable(column) {
 }
 
 
+
+let coinChart = null; // Store chart instance globally
+
 function openModal(coin) {
     const modal = document.getElementById('coinModal');
     const modalImage = document.getElementById('modalCoinImage');
     const modalName = document.getElementById('modalCoinName');
     const modalDetails = document.getElementById('modalCoinDetails');
     const closeBtn = document.getElementById('modalClose');
+    const chartBtns = document.querySelectorAll(".updateChart");
+    chartBtns.forEach(btn => {
+        console.log(btn.id);
+        btn.addEventListener('click', () => updateChart(btn.id, coin.id));
+    });
 
     modalImage.src = coin.image;
     modalName.innerHTML = `
@@ -231,15 +239,91 @@ function openModal(coin) {
 
     modal.style.display = "block";
 
-    // Close modal when clicking on <span> (x)
     closeBtn.onclick = function () {
         modal.style.display = "none";
     }
 
-    // Close modal when clicking outside of the modal content
     window.onclick = function (event) {
         if (event.target == modal) {
             modal.style.display = "none";
         }
     }
+
+    // Initialize chart with default view (24h)
+    updateChart(1, coin.id);
+}
+
+function updateChart(days, coinId) {
+    const loader = document.getElementById('loader');
+
+    // Show the loader
+    loader.style.display = 'block';
+
+    fetch(`https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=${days}`)
+        .then(response => response.json())
+        .then(data => {
+            const labels = data.prices.map(price => new Date(price[0]).toLocaleTimeString());
+            const prices = data.prices.map(price => price[1]);
+
+            const initialPrice = prices[0];
+            const finalPrice = prices[prices.length - 1];
+            let borderColor = 'rgba(255, 205, 86, 1)'; // yellow
+            let backgroundColor = 'rgba(255, 205, 86, 0.2)'; // yellow
+
+            if (finalPrice > initialPrice) {
+                borderColor = 'rgba(45, 125, 31, 1)'; // green
+                backgroundColor = 'rgba(45, 125, 31, 0.2)'; // green
+            } else if (finalPrice < initialPrice) {
+                borderColor = 'rgba(255, 99, 132, 1)'; // red
+                backgroundColor = 'rgba(255, 99, 132, 0.2)'; // red
+            } else {
+                borderColor = 'rgba(53, 162, 235, 1)'; // blue
+                backgroundColor = 'rgba(53, 162, 235, 0.2)'; // blue
+            }
+
+            // Destroy the previous chart instance if it exists
+            if (coinChart) {
+                coinChart.destroy();
+            }
+
+            // Create the chart
+            const ctx = document.getElementById('coinChart').getContext('2d');
+            coinChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Price (USD)',
+                        data: prices,
+                        borderColor: borderColor,
+                        backgroundColor: backgroundColor,
+                        borderWidth: 1,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Time'
+                            }
+                        },
+                        y: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Price (USD)'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Hide the loader once the chart is loaded
+            loader.style.display = 'none';
+        });
 }

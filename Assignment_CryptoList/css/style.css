@@ -166,7 +166,7 @@ main {
     overflow-x: auto;
 }
 #all-coins-data{
-    max-height: 35rem;
+    max-height: 34rem;
     overflow: auto;
 }
 
@@ -307,3 +307,43 @@ main {
     opacity: 1;
 }
 
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+}
+
+.modal-content canvas {
+    display: block;
+    margin: 20px auto;
+}
+.modal-body {
+    max-height: 40rem;
+    overflow: auto;
+}
+
+#coinChart {
+    width: 100%;
+    height: 400px; /* Adjust as needed */
+}
+
+.loader {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border: 8px solid #f3f3f3;
+    border-top: 8px solid #3498db;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    z-index: 999; /* Make sure it's above other content */
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
