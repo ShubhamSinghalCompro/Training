@@ -19,7 +19,6 @@ async function fetchAllCoins(currPage){
 
     try {
         const response = await fetch(`${COINS_API_URL}?${queryParams}`, {
-            mode: 'cors',
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json'
@@ -164,7 +163,7 @@ function displayCoins(data, allCoinTable) {
 
         allCoinTable.append(row);
 
-        updateChange24h(coin.id, coin.price_change_percentage_24h, false);
+        updateChange24h(row.children[5], coin.price_change_percentage_24h);
     });
 }
 
@@ -218,17 +217,17 @@ function openModal(coin) {
     });
 
     modalImage.src = coin.image;
+
     modalName.innerHTML = `
-        ${coin.name}
-        <i class="fas fa-info-circle info-icon" title="How is the price of ${coin.name} (${coin.symbol.toUpperCase()}) calculated?"></i>
-        <span class="tooltip-text">The price of ${coin.name} (${coin.symbol.toUpperCase()}) is calculated in real-time by aggregating the latest data across 29 exchanges and 31 markets, using a global volume-weighted average formula. Learn more about how crypto prices are calculated on CoinGecko.</span>
+    ${coin.name} (<span class="superscript">${coin.symbol.toUpperCase()}<i class="fas fa-info-circle info-icon" title="How is the price of ${coin.name} (${coin.symbol.toUpperCase()}) calculated?"></i></span>)
+    <span class="tooltip-text">The price of ${coin.name} (${coin.symbol.toUpperCase()}) is calculated in real-time by aggregating the latest data across 29 exchanges and 31 markets, using a global volume-weighted average formula. Learn more about how crypto prices are calculated on CoinGecko.</span>
     `;
 
     modalDetails.innerHTML = `
-        <div><strong>Symbol:</strong> ${coin.symbol.toUpperCase()}</div>
-        <div><strong>Current Price:</strong> $${coin.current_price}</div>
-        <div><strong>Market Cap:</strong> $${coin.market_cap}</div>
-        <div><strong>24h Change:</strong> ${coin.price_change_percentage_24h}%</div>
+        <div class="price">
+        <div><strong>$${coin.current_price}</strong></div>
+        <div  class="market-cap" id="details-page-market-cap-${coin.id}"><strong>$${coin.market_cap}</strong></div>
+        </div>
         <div><strong>All-Time High:</strong> $${coin.ath}</div>
         <div><strong>All-Time Low:</strong> $${coin.atl}</div>
         <div><strong>Circulating Supply:</strong> ${coin.circulating_supply}</div>
@@ -236,6 +235,11 @@ function openModal(coin) {
         <div><strong>Total Supply:</strong> ${coin.total_supply}</div>
         <div><strong>Last Updated:</strong> ${new Date(coin.last_updated).toLocaleString()}</div>
     `;
+
+    const detailsPageMarketCap = document.getElementById(`details-page-market-cap-${coin.id}`);
+    if (detailsPageMarketCap) {
+        updateChange24h(detailsPageMarketCap, coin.price_change_percentage_24h);
+    }
 
     modal.style.display = "block";
 

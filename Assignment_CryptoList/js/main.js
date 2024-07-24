@@ -8,8 +8,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         const isTableCreated = createAllCoinTable(filteredCoins);
         if(isTableCreated){
             displayAllCoins(filteredCoins);
+            loadStarCoins(); 
         }
-        loadStarCoins(); 
     }
     else{
         console.log("Error while fetching coins");
@@ -45,8 +45,7 @@ function modalFunction(modalId, openBtnId, closeBtn){
     }
 
 }
-const updateChange24h = (coinId, change, isStarTable) => {
-    const changeElement = isStarTable ? document.querySelector(`#starcoin-${coinId} .change-24h`) : document.querySelector(`#coin-${coinId} .change-24h`);
+const updateChange24h = (changeElement, change) => {
     if (changeElement) {
         changeElement.innerHTML = '';
 
@@ -63,6 +62,6 @@ const updateChange24h = (coinId, change, isStarTable) => {
         }
 
         changeElement.appendChild(icon);
-        changeElement.append(` ${change.toFixed(2)}%`);
+        changeElement.append(`${change.toFixed(2)}%`);
     }
 }

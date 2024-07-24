@@ -146,7 +146,7 @@ function displayStarCoins(data) {
         // creating coin row
         const row = createRow(coin);
         starCoinsTable.append(row);
-        updateChange24h(coin.id, coin.price_change_percentage_24h, true);
+        updateChange24h(row.children[4], coin.price_change_percentage_24h);
     });
 
     // Add pagination controls
