@@ -62,7 +62,6 @@ function saveStarCoins() {
 // add to starCoins
 function addToStarCoins(coinId) {
     const coin = allCoins.find(c => c.id === coinId);
-    console.log(coin);
     if (coin && !starCoins.some(fav => fav.id === coinId)) {
         starCoins.push(coin);
         starCoinIds.push(coin.id);
@@ -117,7 +116,7 @@ function createStarCoinTable() {
     
     const searchInput = document.getElementById('myInputStar');
     searchInput.classList.add("myInputStar"); 
-    autocomplete(searchInput, starCoins, displayStarCoinsAfterFilteration);
+    autocomplete(searchInput, () => starCoins, displayStarCoinsAfterFilteration);
 
 }
 
@@ -146,6 +145,7 @@ function displayStarCoins(data) {
         // creating coin row
         const row = createRow(coin);
         starCoinsTable.append(row);
+        updateChange24h(row.children[4], coin.price_change_percentage_24h);
     });
 
     // Add pagination controls
@@ -159,28 +159,26 @@ function onPressRemoveStarBtn(coinId) {
     // fetch button with class str-btn and attribute data-id = coinId
     const button = document.querySelector(`.star-btn[data-id="${coinId}"]`);
     if (button) {
-        button.textContent = 'Add to Favorites';
+        button.classList.remove('filled');
+        button.classList.add('empty');
     }
 }
 
 function toggleStar(coinId, button) {
-    const isStar = starCoinIds.some(starId => starId === coinId);
+    const isStar = starCoinIds.includes(coinId);
     if (isStar) {
         removeFromStarCoins(coinId);
-        button.textContent = 'Add to Favorites';
+        button.classList.remove('filled');
+        button.classList.add('empty');
     } else {
         addToStarCoins(coinId);
-        button.textContent = 'Remove from Favorites';
+        button.classList.remove('empty');
+        button.classList.add('filled');
     }
 }
 
 function isStarred(coinId) {
-    const isStar = starCoinIds.some(starId => starId === coinId);
-    if (isStar) {
-        return true;
-    } else {
-        return false;
-    }
+    return starCoinIds.includes(coinId);
 }
 
 function checkFilteration() {
@@ -197,32 +195,35 @@ function checkFilteration() {
 function createRow(coin) {
     const row = document.createElement('tr');
     row.classList.add('star-coin-item');
+    row.id = `starcoin-${coin.id}`;
 
     // adding data to row
     row.innerHTML = `
-        <td>${coin.name}</td>
+        <td>
+            <img src="${coin.image}" alt="${coin.name}" class="coin-image" />
+            ${coin.name}
+        </td>
         <td>${coin.symbol.toUpperCase()}</td>
         <td>$${coin.current_price}</td>
         <td>$${coin.market_cap}</td>
-        <td>${coin.price_change_percentage_24h}%</td>
-        <td><button class="remove-star-btn" data-id="${coin.id}">Remove</button></td>
+        <td class="change-24h">${coin.price_change_percentage_24h}%</td>
+        <td><button class="remove-btn star-btn  filled" data-id="${coin.id}"><i class="fas fa-star"></i></button></td>
     `;
 
     // Event listener for removing from favorites
-    const removeButton = row.querySelector('.remove-star-btn');
+    const removeButton = row.querySelector('.remove-btn');
     removeButton.addEventListener('click', () => onPressRemoveStarBtn(coin.id));
     return row;
 }
-
 function createPaginationControls(totalItems) {
     const container = document.querySelector('#pagination-controls');
     container.innerHTML = '';
 
     const totalPages = Math.ceil(totalItems / itemsPerPage);
 
-    // Create Previous button
+    // Create Previous button with icon
     const prevButton = document.createElement('button');
-    prevButton.textContent = 'Previous';
+    prevButton.innerHTML = '<i class="fas fa-angle-left"></i>';
     prevButton.disabled = currentPage === 1;
     prevButton.addEventListener('click', () => {
         if (currentPage > 1) {
@@ -232,9 +233,13 @@ function createPaginationControls(totalItems) {
     });
     container.appendChild(prevButton);
 
-    // Create Next button
+    const pageText = document.createElement('span');
+    pageText.textContent = `Page ${currentPage} of ${totalPages}`;
+    container.appendChild(pageText);
+
+    // Create Next button with icon
     const nextButton = document.createElement('button');
-    nextButton.textContent = 'Next';
+    nextButton.innerHTML = '<i class="fas fa-angle-right"></i>';
     nextButton.disabled = currentPage === totalPages || totalPages === 1;
     nextButton.addEventListener('click', () => {
         if (currentPage < totalPages) {

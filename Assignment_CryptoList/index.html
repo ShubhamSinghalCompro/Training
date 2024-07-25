@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crypto Data</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <header>
@@ -13,36 +15,59 @@
   <main>
     <div class="subHeadings">
       <h2>Cryptocurrency Data</h2>
-      <h2><button id="myBtn">Favorites</button></h2>
+      <h2><button id="favBtn">Favorites</button></h2>
     </div>
-    <div>
-      <button id="searchAllCoins">🔍</button>
+    <div class="searchBar">
+      <button class="searchCoins">🔍</button>
       <input type="text" placeholder="Search by name..." id="myInput">
     </div>
     <div id="all-coins-data"></div>
-
+    <button id="view-more-btn">View More</button>
     
-    <div id="myModal" class="modal">
-
-        <!-- Modal content -->
-        <div class="modal-content">
-          <span class="close">&times;</span>
-          <div>
-            <button id="searchStarCoins">🔍</button>
-            <input type="text" placeholder="Search by name..." id="myInputStar">
-          </div>
-          <div id="star-coins-data"></div>
-          <div id="pagination-controls"></div>
+    <div id="favModal" class="modal">
+      <!-- Modal content -->
+      <div class="modal-content">
+        <span class="close" tabindex="0">&times;</span>
+        <div class="searchBar">
+          <button class="searchCoins" tabindex="0">🔍</button>
+          <input type="text" placeholder="Search by name..." id="myInputStar" tabindex="0">
         </div>
-      
+        <div id="star-coins-data"></div>
+        <div id="pagination-controls"></div>
       </div>
-    </main>
-    <footer></footer>
+    </div>
+    <div id="coinModal" class="modal">
+      <div class="modal-content">
+          <span class="close" id="modalClose" tabindex="0">&times;</span>
+          <div class="modal-body">
+              <div class="details-content">
+                  <div class="coinImage"><img id="modalCoinImage" class="modal-coin-image" /></div>
+                  <h2 id="modalCoinName"></h2>
+                  <p id="modalCoinDetails"></p>
+              </div>
+              <div id="coinChartContainer">
+                  <div id="loader" class="loader"></div>
+                  <div class="chart-controls">
+                      <button class="updateChart" id="1" tabindex="0">24h</button>
+                      <button class="updateChart" id="7" tabindex="0">7d</button>
+                      <button class="updateChart" id="30" tabindex="0">1Mon</button>
+                      <button class="updateChart" id="90" tabindex="0">3Mon</button>
+                      <button class="updateChart" id="180" tabindex="0">6Mon</button>
+                  </div>
+                  <canvas id="coinChart"></canvas>
+              </div>
+          </div>
+      </div>
+  </div>
+  
+  </main>
+  <footer></footer>
     
 
-    <script src="js/allCoins.js"></script>
-    <script src="js/starCoins.js"></script>
-    <script src="js/main.js"></script>
-    <script src="js/search.js"></script>
+  <script src="js/allCoins.js"></script>
+  <script src="js/starCoins.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/search.js"></script>
+  <script src="js/searchByAPI.js"></script>
 </body>
 </html>
