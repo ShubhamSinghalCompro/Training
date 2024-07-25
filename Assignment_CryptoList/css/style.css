@@ -57,14 +57,9 @@ main {
     color: white;
     border: none;
     padding: 0.25rem 0.6rem;
-    cursor: pointer;
     font-size: 1rem;
     margin-right: 0.6rem;
     margin-bottom: 1.25rem;
-}
-
-.searchCoins:hover {
-    background-color: #0056b3;
 }
 
 .searchBar{
@@ -409,4 +404,25 @@ canvas {
 
 .isSelected{
     color:lightgray;
+}
+
+#overlay {
+    position: fixed;
+    display: none;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 2;
+    cursor: pointer;
+}
+
+.no-data-cell {
+    text-align: center;
+    padding: 20px;
+    font-weight: bold;
+    font-size: 1.2em;
 }

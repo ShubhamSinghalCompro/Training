@@ -135,6 +135,24 @@ function displayStarCoins(data) {
         row.remove();
     });
 
+    if(filterStarCoins.length == 0){
+        const noDataRow = document.createElement("tr");
+        noDataRow.classList.add("star-coin-item", "no-data-row");
+
+        // Create a new cell that spans all columns
+        const noDataCell = document.createElement("td");
+        noDataCell.colSpan = starCoinsTable.rows[0].cells.length; // Adjust to match the number of columns
+        noDataCell.textContent = "No Data Found";
+        noDataCell.classList.add("no-data-cell");
+
+        // Append the cell to the row
+        noDataRow.appendChild(noDataCell);
+
+        // Append the row to the table
+        starCoinsTable.appendChild(noDataRow);
+        
+        return;
+    }
     // Calculate the start and end index for the current page
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
@@ -234,13 +252,13 @@ function createPaginationControls(totalItems) {
     container.appendChild(prevButton);
 
     const pageText = document.createElement('span');
-    pageText.textContent = `Page ${currentPage} of ${totalPages}`;
+    pageText.textContent = `Page ${currentPage} of ${totalPages == 0 ? 1 : totalPages}`;
     container.appendChild(pageText);
 
     // Create Next button with icon
     const nextButton = document.createElement('button');
     nextButton.innerHTML = '<i class="fas fa-angle-right"></i>';
-    nextButton.disabled = currentPage === totalPages || totalPages === 1;
+    nextButton.disabled = currentPage === totalPages || totalPages === 1 || totalPages === 0;
     nextButton.addEventListener('click', () => {
         if (currentPage < totalPages) {
             currentPage++;

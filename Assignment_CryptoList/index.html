@@ -6,7 +6,6 @@
     <title>Crypto Data</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <header>
@@ -15,10 +14,10 @@
   <main>
     <div class="subHeadings">
       <h2>Cryptocurrency Data</h2>
-      <h2><button id="favBtn">Favorites</button></h2>
+      <button id="favBtn">Favorites</button>
     </div>
     <div class="searchBar">
-      <button class="searchCoins">🔍</button>
+      <div class="searchCoins">🔍</div>
       <input type="text" placeholder="Search by name..." id="myInput">
     </div>
     <div id="all-coins-data"></div>
@@ -29,7 +28,7 @@
       <div class="modal-content">
         <span class="close" tabindex="0">&times;</span>
         <div class="searchBar">
-          <button class="searchCoins" tabindex="0">🔍</button>
+          <div class="searchCoins" tabindex="0">🔍</div>
           <input type="text" placeholder="Search by name..." id="myInputStar" tabindex="0">
         </div>
         <div id="star-coins-data"></div>
@@ -41,7 +40,7 @@
           <span class="close" id="modalClose" tabindex="0">&times;</span>
           <div class="modal-body">
               <div class="details-content">
-                  <div class="coinImage"><img id="modalCoinImage" class="modal-coin-image" /></div>
+                  <img class="modal-coin-image" alt="coin image">
                   <h2 id="modalCoinName"></h2>
                   <p id="modalCoinDetails"></p>
               </div>
@@ -62,12 +61,11 @@
   
   </main>
   <footer></footer>
-    
-
   <script src="js/allCoins.js"></script>
   <script src="js/starCoins.js"></script>
   <script src="js/main.js"></script>
   <script src="js/search.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="js/searchByAPI.js"></script>
 </body>
 </html>
