@@ -211,6 +211,7 @@ function openModal(coin) {
     const modalDetails = document.getElementById('modalCoinDetails');
     const closeBtn = document.getElementById('modalClose');
     const chartBtns = document.querySelectorAll(".updateChart");
+
     chartBtns.forEach(btn => {
         btn.addEventListener('click', () => updateChart(btn, coin.id));
     });
@@ -219,13 +220,12 @@ function openModal(coin) {
 
     modalName.innerHTML = `
     ${coin.name} (<span class="superscript">${coin.symbol.toUpperCase()}<i class="fas fa-info-circle info-icon"> <span class="tooltip-text">How is the price of ${coin.name} (${coin.symbol.toUpperCase()}) calculated? The price of ${coin.name} (${coin.symbol.toUpperCase()}) is calculated in real-time by aggregating the latest data across 29 exchanges and 31 markets, using a global volume-weighted average formula. Learn more about how crypto prices are calculated on CoinGecko.</span></i></span>)
-    
     `;
 
     modalDetails.innerHTML = `
         <div class="price">
-        <div><strong>$${coin.current_price}</strong></div>
-        <div  class="market-cap" id="details-page-market-cap-${coin.id}"><strong>$${coin.market_cap}</strong></div>
+            <div><strong>$${coin.current_price}</strong></div>
+            <div class="market-cap" id="details-page-market-cap-${coin.id}"><strong>$${coin.market_cap}</strong></div>
         </div>
         <div><strong>All-Time High:</strong> $${coin.ath}</div>
         <div><strong>All-Time Low:</strong> $${coin.atl}</div>
@@ -241,6 +241,7 @@ function openModal(coin) {
     }
 
     modal.style.display = "block";
+    closeBtn.focus();
 
     closeBtn.onclick = function () {
         modal.style.display = "none";
@@ -254,7 +255,40 @@ function openModal(coin) {
 
     // Initialize chart with default view (24h)
     updateChart(chartBtns[0], coin.id);
+
+    // Handle keyboard accessibility
+    closeBtn.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter' || event.key === ' ') {
+            modal.style.display = "none";
+        }
+    });
+
+    // Trap focus inside the modal
+    modal.addEventListener('keydown', function(event) {
+        const focusableElements = modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+
+        if (event.key === 'Tab') {
+            if (event.shiftKey) {
+                if (document.activeElement === firstElement) {
+                    lastElement.focus();
+                    event.preventDefault();
+                }
+            } else {
+                if (document.activeElement === lastElement) {
+                    firstElement.focus();
+                    event.preventDefault();
+                }
+            }
+        }
+
+        if (event.key === 'Escape') {
+            modal.style.display = "none";
+        }
+    });
 }
+
 
 function updateChart(btn, coinId) {
     const loader = document.getElementById('loader');
