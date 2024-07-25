@@ -261,15 +261,18 @@ function openModal(coin) {
     }
 
     modal.style.display = "block";
+    document.body.style.overflow = 'hidden';
     closeBtn.focus();
 
     closeBtn.onclick = function () {
         modal.style.display = "none";
+        document.body.style.overflow = 'auto';
     }
 
     window.onclick = function (event) {
         if (event.target == modal) {
             modal.style.display = "none";
+            document.body.style.overflow = 'auto';
         }
     }
 
@@ -280,6 +283,7 @@ function openModal(coin) {
     closeBtn.addEventListener('keydown', function(event) {
         if (event.key === 'Enter' || event.key === ' ') {
             modal.style.display = "none";
+            document.body.style.overflow = 'auto';
         }
     });
 
@@ -305,6 +309,7 @@ function openModal(coin) {
 
         if (event.key === 'Escape') {
             modal.style.display = "none";
+            document.body.style.overflow = 'auto';
         }
     });
 }
