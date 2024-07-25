@@ -62,7 +62,6 @@ function saveStarCoins() {
 // add to starCoins
 function addToStarCoins(coinId) {
     const coin = allCoins.find(c => c.id === coinId);
-    console.log(coin);
     if (coin && !starCoins.some(fav => fav.id === coinId)) {
         starCoins.push(coin);
         starCoinIds.push(coin.id);

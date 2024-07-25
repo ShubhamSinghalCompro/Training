@@ -212,7 +212,6 @@ function openModal(coin) {
     const closeBtn = document.getElementById('modalClose');
     const chartBtns = document.querySelectorAll(".updateChart");
     chartBtns.forEach(btn => {
-        console.log(btn.id);
         btn.addEventListener('click', () => updateChart(btn, coin.id));
     });
 

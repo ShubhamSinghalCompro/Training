@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const coinsFetch = await fetchAllCoins(1);
     
     if(coinsFetch){
-        modalFunction("myModal", "myBtn", "close");
+        openFavModal("favModal", "favBtn", "close");
         filteredCoins = allCoins;
         const isTableCreated = createAllCoinTable(filteredCoins);
         if(isTableCreated){
@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Load and display star coins
 });
 
-function modalFunction(modalId, openBtnId, closeBtn){
+function openFavModal(modalId, openBtnId, closeBtn){
     // Get the modal
     var modal = document.getElementById(modalId);
 

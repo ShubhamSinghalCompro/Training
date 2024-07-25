@@ -15,36 +15,35 @@
   <main>
     <div class="subHeadings">
       <h2>Cryptocurrency Data</h2>
-      <h2><button id="myBtn">Favorites</button></h2>
+      <h2><button id="favBtn">Favorites</button></h2>
     </div>
     <div class="searchBar">
       <button class="searchCoins">🔍</button>
       <input type="text" placeholder="Search by name..." id="myInput">
     </div>
     <div id="all-coins-data"></div>
-    <div><button id="view-more-btn">View More</button></div>
+    <button id="view-more-btn">View More</button>
     
-    <div id="myModal" class="modal">
-        <!-- Modal content -->
-        <div class="modal-content">
-          <span class="close">&times;</span>
-          <div class="searchBar">
-            <button class="searchCoins">🔍</button>
-            <input type="text" placeholder="Search by name..." id="myInputStar">
-          </div>
-          <div id="star-coins-data"></div>
-          <div id="pagination-controls"></div>
+    <div id="favModal" class="modal">
+      <!-- Modal content -->
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <div class="searchBar">
+          <button class="searchCoins">🔍</button>
+          <input type="text" placeholder="Search by name..." id="myInputStar">
         </div>
+        <div id="star-coins-data"></div>
+        <div id="pagination-controls"></div>
       </div>
-      <div id="coinModal" class="modal">
-        <div class="modal-content">
-          <span class="close" id="modalClose">&times;</span>
-          <div class="modal-body">
-            <div class="details-content">
-              <div class="coinImage"><img id="modalCoinImage" class="modal-coin-image" /></div>
-              <h2 id="modalCoinName"></h2>
-              <p id="modalCoinDetails"></p>
-              
+    </div>
+    <div id="coinModal" class="modal">
+      <div class="modal-content">
+        <span class="close" id="modalClose">&times;</span>
+        <div class="modal-body">
+          <div class="details-content">
+            <div class="coinImage"><img id="modalCoinImage" class="modal-coin-image" /></div>
+            <h2 id="modalCoinName"></h2>
+            <p id="modalCoinDetails"></p>  
           </div>
           <div id="coinChartContainer">
             <div id="loader" class="loader"></div>
@@ -57,10 +56,9 @@
             </div>
             <canvas id="coinChart"></canvas> <!-- Add this line -->
           </div>
-          </div>
-          
-        </div>
+        </div>  
       </div>
+    </div>
   </main>
   <footer></footer>
     
