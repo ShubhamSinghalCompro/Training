@@ -206,7 +206,7 @@ let coinChart = null; // Store chart instance globally
 
 function openModal(coin) {
     const modal = document.getElementById('coinModal');
-    const modalImage = document.getElementById('modalCoinImage');
+    const modalImage = document.querySelector('.modal-coin-image');
     const modalName = document.getElementById('modalCoinName');
     const modalDetails = document.getElementById('modalCoinDetails');
     const closeBtn = document.getElementById('modalClose');
