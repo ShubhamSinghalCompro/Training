@@ -98,6 +98,26 @@ function displayAllCoins(data, numberRows = 9){
         row.remove();
     });
 
+    // Checking if data is empty
+    if (filteredCoins.length == 0) {
+        // Create a new row
+        const noDataRow = document.createElement("tr");
+        noDataRow.classList.add("coin-item", "no-data-row");
+
+        // Create a new cell that spans all columns
+        const noDataCell = document.createElement("td");
+        noDataCell.colSpan = allCoinTable.rows[0].cells.length; // Adjust to match the number of columns
+        noDataCell.textContent = "No Data Found";
+        noDataCell.classList.add("no-data-cell");
+
+        // Append the cell to the row
+        noDataRow.appendChild(noDataCell);
+
+        // Append the row to the table
+        allCoinTable.appendChild(noDataRow);
+        
+        return;
+    }
     // printing first 10 elements
     createNextCoinsList(allCoinTable, data, numberRows); 
 
