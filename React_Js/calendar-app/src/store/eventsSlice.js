@@ -1,57 +1,49 @@
-import { createSlice } from '@reduxjs/toolkit';
+import {createSlice} from '@reduxjs/toolkit';
 
-// Function to load events from local storage
+// Functions to load and save events
 const loadEventsFromLocalStorage = () => {
-  try {
-    const serializedEvents = localStorage.getItem('events');
-    if (serializedEvents === null) {
-      return []; // No events found in local storage
-    }
-    return JSON.parse(serializedEvents);
-  } catch (e) {
-    console.error('Could not load events', e);
+  const savedEvents = localStorage.getItem('events');
+  if (savedEvents) {
+    return JSON.parse(savedEvents);
+  } else {
     return [];
   }
-};
+}
 
-// Function to save events to local storage
 const saveEventsToLocalStorage = (events) => {
-  try {
-    const serializedEvents = JSON.stringify(events);
-    localStorage.setItem('events', serializedEvents);
-  } catch (e) {
-    console.error('Could not save events', e);
-  }
-};
+  localStorage.setItem('events', JSON.stringify(events));
+}
 
-// Initial state for the events loaded from local storage
 const initialState = loadEventsFromLocalStorage();
 
-const eventsSlice = createSlice({
+const eventSlice = createSlice({
   name: 'events',
   initialState,
-  reducers: {
-    addEvent: (state, action) => {
+  reducer: {
+    addEvent(state, action) {
       state.push(action.payload);
-      saveEventsToLocalStorage(state);  // Save state to local storage
+      saveEventsToLocalStorage(state);
     },
-    updateEvent: (state, action) => {
-      const index = state.findIndex(event => event.id === action.payload.id);
-      if (index !== -1) {
-        state[index] = { ...state[index], ...action.payload };
-        saveEventsToLocalStorage(state);  // Save state to local storage
-      }
+    updateEvent(state, action) {
+      const index = state.findIndex((event => event.id === action.payload.id));
+      if(index === -1) return;
+      // Update the event at the specified index by merging the existing event
+      // with the updated event from the action payload. This is done using the
+      // spread operator to create a new object with the updated properties.
+      state[index] = {...state[index], ...action.payload};
+
+      saveEventsToLocalStorage(state);
+
     },
-    deleteEvent: (state, action) => {
-      const newState = state.filter(event => event.id !== action.payload);
-      saveEventsToLocalStorage(newState);  // Save state to local storage
+    deleteEvent(state, action) {
+      const index = state.findIndex((event => event.id === action.payload));
+      if(index === -1) return;
+      const newState = state.slice(0, index).concat(state.slice(index + 1)); // can be done using filter as well
+      saveEventsToLocalStorage(newState);
       return newState;
     },
   },
 });
 
-// Export actions for use in the component
-export const { addEvent, updateEvent, deleteEvent } = eventsSlice.actions;
-
-// Export the reducer to configure the store
-export default eventsSlice.reducer;
+export const {addEvent, updateEvent, deleteEvent} = eventSlice.actions;
+export default eventSlice.reducer;
