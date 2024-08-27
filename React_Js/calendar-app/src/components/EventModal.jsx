@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Modal, Box, Button, Typography, TextField, Grid, IconButton, Select, MenuItem } from '@mui/material';
+import { Modal, Box, Button, Typography, TextField, Grid, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import { format } from 'date-fns'; // Import format function
 import { addEvent, updateEvent, deleteEvent } from '../store/eventsSlice';
 import { categoryColors } from '../utils/categoryColors';
-import EditIcon from '@mui/icons-material/Edit';   // Import Edit icon
+import EditIcon from '@mui/icons-material/Edit'; 
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
 import AddIcon from '@mui/icons-material/Add';
@@ -70,17 +70,20 @@ const EventModal = ({ open, onClose, selectedEvent, selectedDay, setSelectedEven
           onChange={(e) => setTitle(e.target.value)}
           sx={{ mt: 2, mb: 2 }}
         />
-        <Select
-          label="Category"
-          value={category}
-          fullWidth
-          onChange={handleCategoryChange}
-          sx={{ mb: 2 }}
-        >
-          {Object.keys(categoryColors).map(cat => (
-            <MenuItem key={cat} value={cat}>{cat}</MenuItem>
-          ))}
-        </Select>
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <InputLabel>Category</InputLabel> {/* Add InputLabel */}
+          <Select
+            value={category}
+            onChange={handleCategoryChange}
+            label="Category" 
+          >
+            {Object.keys(categoryColors).map((cat) => (
+              <MenuItem key={cat} value={cat}>
+                {cat}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
         <Button variant="contained" color="primary" onClick={handleSave} endIcon={selectedEvent ? <SaveIcon /> : <AddIcon />}>
           {selectedEvent ? 'Update' : 'Add Event'}
         </Button>
