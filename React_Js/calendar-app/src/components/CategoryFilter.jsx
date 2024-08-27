@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Select, MenuItem } from '@mui/material';
+import { Box, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import { categoryColors } from '../utils/categoryColors';
 
 
@@ -13,16 +13,20 @@ const CategoryFilter = ({ onChange }) => {
 
   return (
     <Box sx={{ mb: 2 }}>
+        <FormControl fullWidth  sx={{ mb: 2 }}>
+            <InputLabel>Filter Events</InputLabel>
       <Select
         fullWidth
         value={selectedCategory}
         onChange={handleCategoryChange}
+        label="Filter Events"
       >
         <MenuItem value="All">All</MenuItem>
         {Object.keys(categoryColors).map((cat) => (
           <MenuItem key={cat} value={cat}>{cat}</MenuItem>
         ))}
       </Select>
+    </FormControl>
     </Box>
   );
 };

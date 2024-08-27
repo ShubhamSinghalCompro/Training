@@ -1,44 +1,65 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Modal, Box, Button, Typography, TextField, Grid, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
-import { format } from 'date-fns'; // Import format function
+import {
+  Modal,
+  Box,
+  Button,
+  Typography,
+  TextField,
+  Grid,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  IconButton
+} from '@mui/material';
+import { format } from 'date-fns';
 import { addEvent, updateEvent, deleteEvent } from '../store/eventsSlice';
 import { categoryColors } from '../utils/categoryColors';
-import EditIcon from '@mui/icons-material/Edit'; 
 import DeleteIcon from '@mui/icons-material/Delete';
-import SaveIcon from '@mui/icons-material/Save';
+import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
-
+import SaveIcon from '@mui/icons-material/Save';
+import CloseIcon from '@mui/icons-material/Close';
 
 const EventModal = ({ open, onClose, selectedEvent, selectedDay, setSelectedEvent }) => {
   const dispatch = useDispatch();
   const events = useSelector((state) => state.events);
 
+  // State variables for event details
   const [title, setTitle] = useState('');
-  const [category, setCategory] = useState('Meeting'); // Default category
-  const [color, setColor] = useState(categoryColors.Meeting); // Default color
+  const [category, setCategory] = useState('Meeting');
+  const [color, setColor] = useState(categoryColors.Meeting);
+  const [startTime, setStartTime] = useState('00:00'); // Default to 12:00 am
+  const [endTime, setEndTime] = useState('00:00'); // Default to 12:00 am
 
-  // Reset state when modal is opened or when selectedEvent changes
   useEffect(() => {
     if (selectedEvent) {
       setTitle(selectedEvent.title);
       setCategory(selectedEvent.category);
       setColor(categoryColors[selectedEvent.category]);
+      setStartTime(selectedEvent.startTime || '00:00'); // Use existing or default to 12:00 am
+      setEndTime(selectedEvent.endTime || '00:00'); // Use existing or default to 12:00 am
     } else {
       setTitle('');
       setCategory('Meeting');
       setColor(categoryColors.Meeting);
+      setStartTime('00:00'); // Reset to 12:00 am when adding a new event
+      setEndTime('00:00'); // Reset to 12:00 am when adding a new event
     }
   }, [selectedEvent, open]);
 
   const handleSave = () => {
-    const event = { 
+    const event = {
       id: selectedEvent ? selectedEvent.id : Date.now(),
       title,
       category,
       color: categoryColors[category],
-      date: selectedDay 
+      date: selectedDay,
+      startTime,
+      endTime,
     };
+
     if (selectedEvent) {
       dispatch(updateEvent(event));
     } else {
@@ -60,9 +81,16 @@ const EventModal = ({ open, onClose, selectedEvent, selectedDay, setSelectedEven
 
   return (
     <Modal open={open} onClose={() => { onClose(); setSelectedEvent(null); }}>
-      <Box sx={{ maxWidth: 400, margin: 'auto', padding: 2, backgroundColor: '#fff', borderRadius: 2, mt: 8 }}>
+      <Box sx={{ maxWidth: 400, margin: 'auto', padding: 2, backgroundColor: '#fff', borderRadius: 2, mt: 8, position: 'relative' }}>
+        {/* Close Button */}
+        <IconButton
+          onClick={() => { onClose(); setSelectedEvent(null); }}
+          sx={{ position: 'absolute', top: 8, right: 8 }}
+        >
+          <CloseIcon />
+        </IconButton>
         <Typography variant="h6">{selectedEvent ? 'Edit Event' : 'Add Event'}</Typography>
-        <Box sx={{ backgroundColor: color, height: 8, borderRadius: 1, mb: 2 }} /> {/* Color bar */}
+        <Box sx={{ backgroundColor: color, height: 8, borderRadius: 1, mb: 2 }} />
         <TextField
           label="Title"
           fullWidth
@@ -70,22 +98,42 @@ const EventModal = ({ open, onClose, selectedEvent, selectedDay, setSelectedEven
           onChange={(e) => setTitle(e.target.value)}
           sx={{ mt: 2, mb: 2 }}
         />
+        {/* Start Time */}
+        <TextField
+          label="Start Time"
+          type="time"
+          fullWidth
+          value={startTime}
+          onChange={(e) => setStartTime(e.target.value)}
+          sx={{ mb: 2 }}
+          InputLabelProps={{ shrink: true }}
+        />
+        {/* End Time */}
+        <TextField
+          label="End Time"
+          type="time"
+          fullWidth
+          value={endTime}
+          onChange={(e) => setEndTime(e.target.value)}
+          sx={{ mb: 2 }}
+          InputLabelProps={{ shrink: true }}
+        />
+        {/* Category Selection */}
         <FormControl fullWidth sx={{ mb: 2 }}>
-          <InputLabel>Category</InputLabel> {/* Add InputLabel */}
+          <InputLabel>Category</InputLabel>
           <Select
             value={category}
             onChange={handleCategoryChange}
-            label="Category" 
+            label="Category"
           >
-            {Object.keys(categoryColors).map((cat) => (
-              <MenuItem key={cat} value={cat}>
-                {cat}
-              </MenuItem>
+            {Object.keys(categoryColors).map(cat => (
+              <MenuItem key={cat} value={cat}>{cat}</MenuItem>
             ))}
           </Select>
         </FormControl>
+        {/* Save and Delete Buttons */}
         <Button variant="contained" color="primary" onClick={handleSave} endIcon={selectedEvent ? <SaveIcon /> : <AddIcon />}>
-          {selectedEvent ? 'Update' : 'Add Event'}
+          {selectedEvent ? 'Update Event' : 'Add Event'}
         </Button>
         {selectedEvent && (
           <Button
@@ -95,7 +143,7 @@ const EventModal = ({ open, onClose, selectedEvent, selectedDay, setSelectedEven
             sx={{ ml: 2 }}
             endIcon={<DeleteIcon />}
           >
-            Delete
+            Delete Event
           </Button>
         )}
         {/* Display existing events for the selected day */}
@@ -108,28 +156,13 @@ const EventModal = ({ open, onClose, selectedEvent, selectedDay, setSelectedEven
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 1, border: '1px solid #ddd', borderRadius: 1 }}>
                   <Typography>{event.title}</Typography>
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    {/* Show color bar for each event */}
                     <Box sx={{ width: 16, height: 16, backgroundColor: event.color, borderRadius: '50%', mr: 1 }} />
-                    <Button 
-                      size='small' 
-                      variant="contained" 
-                      color="primary" 
-                      onClick={() => setSelectedEvent(event)}
-                      endIcon={<EditIcon />}
-                    >
+                    <Button size='small' variant="contained" color="primary" onClick={() => setSelectedEvent(event)} endIcon={<EditIcon />}>
                       Edit
                     </Button>
-                    <Button
-                      size='small'
-                      variant="contained"
-                      color="error"
-                      onClick={() => handleDelete(event.id)}
-                      sx={{ ml: 2 }}
-                      endIcon={<DeleteIcon />}
-                    >
+                    <Button size='small' variant="contained" color="error" onClick={() => handleDelete(event.id)} sx={{ ml: 2 }} endIcon={<DeleteIcon />}>
                       Delete
                     </Button>
-        
                   </Box>
                 </Box>
               </Grid>
