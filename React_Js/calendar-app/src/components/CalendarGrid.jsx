@@ -4,6 +4,9 @@ import { Box, Button, Typography, Grid, IconButton } from '@mui/material';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
 import AddIcon from '@mui/icons-material/Add';
 import EventModal from './EventModal';
+import CategoryFilter from './CategoryFilter';
+import { categoryColors } from '../utils/categoryColors';
+
 
 const CalendarGrid = () => {
   const events = useSelector((state) => state.events);
@@ -12,6 +15,7 @@ const CalendarGrid = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [selectedDay, setSelectedDay] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState('All');
 
   useEffect(() => {
     generateCalendar(currentMonth);
@@ -43,8 +47,13 @@ const CalendarGrid = () => {
     setModalOpen(false);
   };
 
+  const handleCategoryChange = (category) => {
+    setSelectedCategory(category);
+  };
+
   return (
     <Box sx={{ maxWidth: 800, margin: '0 auto', padding: 2, border: '1px solid #ddd', borderRadius: 2, backgroundColor: '#f9f9f9' }}>
+      <CategoryFilter onChange={handleCategoryChange} />
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
         <Button variant="contained" onClick={handlePrevMonth}>Previous</Button>
         <Typography variant="h5">{format(currentMonth, 'MMMM yyyy')}</Typography>
@@ -52,14 +61,29 @@ const CalendarGrid = () => {
       </Box>
       <Grid container spacing={1}>
         {days.map((day, index) => {
-          // Determine if there are events for the current day
-          const hasEvents = events.some(event => new Date(event.date).toDateString() === day.toDateString());
+          const dayStr = day.toDateString();
+          const dayEvents = events.filter(event => new Date(event.date).toDateString() === dayStr);
+          const hasEvents = dayEvents.length > 0;
+
+          // Determine the background color based on selected category
+          const applicableCategories = dayEvents.map(event => event.category);
+          const uniqueCategories = [...new Set(applicableCategories)];
+
+          const isCurrentDate = day.toDateString() === new Date().toDateString();
+          const hasCategoryEvents = selectedCategory !== 'All' && uniqueCategories.includes(selectedCategory);
+          
+          const bgColor = isCurrentDate && (!hasEvents || !hasCategoryEvents)
+            ? '#e0f7fa'
+            : selectedCategory !== 'All' && uniqueCategories.includes(selectedCategory)
+            ? categoryColors[selectedCategory] || '#fff'
+            : '#fff';
+
           return (
             <Grid item xs={12 / 7} key={index}>
               <Box
                 sx={{
                   padding: 2,
-                  backgroundColor: day.toDateString() === new Date().toDateString() ? '#e0f7fa' : '#fff',
+                  backgroundColor: bgColor,
                   border: '1px solid #ddd',
                   borderRadius: 1,
                   textAlign: 'center',
@@ -67,8 +91,8 @@ const CalendarGrid = () => {
                   cursor: 'pointer',
                   textDecoration: hasEvents ? 'underline' : 'none',  // Underline if there are events
                   '&:hover': {
-                  backgroundColor: '#e0e0e0', // Greyish color on hover
-                },
+                    backgroundColor: '#e0e0e0', // Greyish color on hover
+                  },
                 }}
                 onClick={() => handleOpenModal(null, day)}
               >

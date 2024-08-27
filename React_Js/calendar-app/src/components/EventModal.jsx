@@ -1,32 +1,48 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Modal, Box, Button, Typography, TextField, Grid, IconButton } from '@mui/material';
-import { format } from 'date-fns';  // Import format function
+import { Modal, Box, Button, Typography, TextField, Grid, IconButton, Select, MenuItem } from '@mui/material';
+import { format } from 'date-fns'; // Import format function
 import { addEvent, updateEvent, deleteEvent } from '../store/eventsSlice';
+import { categoryColors } from '../utils/categoryColors';
+import EditIcon from '@mui/icons-material/Edit';   // Import Edit icon
+import DeleteIcon from '@mui/icons-material/Delete';
+import SaveIcon from '@mui/icons-material/Save';
+import AddIcon from '@mui/icons-material/Add';
+
 
 const EventModal = ({ open, onClose, selectedEvent, selectedDay, setSelectedEvent }) => {
   const dispatch = useDispatch();
   const events = useSelector((state) => state.events);
 
   const [title, setTitle] = useState('');
-  const [color, setColor] = useState('#000000');
+  const [category, setCategory] = useState('Meeting'); // Default category
+  const [color, setColor] = useState(categoryColors.Meeting); // Default color
 
   // Reset state when modal is opened or when selectedEvent changes
   useEffect(() => {
     if (selectedEvent) {
       setTitle(selectedEvent.title);
-      setColor(selectedEvent.color);
+      setCategory(selectedEvent.category);
+      setColor(categoryColors[selectedEvent.category]);
     } else {
       setTitle('');
-      setColor('#000000');
+      setCategory('Meeting');
+      setColor(categoryColors.Meeting);
     }
   }, [selectedEvent, open]);
 
   const handleSave = () => {
+    const event = { 
+      id: selectedEvent ? selectedEvent.id : Date.now(),
+      title,
+      category,
+      color: categoryColors[category],
+      date: selectedDay 
+    };
     if (selectedEvent) {
-      dispatch(updateEvent({ ...selectedEvent, title, color }));
+      dispatch(updateEvent(event));
     } else {
-      dispatch(addEvent({ id: Date.now(), title, color, date: selectedDay }));
+      dispatch(addEvent(event));
     }
     onClose();
   };
@@ -36,10 +52,17 @@ const EventModal = ({ open, onClose, selectedEvent, selectedDay, setSelectedEven
     onClose();
   };
 
+  const handleCategoryChange = (event) => {
+    const newCategory = event.target.value;
+    setCategory(newCategory);
+    setColor(categoryColors[newCategory]);
+  };
+
   return (
     <Modal open={open} onClose={() => { onClose(); setSelectedEvent(null); }}>
       <Box sx={{ maxWidth: 400, margin: 'auto', padding: 2, backgroundColor: '#fff', borderRadius: 2, mt: 8 }}>
         <Typography variant="h6">{selectedEvent ? 'Edit Event' : 'Add Event'}</Typography>
+        <Box sx={{ backgroundColor: color, height: 8, borderRadius: 1, mb: 2 }} /> {/* Color bar */}
         <TextField
           label="Title"
           fullWidth
@@ -47,25 +70,29 @@ const EventModal = ({ open, onClose, selectedEvent, selectedDay, setSelectedEven
           onChange={(e) => setTitle(e.target.value)}
           sx={{ mt: 2, mb: 2 }}
         />
-        <TextField
-          label="Color"
-          type="color"
+        <Select
+          label="Category"
+          value={category}
           fullWidth
-          value={color}
-          onChange={(e) => setColor(e.target.value)}
+          onChange={handleCategoryChange}
           sx={{ mb: 2 }}
-        />
-        <Button variant="contained" color="primary" onClick={handleSave}>
-          {selectedEvent ? 'Update Event' : 'Add Event'}
+        >
+          {Object.keys(categoryColors).map(cat => (
+            <MenuItem key={cat} value={cat}>{cat}</MenuItem>
+          ))}
+        </Select>
+        <Button variant="contained" color="primary" onClick={handleSave} endIcon={selectedEvent ? <SaveIcon /> : <AddIcon />}>
+          {selectedEvent ? 'Update' : 'Add Event'}
         </Button>
         {selectedEvent && (
           <Button
             variant="contained"
-            color="secondary"
+            color="error"
             onClick={() => handleDelete(selectedEvent.id)}
             sx={{ ml: 2 }}
+            endIcon={<DeleteIcon />}
           >
-            Delete Event
+            Delete
           </Button>
         )}
         {/* Display existing events for the selected day */}
@@ -77,13 +104,29 @@ const EventModal = ({ open, onClose, selectedEvent, selectedDay, setSelectedEven
               <Grid item xs={12} key={event.id}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 1, border: '1px solid #ddd', borderRadius: 1 }}>
                   <Typography>{event.title}</Typography>
-                  <Box>
-                    <IconButton onClick={() => setSelectedEvent(event)} color="primary">
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    {/* Show color bar for each event */}
+                    <Box sx={{ width: 16, height: 16, backgroundColor: event.color, borderRadius: '50%', mr: 1 }} />
+                    <Button 
+                      size='small' 
+                      variant="contained" 
+                      color="primary" 
+                      onClick={() => setSelectedEvent(event)}
+                      endIcon={<EditIcon />}
+                    >
                       Edit
-                    </IconButton>
-                    <IconButton onClick={() => handleDelete(event.id)} color="error">
+                    </Button>
+                    <Button
+                      size='small'
+                      variant="contained"
+                      color="error"
+                      onClick={() => handleDelete(event.id)}
+                      sx={{ ml: 2 }}
+                      endIcon={<DeleteIcon />}
+                    >
                       Delete
-                    </IconButton>
+                    </Button>
+        
                   </Box>
                 </Box>
               </Grid>
