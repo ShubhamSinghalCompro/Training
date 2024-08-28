@@ -116,6 +116,7 @@ return (
         selectedEvent={selectedEvent}
         selectedDay={selectedDay}
         setSelectedEvent={setSelectedEvent}
+        selectedCategory={selectedCategory}
       />
     </Box>
 );

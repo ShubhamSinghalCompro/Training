@@ -120,6 +120,7 @@ const CalendarGrid: React.FC = () => {
         selectedEvent={selectedEvent}
         selectedDay={selectedDay}
         setSelectedEvent={setSelectedEvent}
+        selectedCategory={selectedCategory}
       />
     </Box>
 );};
