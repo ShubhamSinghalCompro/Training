@@ -10,7 +10,7 @@ import { categoryColors } from '../utils/categoryColors';
 
 const CalendarGrid = () => {
   const events = useSelector((state) => state.events);
-  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [current, setCurrent] = useState(new Date());
   const [days, setDays] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -18,8 +18,8 @@ const CalendarGrid = () => {
   const [selectedCategory, setSelectedCategory] = useState('All');
 
   useEffect(() => {
-    generateCalendar(currentMonth);
-  }, [currentMonth]);
+    generateCalendar(current);
+  }, [current]);
 
   const generateCalendar = (date) => {
     const start = startOfMonth(date);
@@ -29,11 +29,11 @@ const CalendarGrid = () => {
   };
 
   const handlePrevMonth = () => {
-    setCurrentMonth(new Date(currentMonth.setMonth(currentMonth.getMonth() - 1)));
+    setCurrent(new Date(current.setMonth(current.getMonth() - 1)));
   };
 
   const handleNextMonth = () => {
-    setCurrentMonth(new Date(currentMonth.setMonth(currentMonth.getMonth() + 1)));
+    setCurrent(new Date(current.setMonth(current.getMonth() + 1)));
   };
 
   const handleOpenModal = (event = null, day = null) => {
@@ -56,7 +56,7 @@ const CalendarGrid = () => {
       <CategoryFilter onChange={handleCategoryChange} />
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
         <Button variant="contained" onClick={handlePrevMonth}>Previous</Button>
-        <Typography variant="h5">{format(currentMonth, 'MMMM yyyy')}</Typography>
+        <Typography variant="h5">{format(current, 'MMMM yyyy')}</Typography>
         <Button variant="contained" onClick={handleNextMonth}>Next</Button>
       </Box>
       <Grid container spacing={1}>
