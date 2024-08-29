@@ -24,6 +24,7 @@ import AddIcon from '@mui/icons-material/Add';
 import SaveIcon from '@mui/icons-material/Save';
 import { categoryColors } from '../utils/categoryColors';
 import { Event, Category } from '../utils/types';
+import EventDetails from './EventDetails';
 
 interface EventModalProps {
   open: boolean;
@@ -175,88 +176,28 @@ const EventModal: React.FC<EventModalProps> = ({
           </IconButton>
 
           {/* Title */}
-          {mode !== 'view' && (
+          {mode !== 'view' ? (
             <>
-            <Typography variant="h6">
-              {mode === 'add' ? 'Add Event' : (mode === 'edit' ? 'Edit Event' : 'Event')}
-            </Typography>
-            <Box
-              sx={{ backgroundColor: color, height: 8, borderRadius: 1, mb: 2 }}
-            />
-         
-
-          {/* Form for adding/editing event */}
-            
-              {/* Title Field */}
-              <TextField
-                label="Title"
-                value={title}
-                onChange={(event) => setTitle(event.target.value)}
-                fullWidth
-                sx={{ mt: 2, mb: 2 }}
-                disabled={mode === 'viewEvent'}
+              <EventDetails
+                mode = {mode}
+                selectedEvent={selectedEvent}
+                title={title}
+                category={category}
+                color={color}
+                startTime={startTime}
+                endTime={endTime}
+                setTitle={setTitle}
+                setStartTime={setStartTime}
+                setEndTime={setEndTime}
+                handleSave={handleSave}
+                handleDelete={handleDelete}
+                handleCategoryChange={handleCategoryChange}
               />
-              {/* Start Time Field */}
-              <TextField
-                label="Start Time"
-                type="time"
-                fullWidth
-                value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
-                sx={{ mb: 2 }}
-                InputLabelProps={{ shrink: true }}
-                disabled={mode === 'viewEvent'}
-              />
-              {/* End Time Field */}
-              <TextField
-                label="End Time"
-                type="time"
-                fullWidth
-                value={endTime}
-                onChange={(e) => setEndTime(e.target.value)}
-                sx={{ mb: 2 }}
-                InputLabelProps={{ shrink: true }}
-                disabled={mode === 'viewEvent'}
-              />
-              {/* Category Selection */}
-              <FormControl fullWidth sx={{ mb: 2 }}>
-                <InputLabel>Category</InputLabel>
-                <Select
-                  value={category}
-                  onChange={handleCategoryChange}
-                  label="Category"
-                  disabled={mode === 'viewEvent'}
-                >
-            {Object.keys(categoryColors).filter(cat => cat !== 'All').map(cat => (
-              <MenuItem key={cat} value={cat}>{cat}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              {/* Save and Delete Buttons */}
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleSave}
-                endIcon={mode === 'viewEvent'? <EditIcon /> : selectedEvent ? <SaveIcon /> : <AddIcon />}
-              >
-                {mode === 'viewEvent' ? 'Edit Event' : (selectedEvent ? 'Update Event' : 'Add Event')}
-              </Button>
-              {selectedEvent && (
-                <Button
-                  variant="contained"
-                  color="error"
-                  onClick={() => handleDelete(selectedEvent.id)}
-                  sx={{ ml: 2 }}
-                  endIcon={<DeleteIcon />}
-                >
-                  Delete Event
-                </Button>
-              )}
             </>
-          )}
+          )
 
-          {/* Display existing events for the selected day */}
-          {mode === 'view' && (
+          //{/* Display existing events for the selected day */}
+          : (
             <>
               <Typography variant="h6" sx={{ mt: 2 }}>
                 Existing Events
