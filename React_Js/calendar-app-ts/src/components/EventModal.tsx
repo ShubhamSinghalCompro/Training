@@ -56,7 +56,7 @@ const EventModal: React.FC<EventModalProps> = ({
   const [color, setColor] = useState<string>(categoryColors.General);
   const [startTime, setStartTime] = useState<string>('00:00');
   const [endTime, setEndTime] = useState<string>('00:00');
-  const [mode, setMode] = useState<'view' | 'add' | 'edit'>('view'); // State to manage modal mode
+  const [mode, setMode] = useState<'view' | 'add' | 'edit' | 'viewEvent'>('view'); // State to manage modal mode
 
 
   const resetForm = () => {
@@ -75,7 +75,6 @@ const EventModal: React.FC<EventModalProps> = ({
       setColor(categoryColors[selectedEvent.category]);
       setStartTime(selectedEvent.startTime || '00:00');
       setEndTime(selectedEvent.endTime || '00:00');
-      setMode('edit'); // Set mode to 'edit' when an event is selected
     } else {
       resetForm();
       setMode('view');
@@ -95,6 +94,10 @@ const EventModal: React.FC<EventModalProps> = ({
       endTime,
     };
 
+    if(mode === 'viewEvent') {
+      setMode('edit'); 
+    }
+    else{
     if (selectedEvent) {
       dispatch(updateEvent(event));
     } else {
@@ -102,6 +105,7 @@ const EventModal: React.FC<EventModalProps> = ({
     }
     onClose();
     setMode('view'); // Reset mode after closing
+  }
   };
 
   const handleDelete = (id: number) => {
@@ -172,19 +176,17 @@ const EventModal: React.FC<EventModalProps> = ({
 
           {/* Title */}
           {mode !== 'view' && (
+            <>
             <Typography variant="h6">
-              {mode === 'add' ? 'Add Event' : 'Edit Event'}
+              {mode === 'add' ? 'Add Event' : (mode === 'edit' ? 'Edit Event' : 'Event')}
             </Typography>
-          )}
-          {mode !== 'view' && (
             <Box
               sx={{ backgroundColor: color, height: 8, borderRadius: 1, mb: 2 }}
             />
-          )}
+         
 
           {/* Form for adding/editing event */}
-          {mode !== 'view' && (
-            <>
+            
               {/* Title Field */}
               <TextField
                 label="Title"
@@ -192,6 +194,7 @@ const EventModal: React.FC<EventModalProps> = ({
                 onChange={(event) => setTitle(event.target.value)}
                 fullWidth
                 sx={{ mt: 2, mb: 2 }}
+                disabled={mode === 'viewEvent'}
               />
               {/* Start Time Field */}
               <TextField
@@ -202,6 +205,7 @@ const EventModal: React.FC<EventModalProps> = ({
                 onChange={(e) => setStartTime(e.target.value)}
                 sx={{ mb: 2 }}
                 InputLabelProps={{ shrink: true }}
+                disabled={mode === 'viewEvent'}
               />
               {/* End Time Field */}
               <TextField
@@ -212,6 +216,7 @@ const EventModal: React.FC<EventModalProps> = ({
                 onChange={(e) => setEndTime(e.target.value)}
                 sx={{ mb: 2 }}
                 InputLabelProps={{ shrink: true }}
+                disabled={mode === 'viewEvent'}
               />
               {/* Category Selection */}
               <FormControl fullWidth sx={{ mb: 2 }}>
@@ -220,6 +225,7 @@ const EventModal: React.FC<EventModalProps> = ({
                   value={category}
                   onChange={handleCategoryChange}
                   label="Category"
+                  disabled={mode === 'viewEvent'}
                 >
             {Object.keys(categoryColors).filter(cat => cat !== 'All').map(cat => (
               <MenuItem key={cat} value={cat}>{cat}</MenuItem>
@@ -231,9 +237,9 @@ const EventModal: React.FC<EventModalProps> = ({
                 variant="contained"
                 color="primary"
                 onClick={handleSave}
-                endIcon={selectedEvent ? <SaveIcon /> : <AddIcon />}
+                endIcon={mode === 'viewEvent'? <EditIcon /> : selectedEvent ? <SaveIcon /> : <AddIcon />}
               >
-                {selectedEvent ? 'Update Event' : 'Add Event'}
+                {mode === 'viewEvent' ? 'Edit Event' : (selectedEvent ? 'Update Event' : 'Add Event')}
               </Button>
               {selectedEvent && (
                 <Button
@@ -275,7 +281,10 @@ const EventModal: React.FC<EventModalProps> = ({
                           p: 1,
                           border: '1px solid #ddd',
                           borderRadius: 1,
+                          cursor: 'pointer',
+                          
                         }}
+                        onClick={() => { setSelectedEvent(event); setMode('viewEvent'); }}
                       >
                         <Typography>{event.title}</Typography>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -288,28 +297,24 @@ const EventModal: React.FC<EventModalProps> = ({
                               mr: 1,
                             }}
                           />
-                          <Button
-                            size="small"
-                            variant="contained"
-                            color="primary"
-                            onClick={() => {
-                              setSelectedEvent(event);
-                              setMode('edit');
-                            }}
-                            endIcon={<EditIcon />}
-                          >
-                            Edit
-                          </Button>
-                          <Button
-                            size="small"
-                            variant="contained"
-                            color="error"
-                            onClick={() => handleDelete(event.id)}
-                            sx={{ ml: 2 }}
-                            endIcon={<DeleteIcon />}
-                          >
-                            Delete
-                          </Button>
+                         <IconButton
+
+                          size='small'
+                          color='primary'
+                          onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedEvent(event); 
+                          setMode('edit'); }}>
+                            <EditIcon />
+                          </IconButton>
+                          <IconButton
+                          size='small'
+                          color='error'
+                          onClick={(e) => {
+                            e.stopPropagation(); 
+                            handleDelete(event.id)}}>
+                            <DeleteIcon />
+                          </IconButton>
                         </Box>
                       </Box>
                     </Grid>
