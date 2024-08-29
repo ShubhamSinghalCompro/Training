@@ -3,28 +3,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   Modal,
   Box,
-  Button,
-  Typography,
-  TextField,
-  Grid,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
   IconButton,
-  Fab,
   SelectChangeEvent,
 } from '@mui/material';
 import { format } from 'date-fns';
 import { addEvent, updateEvent, deleteEvent } from '../store/eventsSlice';
 import CloseIcon from '@mui/icons-material/Close';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import AddIcon from '@mui/icons-material/Add';
-import SaveIcon from '@mui/icons-material/Save';
 import { categoryColors } from '../utils/categoryColors';
-import { Event, Category } from '../utils/types';
+import { Event, Category, RootState } from '../utils/types';
 import EventDetails from './EventDetails';
+import ExistingEventsList from './ExistingEventsList'; // Import your new component
 
 interface EventModalProps {
   open: boolean;
@@ -32,12 +20,7 @@ interface EventModalProps {
   selectedEvent: Event | null;
   selectedDay: Date | null;
   setSelectedEvent: (event: Event | null) => void;
-  selectedCategory: string; // Assuming you have this prop for filtering events by category
-}
-
-// Define the RootState interface for TypeScript
-interface RootState {
-  events: Event[];
+  selectedCategory: string;
 }
 
 const EventModal: React.FC<EventModalProps> = ({
@@ -59,7 +42,6 @@ const EventModal: React.FC<EventModalProps> = ({
   const [endTime, setEndTime] = useState<string>('00:00');
   const [mode, setMode] = useState<'view' | 'add' | 'edit' | 'viewEvent'>('view'); // State to manage modal mode
 
-
   const resetForm = () => {
     setTitle('');
     setCategory('General');
@@ -68,7 +50,6 @@ const EventModal: React.FC<EventModalProps> = ({
     setEndTime('00:00');
   };
 
-  
   useEffect(() => {
     if (selectedEvent) {
       setTitle(selectedEvent.title);
@@ -82,8 +63,6 @@ const EventModal: React.FC<EventModalProps> = ({
     }
   }, [selectedEvent, open]);
 
-  
-
   const handleSave = () => {
     const event: Event = {
       id: selectedEvent ? selectedEvent.id : Date.now(),
@@ -95,18 +74,17 @@ const EventModal: React.FC<EventModalProps> = ({
       endTime,
     };
 
-    if(mode === 'viewEvent') {
-      setMode('edit'); 
-    }
-    else{
-    if (selectedEvent) {
-      dispatch(updateEvent(event));
+    if (mode === 'viewEvent') {
+      setMode('edit');
     } else {
-      dispatch(addEvent(event));
+      if (selectedEvent) {
+        dispatch(updateEvent(event));
+      } else {
+        dispatch(addEvent(event));
+      }
+      onClose();
+      setMode('view'); // Reset mode after closing
     }
-    onClose();
-    setMode('view'); // Reset mode after closing
-  }
   };
 
   const handleDelete = (id: number) => {
@@ -128,155 +106,71 @@ const EventModal: React.FC<EventModalProps> = ({
   };
 
   return (
-    <>
-      {/* Floating Action Button to open modal in add mode */}
-      <Fab
-        color="primary"
-        aria-label="add"
-        onClick={handleAddClick}
-        sx={{ position: 'fixed', bottom: 16, right: 16 }}
-      >
-        <AddIcon />
-      </Fab>
-
-      {/* Modal for adding or editing events */}
-      <Modal
-        open={open}
-        onClose={() => {
-          onClose();
-          setSelectedEvent(null);
-          setMode('view');
+    <Modal
+      open={open}
+      onClose={() => {
+        onClose();
+        setSelectedEvent(null);
+        setMode('view');
+      }}
+    >
+      <Box
+        sx={{
+          maxWidth: 400,
+          margin: 'auto',
+          mt: 8,
+          padding: 2,
+          backgroundColor: '#fff',
+          borderRadius: 2,
+          position: 'relative',
         }}
       >
-        <Box
+        {/* Close Button */}
+        <IconButton
           sx={{
-            maxWidth: 400,
-            margin: 'auto',
-            mt: 8,
-            padding: 2,
-            backgroundColor: '#fff',
-            borderRadius: 2,
-            position: 'relative',
+            position: 'absolute',
+            top: 8,
+            right: 8,
+          }}
+          onClick={() => {
+            onClose();
+            setSelectedEvent(null);
+            setMode('view');
           }}
         >
-          {/* Close Button */}
-          <IconButton
-            sx={{
-              position: 'absolute',
-              top: 8,
-              right: 8,
-            }}
-            onClick={() => {
-              onClose();
-              setSelectedEvent(null);
-              setMode('view');
-            }}
-          >
-            <CloseIcon />
-          </IconButton>
+          <CloseIcon />
+        </IconButton>
 
-          {/* Title */}
-          {mode !== 'view' ? (
-            <>
-              <EventDetails
-                mode = {mode}
-                selectedEvent={selectedEvent}
-                title={title}
-                category={category}
-                color={color}
-                startTime={startTime}
-                endTime={endTime}
-                setTitle={setTitle}
-                setStartTime={setStartTime}
-                setEndTime={setEndTime}
-                handleSave={handleSave}
-                handleDelete={handleDelete}
-                handleCategoryChange={handleCategoryChange}
-              />
-            </>
-          )
-
-          //{/* Display existing events for the selected day */}
-          : (
-            <>
-              <Typography variant="h6" sx={{ mt: 2 }}>
-                Existing Events
-              </Typography>
-              <Grid container spacing={1}>
-                {events
-                  .filter(event => {
-                    if (!selectedDay) return false; // If selectedDay is null, skip filtering
-                    return format(new Date(event.date), 'yyyy-MM-dd') === format(new Date(selectedDay), 'yyyy-MM-dd');})
-                  .filter(
-                    (event) =>
-                      selectedCategory === 'All' ||
-                      event.category === selectedCategory
-                  )
-                  .map((event) => (
-                    <Grid item xs={12} key={event.id}>
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                          p: 1,
-                          border: '1px solid #ddd',
-                          borderRadius: 1,
-                          cursor: 'pointer',
-                          
-                        }}
-                        onClick={() => { setSelectedEvent(event); setMode('viewEvent'); }}
-                      >
-                        <Typography>{event.title}</Typography>
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                          <Box
-                            sx={{
-                              width: 16,
-                              height: 16,
-                              backgroundColor: event.color,
-                              borderRadius: '50%',
-                              mr: 1,
-                            }}
-                          />
-                         <IconButton
-
-                          size='small'
-                          color='primary'
-                          onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedEvent(event); 
-                          setMode('edit'); }}>
-                            <EditIcon />
-                          </IconButton>
-                          <IconButton
-                          size='small'
-                          color='error'
-                          onClick={(e) => {
-                            e.stopPropagation(); 
-                            handleDelete(event.id)}}>
-                            <DeleteIcon />
-                          </IconButton>
-                        </Box>
-                      </Box>
-                    </Grid>
-                  ))}
-              </Grid>
-            {/* Add Event Button */}
-            <Button
-                variant="contained"
-                color="primary"
-                onClick={handleAddClick}
-                startIcon={<AddIcon />}
-                sx={{ mt: 2 }}
-                fullWidth
-              >
-                Add Event
-              </Button>
-            </>
-          )}
-        </Box>
-      </Modal>
-    </>
+        {/* Event Details or Existing Events List */}
+        {mode !== 'view' ? (
+          <EventDetails
+            mode={mode}
+            selectedEvent={selectedEvent}
+            title={title}
+            category={category}
+            color={color}
+            startTime={startTime}
+            endTime={endTime}
+            setTitle={setTitle}
+            setStartTime={setStartTime}
+            setEndTime={setEndTime}
+            handleSave={handleSave}
+            handleDelete={handleDelete}
+            handleCategoryChange={handleCategoryChange}
+          />
+        ) : (
+          <ExistingEventsList
+            events={events}
+            selectedDay={selectedDay}
+            selectedCategory={selectedCategory}
+            setSelectedEvent={setSelectedEvent}
+            setMode={setMode}
+            handleDelete={handleDelete}
+            handleAddClick={handleAddClick}
+          />
+        )}
+      </Box>
+    </Modal>
   );
 };
 

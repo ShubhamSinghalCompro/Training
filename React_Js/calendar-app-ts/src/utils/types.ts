@@ -9,3 +9,8 @@ export interface Event {
   startTime: string;
   endTime: string;
 }
+
+// Define the RootState interface for TypeScript
+export interface RootState {
+  events: Event[];
+}
