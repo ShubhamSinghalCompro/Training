@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Box, Button, Typography, Grid } from '@mui/material';
+import { Box, Button, Typography, Grid, Tooltip } from '@mui/material';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, addDays, subDays, subWeeks, addWeeks, startOfWeek, endOfWeek } from 'date-fns';
 import EventModal from './EventModal';
 import CategoryFilter from './CategoryFilter';
@@ -38,7 +38,7 @@ const CalendarGrid: React.FC = () => {
       setCurrent(new Date(current.setMonth(current.getMonth() - 1))); // Subtract one month
     }
   };
-  
+
   const handleNext = () => {
     if (viewMode === 'daily') {
       setCurrent(addDays(current, 1)); // Add one day
@@ -99,7 +99,7 @@ const CalendarGrid: React.FC = () => {
       {viewMode === 'monthly' && (
         <>
           {/* Render days of the week */}
-          <Grid container spacing={1}>
+          <Grid container spacing={0}>
             {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((dayName, index) => (
               <Grid item xs={12 / 7} key={index}>
                 <Typography variant="subtitle2" align="center">
@@ -118,28 +118,33 @@ const CalendarGrid: React.FC = () => {
               // Determine the background color based on selected category
               const applicableCategories = dayEvents.map(event => event.category);
               const uniqueCategories = [...new Set(applicableCategories)];
-
               const isCurrentDate = day.toDateString() === new Date().toDateString();
               const hasCategoryEvents = selectedCategory !== 'All' && uniqueCategories.includes(selectedCategory);
-
               const bgColor = isCurrentDate && (!hasEvents || !hasCategoryEvents)
                 ? '#e0f7fa'
                 : selectedCategory !== 'All' && uniqueCategories.includes(selectedCategory)
                   ? `${categoryColors[selectedCategory]}80` || '#fff'
                   : '#fff';
 
+              const displayMore = dayEvents.length > 2;
+
               return (
                 <Grid item xs={12 / 7} key={index}>
                   <Box
                     sx={{
+                      // Fixed height for consistency
+                      height: 100,
                       padding: 2,
                       backgroundColor: bgColor,
                       border: '1px solid #ddd',
                       borderRadius: 1,
                       textAlign: 'center',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center',
+                      alignItems: 'center',
                       position: 'relative',
-                      cursor: current.getMonth() !== day.getMonth() ? 'not-allowed' :'pointer',
-                      textDecoration: hasEvents ? 'underline' : 'none',  // Underline if there are events
+                      cursor: current.getMonth() !== day.getMonth() ? 'not-allowed' : 'pointer',
                       '&:hover': {
                         backgroundColor: '#e0e0e0',
                       },
@@ -147,7 +152,35 @@ const CalendarGrid: React.FC = () => {
                     }}
                     onClick={() => current.getMonth() !== day.getMonth() ? null : handleOpenModal(null, day)}
                   >
-                    {format(day, 'd')}
+                    <Typography variant="body2">{format(day, 'd')}</Typography>
+                    
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', marginTop: 1 }}>
+                      {dayEvents.slice(0, 2).map((event) => (
+                        <Tooltip title={`${event.title} (${event.startTime} - ${event.endTime})`} key={event.id}>
+                          <Box
+                            sx={{
+                              width: 10,
+                              height: 10,
+                              borderRadius: '50%',
+                              backgroundColor: event.color,
+                              margin: '0 2px 2px 2px',
+                              cursor: 'pointer',
+                            }}
+                            onClick={() => handleOpenModal(event, day)}
+                          />
+                        </Tooltip>
+                      ))}
+                    </Box>
+                    
+                    {displayMore && (
+                      <Typography
+                        variant="body2"
+                        sx={{ cursor: 'pointer', color: 'blue', marginTop: 1 }}
+                        onClick={() => handleOpenModal(null, day)}
+                      >
+                        View More
+                      </Typography>
+                    )}
                   </Box>
                 </Grid>
               );
