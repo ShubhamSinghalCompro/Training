@@ -54,9 +54,9 @@ const ExistingEventsList: React.FC<ExistingEventsListProps> = ({
                   setMode('viewEvent');
                 }}
               >
-                <Typography>{event.title}</Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Box
+              <Box
+                sx={{ display: 'flex', alignItems: 'center' }}>
+                 <Box
                     sx={{
                       width: 16,
                       height: 16,
@@ -65,6 +65,10 @@ const ExistingEventsList: React.FC<ExistingEventsListProps> = ({
                       mr: 1,
                     }}
                   />
+                <Typography>{event.title}</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                 
                   <IconButton
                     size="small"
                     color="primary"

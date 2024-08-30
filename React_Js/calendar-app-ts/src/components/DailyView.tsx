@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
 import { Box, Typography, Grid, IconButton, Tooltip } from '@mui/material';
-import { format, addHours, startOfDay, isValid } from 'date-fns';
-import { Event } from '../utils/types';
+import { format, addHours, startOfDay } from 'date-fns';
+import { Event, RootState } from '../utils/types';
 import AddIcon from '@mui/icons-material/Add';
-import { RootState } from '../utils/types';
 
 interface DailyViewProps {
   selectedDate: Date;
@@ -18,7 +17,6 @@ const DailyView: React.FC<DailyViewProps> = ({
   selectedCategory,
 }) => {
   const events = useSelector((state: RootState) => state.events);
-  const [showMore, setShowMore] = useState<{ [key: string]: boolean }>({});
 
   // Generate an array of 1-hour intervals from 00:00 to 23:00
   const intervals = Array.from({ length: 24 }, (_, index) => {
@@ -51,7 +49,7 @@ const DailyView: React.FC<DailyViewProps> = ({
             doesEventOverlap(event, interval)
           );
           const intervalKey = format(interval, 'HH:mm');
-          const displayMore = eventsInInterval.length > 2 && !showMore[intervalKey];
+          const displayMore = eventsInInterval.length > 2;
 
           return (
             <Grid item xs={12} key={intervalKey}>
@@ -66,13 +64,14 @@ const DailyView: React.FC<DailyViewProps> = ({
                   alignItems: 'center',
                   justifyContent: 'space-between',
                   backgroundColor: eventsInInterval.length > 0 ? '#f5f5f5' : '#fff',
+                  overflow: 'visible', // Ensure content is visible
                 }}
               >
                 <Typography>{format(interval, 'HH:mm')}</Typography>
 
                 {/* Display events with dots and tooltips */}
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  {eventsInInterval.slice(0, displayMore ? 2 : eventsInInterval.length).map((event) => (
+                  {eventsInInterval.slice(0, 2).map((event) => (
                     <Tooltip
                       title={`${event.title} (${event.startTime} - ${event.endTime})`}
                       key={event.id}
@@ -92,37 +91,13 @@ const DailyView: React.FC<DailyViewProps> = ({
                   {displayMore && (
                     <Typography
                       variant="body2"
-                      sx={{ cursor: 'pointer', color: 'blue' }}
-                      onClick={() => setShowMore({ ...showMore, [intervalKey]: true })}
+                      sx={{ cursor: 'pointer', color: 'blue', marginLeft: 1 }}
+                      onClick={() => openModal(null, selectedDate)}
                     >
                       View More
                     </Typography>
                   )}
                 </Box>
-
-                {/* Show all events when "View More" is clicked */}
-                {showMore[intervalKey] && (
-                  <Box sx={{ marginTop: 1 }}>
-                    {eventsInInterval.map((event) => (
-                      <Box
-                        key={event.id}
-                        sx={{
-                          padding: 1,
-                          backgroundColor: event.color,
-                          borderRadius: 1,
-                          cursor: 'pointer',
-                          marginBottom: 1,
-                        }}
-                        onClick={() => openModal(event, new Date(event.date))}
-                      >
-                        <Typography>{event.title}</Typography>
-                        <Typography variant="body2">
-                          {`${event.startTime} - ${event.endTime}`}
-                        </Typography>
-                      </Box>
-                    ))}
-                  </Box>
-                )}
               </Box>
             </Grid>
           );
