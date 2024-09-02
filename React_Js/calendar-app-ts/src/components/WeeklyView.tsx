@@ -1,10 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
-import { Box, Typography, Grid, IconButton, Tooltip } from '@mui/material';
-import { format, addDays, startOfWeek, addHours, startOfDay, eachDayOfInterval } from 'date-fns';
-import { Event } from '../utils/types';
-import AddIcon from '@mui/icons-material/Add';
-import { RootState } from '../utils/types';
+import { Box, Typography, Grid, Tooltip } from '@mui/material';
+import { format, addHours, startOfDay, addDays } from 'date-fns';
+import { Event, RootState } from '../utils/types';
 
 interface WeeklyViewProps {
   selectedDate: Date;
@@ -18,165 +16,172 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
   selectedCategory,
 }) => {
   const events = useSelector((state: RootState) => state.events);
-  
-  // Generate start and end dates of the week
-  const start = startOfWeek(selectedDate, { weekStartsOn: 1 });
-  const end = addDays(start, 6);
-  const days = eachDayOfInterval({ start, end });
 
   // Generate an array of 1-hour intervals from 00:00 to 23:00
   const intervals = Array.from({ length: 24 }, (_, index) => {
-    const time = startOfDay(new Date());
+    const time = startOfDay(selectedDate);
     return addHours(time, index);
   });
 
+  // Generate days of the week based on the selected date
+  const weekDays = Array.from({ length: 7 }, (_, index) => addDays(startOfDay(selectedDate), index));
+
+  // Filter events by selected category and the week
+  const weeklyEvents = events.filter(
+    (event) =>
+      (selectedCategory === 'All' || event.category === selectedCategory) &&
+      weekDays.some((day) => new Date(event.date).toDateString() === day.toDateString())
+  );
+
+  // Helper function to convert 'HH:mm' string to total minutes since midnight
+  const convertTimeStringToMinutes = (timeString: string) => {
+    const [hours, minutes] = timeString.split(':').map(Number);
+    return hours * 60 + minutes;
+  };
+
+  // Function to determine how many intervals an event spans
+  const getIntervalsOccupiedByEvent = (event: Event, intervals: Date[]) => {
+    const eventStart = convertTimeStringToMinutes(event.startTime);
+    const eventEnd = convertTimeStringToMinutes(event.endTime);
+
+    // Count how many intervals are covered by the event
+    return intervals.filter(interval => {
+      const intervalStart = convertTimeStringToMinutes(format(interval, 'HH:mm'));
+      const nextIntervalStart = convertTimeStringToMinutes(format(addHours(interval, 1), 'HH:mm'));
+
+      return eventStart < nextIntervalStart && eventEnd > intervalStart;
+    }).length;
+  };
+
+  
+
   return (
     <Box>
-      <Typography variant="h5" sx={{ marginBottom: 2 }}>
-        {`Week of ${format(start, 'MMMM d, yyyy')} - ${format(end, 'MMMM d, yyyy')}`}
-      </Typography>
-      <Grid container>
-        {/* Header row for weekdays and time slots */}
-        <Grid item xs={12}>
-          <Grid container spacing={2} sx={{ marginBottom: 2 }}>
-            {/* Empty box for the top-left corner */}
-            <Grid item xs={2}></Grid>
-            {/* Days of the week headers */}
-            {days.map((day) => (
-              <Grid item xs key={day.toDateString()}>
-                <Box
-                  sx={{
-                    padding: 1,
-                    borderBottom: '1px solid #ddd',
-                    backgroundColor: '#f5f5f5',
-                    textAlign: 'center',
-                    fontWeight: 'bold',
-                  }}
-                >
-                  <Typography variant="body2">{format(day, 'EEE')}</Typography>
-                  <Typography variant="body2">{format(day, 'MMM d')}</Typography>
-                </Box>
-              </Grid>
-            ))}
-          </Grid>
+      {/* Display Week Days at the Top */}
+      <Grid container spacing={0}>
+        <Grid item xs={1}>
+          <Typography sx={{ padding: '8px', fontWeight: 'bold' }}>Time</Typography>
         </Grid>
+        {weekDays.map((day) => (
+          <Grid item xs key={day.toDateString()}>
+            <Typography sx={{ padding: '8px', fontWeight: 'bold', textAlign: 'center' }}>
+              {format(day, 'EEE, MMM d')}
+            </Typography>
+          </Grid>
+        ))}
+      </Grid>
 
-        {/* Main grid for time slots and events */}
-        <Grid item xs={12}>
-          <Grid container>
-            {/* Time slots column */}
-            <Grid item xs={2} sx={{ borderRight: '1px solid #ddd', paddingRight: 2 }}>
-              <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-                {intervals.map((interval) => (
+      {/* Display Time Intervals and Events */}
+      <Grid container spacing={0}>
+        {intervals.map((interval, rowIndex) => (
+          <Grid container spacing={0} key={interval.toString()}>
+            {/* Time Column */}
+            <Grid item xs={1}>
+              <Typography sx={{ padding: '8px', textAlign: 'right' }}>{format(interval, 'HH:mm')}</Typography>
+            </Grid>
+            {/* Days Columns */}
+            {weekDays.map((day, colIndex) => {
+              const eventsInInterval = weeklyEvents.filter(
+                (event) =>
+                  new Date(event.date).toDateString() === day.toDateString() &&
+                  doesEventOverlapWithInterval(event, interval)
+              );
+              const sortedDayEvents = [...eventsInInterval].sort((a, b) => {
+                const intervalsOccupiedA = getIntervalsOccupiedByEvent(a, intervals);
+                const intervalsOccupiedB = getIntervalsOccupiedByEvent(b, intervals);
+                return intervalsOccupiedB - intervalsOccupiedA; // Sort in descending order
+              });
+              const displayMore = eventsInInterval.length > 1;
+
+              return (
+                <Grid item xs key={`${day.toDateString()}-${interval.toString()}`}>
                   <Box
-                    key={format(interval, 'HH:mm')}
                     sx={{
-                      padding: 1,
                       borderBottom: '1px solid #ddd',
-                      backgroundColor: '#fff',
-                      minHeight: 60,
+                      position: 'relative',
+                      minHeight: 60, // Fixed height for each time slot
                       display: 'flex',
+                      justifyContent: 'center',
                       alignItems: 'center',
+                      backgroundColor: '#f9f9f9',
+                      boxSizing: 'border-box', // Ensure the box sizing includes padding and borders
                     }}
                   >
-                    <Typography variant="body2">{format(interval, 'HH:mm')}</Typography>
+                    {sortedDayEvents.slice(0, 1).map((event) => {
+                      const { topPosition, eventHeight } = calculateEventPositionInInterval(event, interval);
+
+                      return (
+                        <Tooltip
+                          title={`${event.title} (${event.startTime} - ${event.endTime})`}
+                          key={event.id}
+                        >
+                          <Box
+                            sx={{
+                              position: 'absolute',
+                              top: `${topPosition}px`,
+                              width: '90%', // Adjust width for better spacing
+                              height: `${eventHeight}px`,
+                              backgroundColor: event.color,
+                              cursor: 'pointer',
+                              borderRadius: '4px',
+                              overflow: 'hidden', // Prevent content overflow
+                            }}
+                            onClick={() => openModal(event, new Date(event.date))}
+                          />
+                        </Tooltip>
+                      );
+                    })}
+                    {displayMore && (
+                    <Typography
+                      variant="body2"
+                      sx={{ cursor: 'pointer', color: 'blue', marginLeft: 'auto', zIndex: 1 }}
+                      onClick={() => openModal(null, day)}
+                    >
+                      View More
+                    </Typography>
+                  )}
                   </Box>
-                ))}
-              </Box>
-            </Grid>
-
-            {/* Days of the week and intervals */}
-            <Grid item xs={10}>
-              <Grid container>
-                {/* Render day events under the time slots */}
-                {intervals.map((interval) => {
-                  const intervalKey = format(interval, 'HH:mm');
-
-                  return (
-                    <Grid item xs={12} container key={intervalKey} spacing={2}>
-                      {days.map((day) => {
-                        const dayStr = day.toDateString();
-                        const dayEvents = events.filter(
-                          (event) =>
-                            new Date(event.date).toDateString() === dayStr &&
-                            (selectedCategory === 'All' || event.category === selectedCategory)
-                        );
-                        const eventsInInterval = dayEvents.filter((event) =>
-                          doesEventOverlap(event, interval)
-                        );
-                        const displayMore = eventsInInterval.length > 2;
-
-                        return (
-                          <Grid item xs key={dayStr}>
-                            <Box
-                              sx={{
-                                padding: 1,
-                                borderBottom: '1px solid #ddd',
-                                minHeight: 60,
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'space-between',
-                                backgroundColor: eventsInInterval.length > 0 ? '#f5f5f5' : '#fff',
-                              }}
-                            >
-                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                {eventsInInterval.slice(0, 2).map((event) => (
-                                  <Tooltip
-                                    title={`${event.title} (${event.startTime} - ${event.endTime})`}
-                                    key={event.id}
-                                  >
-                                    <Box
-                                      sx={{
-                                        width: 10,
-                                        height: 10,
-                                        borderRadius: '50%',
-                                        backgroundColor: event.color,
-                                        cursor: 'pointer',
-                                      }}
-                                      onClick={() => openModal(event, new Date(event.date))}
-                                    />
-                                  </Tooltip>
-                                ))}
-                                {displayMore && (
-                                  <Typography
-                                    variant="body2"
-                                    sx={{ cursor: 'pointer', color: 'blue' }}
-                                    onClick={() => openModal(null, day)}
-                                  >
-                                    View More
-                                  </Typography>
-                                )}
-                              </Box>
-                            </Box>
-                          </Grid>
-                        );
-                      })}
-                    </Grid>
-                  );
-                })}
-              </Grid>
-            </Grid>
+                </Grid>
+              );
+            })}
           </Grid>
-        </Grid>
+        ))}
       </Grid>
-      <IconButton
-        color="primary"
-        onClick={() => openModal(null, selectedDate)}
-        sx={{ position: 'fixed', bottom: 16, right: 16 }}
-      >
-        <AddIcon />
-      </IconButton>
     </Box>
   );
 };
 
-// Helper function to determine if an event overlaps with a given interval
-const doesEventOverlap = (event: Event, interval: Date) => {
-  const eventStart = event.startTime;
-  const eventEnd = event.endTime;
-  const intervalFormatted = format(interval, 'HH:mm');
-  const nextIntervalFormatted = format(addHours(interval, 1), 'HH:mm');
-  return eventStart < nextIntervalFormatted && eventEnd > intervalFormatted;
+// Helper function to check if an event overlaps with a given interval
+const doesEventOverlapWithInterval = (event: Event, interval: Date) => {
+  const eventStart = convertTimeStringToMinutes(event.startTime);
+  const eventEnd = convertTimeStringToMinutes(event.endTime);
+  const intervalStart = convertTimeStringToMinutes(format(interval, 'HH:mm'));
+  const nextIntervalStart = convertTimeStringToMinutes(format(addHours(interval, 1), 'HH:mm'));
+
+  return eventStart < nextIntervalStart && eventEnd > intervalStart;
+};
+
+// Helper function to convert time strings to minutes
+const convertTimeStringToMinutes = (timeString: string) => {
+  const [hours, minutes] = timeString.split(':').map(Number);
+  return hours * 60 + minutes;
+};
+
+// Helper function to calculate event position and height
+const calculateEventPositionInInterval = (event: Event, interval: Date) => {
+  const eventStart = convertTimeStringToMinutes(event.startTime);
+  const eventEnd = convertTimeStringToMinutes(event.endTime);
+  const intervalStart = convertTimeStringToMinutes(format(interval, 'HH:mm'));
+  const nextIntervalStart = convertTimeStringToMinutes(format(addHours(interval, 1), 'HH:mm'));
+
+  const visibleStart = Math.max(eventStart, intervalStart);
+  const visibleEnd = Math.min(eventEnd, nextIntervalStart);
+
+  const pixelsPerMinute = 1; // Adjust this to control the height
+  const topPosition = (visibleStart - intervalStart) * pixelsPerMinute;
+  const eventHeight = (visibleEnd - visibleStart) * pixelsPerMinute;
+
+  return { topPosition, eventHeight };
 };
 
 export default WeeklyView;
