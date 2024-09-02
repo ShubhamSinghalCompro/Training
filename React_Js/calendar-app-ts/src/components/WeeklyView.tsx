@@ -2,11 +2,11 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { Box, Typography, Grid, Tooltip } from '@mui/material';
 import { format, addHours, startOfDay, addDays } from 'date-fns';
-import { Event, RootState } from '../utils/types';
+import { Event, RootState, modalMode } from '../utils/types';
 
 interface WeeklyViewProps {
   selectedDate: Date;
-  openModal: (event: Event | null, day: Date | null) => void;
+  openModal: (event: Event | null, day: Date | null, mode?: modalMode) => void;
   selectedCategory: string;
 }
 
@@ -126,7 +126,7 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
                               borderRadius: '4px',
                               overflow: 'hidden', // Prevent content overflow
                             }}
-                            onClick={() => openModal(event, new Date(event.date))}
+                            onClick={() => openModal(event, new Date(event.date), 'viewEvent')}
                           />
                         </Tooltip>
                       );

@@ -1,14 +1,15 @@
 import React from 'react';
 import { Box, Button, Typography, TextField, Grid, Select, MenuItem, FormControl, InputLabel, SelectChangeEvent } from '@mui/material';
 import { categoryColors } from '../utils/categoryColors';
-import { Event, Category } from '../utils/types';
+import { Event, Category, modalMode } from '../utils/types';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 
+
 interface EventDetailsProps {
-    mode: 'view' | 'add' | 'edit' | 'viewEvent';
+    mode: modalMode;
     selectedEvent: Event | null;
     title: string;
     startTime: string;

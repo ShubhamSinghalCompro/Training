@@ -10,7 +10,7 @@ import { format } from 'date-fns';
 import { addEvent, updateEvent, deleteEvent } from '../store/eventsSlice';
 import CloseIcon from '@mui/icons-material/Close';
 import { categoryColors } from '../utils/categoryColors';
-import { Event, Category, RootState } from '../utils/types';
+import { Event, Category, RootState, modalMode } from '../utils/types';
 import EventDetails from './EventDetails';
 import ExistingEventsList from './ExistingEventsList'; // Import your new component
 
@@ -21,6 +21,8 @@ interface EventModalProps {
   selectedDay: Date | null;
   setSelectedEvent: (event: Event | null) => void;
   selectedCategory: string;
+  mode: modalMode,
+  setMode: (mode: modalMode) => void;
 }
 
 const EventModal: React.FC<EventModalProps> = ({
@@ -30,6 +32,8 @@ const EventModal: React.FC<EventModalProps> = ({
   selectedDay,
   setSelectedEvent,
   selectedCategory,
+  mode,
+  setMode
 }) => {
   const dispatch = useDispatch();
   const events = useSelector((state: RootState) => state.events);
@@ -40,7 +44,7 @@ const EventModal: React.FC<EventModalProps> = ({
   const [color, setColor] = useState<string>(categoryColors.General);
   const [startTime, setStartTime] = useState<string>('00:00');
   const [endTime, setEndTime] = useState<string>('00:00');
-  const [mode, setMode] = useState<'view' | 'add' | 'edit' | 'viewEvent'>('view'); // State to manage modal mode
+  
 
   const resetForm = () => {
     setTitle('');

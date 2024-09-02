@@ -8,7 +8,7 @@ import { categoryColors } from '../utils/categoryColors';
 import DailyView from './DailyView';
 import WeeklyView from './WeeklyView';
 import { Event, Category } from '../utils/types';
-import { RootState } from '../utils/types'; // Import RootState interface
+import { RootState, modalMode } from '../utils/types'; // Import RootState interface
 
 type ViewMode = 'monthly' | 'weekly' | 'daily';
 
@@ -22,6 +22,7 @@ const CalendarGrid: React.FC = () => {
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<Category>('All');
   const [viewMode, setViewMode] = useState<ViewMode>('monthly'); // State to manage the view mode
+  const [mode, setMode] = useState<modalMode>('view'); // State to manage modal mode
 
   const generateCalendar = () => {
     const start = startOfWeek(startOfMonth(current), { weekStartsOn: 1 }); // Week starts on Monday
@@ -50,11 +51,13 @@ const CalendarGrid: React.FC = () => {
     }
   };
 
-  const handleOpenModal = (event: Event | null = null, day: Date | null = null) => {
+  const handleOpenModal = (event: Event | null = null, day: Date | null = null, mode: 'viewEvent' | 'add' | 'edit' | 'view' = 'view') => {
     setSelectedEvent(event);
     setSelectedDay(day);
     setModalOpen(true);
+    setMode(mode); // Set the mode based on the parameter
   };
+  
 
   const handleCloseModal = () => {
     setSelectedEvent(null);
@@ -270,6 +273,8 @@ const CalendarGrid: React.FC = () => {
         selectedDay={selectedDay}
         setSelectedEvent={setSelectedEvent}
         selectedCategory={selectedCategory}
+        mode = {mode}
+        setMode = {setMode}
       />
     </Box>
   );

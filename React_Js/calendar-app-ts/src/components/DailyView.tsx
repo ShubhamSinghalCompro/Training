@@ -2,12 +2,12 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { Box, Typography, Grid, IconButton, Tooltip } from '@mui/material';
 import { format, addHours, startOfDay } from 'date-fns';
-import { Event, RootState } from '../utils/types';
+import { Event, RootState, modalMode } from '../utils/types';
 import AddIcon from '@mui/icons-material/Add';
 
 interface DailyViewProps {
   selectedDate: Date;
-  openModal: (event: Event | null, day: Date | null) => void;
+  openModal: (event: Event | null, day: Date | null, mode?: modalMode) => void;
   selectedCategory: string;
 }
 
@@ -148,7 +148,7 @@ const DailyView: React.FC<DailyViewProps> = ({
                             borderRadius: '4px',
                             overflow: 'hidden', // Ensure no content overflows the box
                           }}
-                          onClick={() => openModal(event, new Date(event.date))}
+                          onClick={() => openModal(event, new Date(event.date), 'viewEvent')}
                         />
                       </Tooltip>
                     );

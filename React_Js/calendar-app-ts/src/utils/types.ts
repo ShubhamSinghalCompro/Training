@@ -14,3 +14,5 @@ export interface Event {
 export interface RootState {
   events: Event[];
 }
+
+export type modalMode = 'view' | 'add' | 'edit' | 'viewEvent';
