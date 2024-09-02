@@ -18,8 +18,8 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({ onChange }) => {
   };
 
   return (
-    <Box sx={{ mb: 2 }}>
-        <FormControl fullWidth  sx={{ mb: 2 }}>
+    <Box>
+        <FormControl fullWidth>
             <InputLabel>Filter Events</InputLabel>
       <Select
         value={selectedCategory}

@@ -1,20 +1,23 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { Box, Typography, Grid, IconButton, Tooltip } from '@mui/material';
+import { Box, Typography, Grid, IconButton, Tooltip, Theme } from '@mui/material';
 import { format, addHours, startOfDay } from 'date-fns';
 import { Event, RootState, modalMode } from '../utils/types';
 import AddIcon from '@mui/icons-material/Add';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 
 interface DailyViewProps {
   selectedDate: Date;
   openModal: (event: Event | null, day: Date | null, mode?: modalMode) => void;
   selectedCategory: string;
+  theme: Theme
 }
 
 const DailyView: React.FC<DailyViewProps> = ({
   selectedDate,
   openModal,
   selectedCategory,
+  theme
 }) => {
   const events = useSelector((state: RootState) => state.events);
 
@@ -98,7 +101,7 @@ const DailyView: React.FC<DailyViewProps> = ({
             doesEventOverlapWithInterval(event, interval)
           );
           const intervalKey = format(interval, 'HH:mm');
-          const displayMore = eventsInInterval.length > 2;
+          const displayMore = eventsInInterval.length > 3;
 
           return (
             <Grid item xs={12} key={intervalKey}>
@@ -112,7 +115,12 @@ const DailyView: React.FC<DailyViewProps> = ({
                   display: 'flex',
                   flexDirection: 'column',
                   backgroundColor: '#f9f9f9',
+                  '&:hover': {
+                        backgroundColor: theme.palette.action.selected, // Hover color from theme
+                        cursor:'pointer'
+                      },
                 }}
+                onClick={() => openModal(null, selectedDate)}
               >
                 {/* Time Label */}
                 <Typography sx={{ position: 'absolute', left: 8, top: 8 }}>{format(interval, 'HH:mm')}</Typography>
@@ -127,6 +135,7 @@ const DailyView: React.FC<DailyViewProps> = ({
                     flexDirection: 'row',
                     flexWrap: 'wrap',
                   }}
+                  
                 >
                   {eventsInInterval.slice(0, 2).map((event) => {
                     const { topPosition, eventHeight } = calculateEventPositionInInterval(event, interval);
@@ -148,19 +157,20 @@ const DailyView: React.FC<DailyViewProps> = ({
                             borderRadius: '4px',
                             overflow: 'hidden', // Ensure no content overflows the box
                           }}
-                          onClick={() => openModal(event, new Date(event.date), 'viewEvent')}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openModal(event, new Date(event.date), 'viewEvent')}}
                         />
                       </Tooltip>
                     );
                   })}
                   {displayMore && (
-                    <Typography
-                      variant="body2"
-                      sx={{ cursor: 'pointer', color: 'blue', marginLeft: 'auto', zIndex: 1 }}
-                      onClick={() => openModal(null, selectedDate)}
-                    >
-                      View More
-                    </Typography>
+                    <IconButton
+                    sx={{ marginLeft: 'auto', zIndex: 1 }}
+                    onClick={() => openModal(null, selectedDate)}
+                  >
+                    <MoreHorizIcon color="primary" />
+                  </IconButton>
                   )}
                 </Box>
               </Box>

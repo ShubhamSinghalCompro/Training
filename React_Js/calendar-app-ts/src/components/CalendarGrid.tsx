@@ -9,6 +9,7 @@ import DailyView from './DailyView';
 import WeeklyView from './WeeklyView';
 import { Event, Category } from '../utils/types';
 import { RootState, modalMode } from '../utils/types'; // Import RootState interface
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 
 type ViewMode = 'monthly' | 'weekly' | 'daily';
 
@@ -224,7 +225,7 @@ const CalendarGrid: React.FC = () => {
                               }}
                               onClick={(e) => {
                                 e.stopPropagation(); // Prevents triggering day click when clicking on dot
-                                handleOpenModal(event, day);
+                                handleOpenModal(event, day, 'viewEvent');
                               }}
                             />
                           </Tooltip>
@@ -257,6 +258,7 @@ const CalendarGrid: React.FC = () => {
           selectedDate={current}
           openModal={handleOpenModal}
           selectedCategory={selectedCategory}
+          theme={theme}
         />
       )}
       {viewMode === 'daily' && (
@@ -264,6 +266,7 @@ const CalendarGrid: React.FC = () => {
           selectedDate={current}
           openModal={handleOpenModal}
           selectedCategory={selectedCategory}
+          theme={theme}
         />
       )}
       <EventModal

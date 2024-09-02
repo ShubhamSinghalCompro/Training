@@ -1,21 +1,27 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { Box, Typography, Grid, Tooltip } from '@mui/material';
-import { format, addHours, startOfDay, addDays } from 'date-fns';
+import { Box, Typography, Grid, Tooltip, IconButton, Theme } from '@mui/material';
+import { format, addHours, startOfDay, addDays, startOfWeek,  } from 'date-fns';
 import { Event, RootState, modalMode } from '../utils/types';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 
 interface WeeklyViewProps {
   selectedDate: Date;
   openModal: (event: Event | null, day: Date | null, mode?: modalMode) => void;
   selectedCategory: string;
+  theme:Theme;
 }
 
 const WeeklyView: React.FC<WeeklyViewProps> = ({
   selectedDate,
   openModal,
   selectedCategory,
+  theme
 }) => {
   const events = useSelector((state: RootState) => state.events);
+
+  // Calculate the Monday of the week for the selected date
+  const startOfWeekDate = startOfWeek(selectedDate, { weekStartsOn: 1 });
 
   // Generate an array of 1-hour intervals from 00:00 to 23:00
   const intervals = Array.from({ length: 24 }, (_, index) => {
@@ -23,8 +29,8 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
     return addHours(time, index);
   });
 
-  // Generate days of the week based on the selected date
-  const weekDays = Array.from({ length: 7 }, (_, index) => addDays(startOfDay(selectedDate), index));
+  // Generate days of the week starting from Monday
+  const weekDays = Array.from({ length: 7 }, (_, index) => addDays(startOfWeekDate, index));
 
   // Filter events by selected category and the week
   const weeklyEvents = events.filter(
@@ -53,8 +59,6 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
     }).length;
   };
 
-  
-
   return (
     <Box>
       {/* Display Week Days at the Top */}
@@ -70,7 +74,7 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
           </Grid>
         ))}
       </Grid>
-
+  
       {/* Display Time Intervals and Events */}
       <Grid container spacing={0}>
         {intervals.map((interval, rowIndex) => (
@@ -92,24 +96,31 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
                 return intervalsOccupiedB - intervalsOccupiedA; // Sort in descending order
               });
               const displayMore = eventsInInterval.length > 1;
-
+  
               return (
                 <Grid item xs key={`${day.toDateString()}-${interval.toString()}`}>
                   <Box
                     sx={{
                       borderBottom: '1px solid #ddd',
+                      borderRight: colIndex < weekDays.length - 1 ? '1px solid #ddd' : 'none', // Add this for vertical lines
                       position: 'relative',
                       minHeight: 60, // Fixed height for each time slot
                       display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
+                      justifyContent: 'flex-start', // Align items at the start
+                      alignItems: 'flex-start', // Align items at the top
                       backgroundColor: '#f9f9f9',
                       boxSizing: 'border-box', // Ensure the box sizing includes padding and borders
+                      paddingLeft: '5px', // Optional padding for spacing
+                      '&:hover': {
+                        backgroundColor: theme.palette.action.selected, // Hover color from theme
+                        cursor:'pointer'
+                      },
                     }}
+                    onClick={() => openModal(null, day)}
                   >
                     {sortedDayEvents.slice(0, 1).map((event) => {
                       const { topPosition, eventHeight } = calculateEventPositionInInterval(event, interval);
-
+  
                       return (
                         <Tooltip
                           title={`${event.title} (${event.startTime} - ${event.endTime})`}
@@ -119,27 +130,28 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
                             sx={{
                               position: 'absolute',
                               top: `${topPosition}px`,
-                              width: '90%', // Adjust width for better spacing
+                              width: '50%', // Adjust width for better spacing
                               height: `${eventHeight}px`,
                               backgroundColor: event.color,
                               cursor: 'pointer',
                               borderRadius: '4px',
                               overflow: 'hidden', // Prevent content overflow
                             }}
-                            onClick={() => openModal(event, new Date(event.date), 'viewEvent')}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openModal(event, new Date(event.date), 'viewEvent')}}
                           />
                         </Tooltip>
                       );
                     })}
                     {displayMore && (
-                    <Typography
-                      variant="body2"
-                      sx={{ cursor: 'pointer', color: 'blue', marginLeft: 'auto', zIndex: 1 }}
+                      <IconButton
+                      sx={{ marginLeft: 'auto', zIndex: 1 }}
                       onClick={() => openModal(null, day)}
                     >
-                      View More
-                    </Typography>
-                  )}
+                      <MoreHorizIcon color="primary" />
+                    </IconButton>
+                    )}
                   </Box>
                 </Grid>
               );
@@ -149,6 +161,7 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
       </Grid>
     </Box>
   );
+  
 };
 
 // Helper function to check if an event overlaps with a given interval
