@@ -7,9 +7,6 @@ const App: React.FC = () => {
     <>
       <CssBaseline />
       <Container>
-        <Typography variant="h3" gutterBottom align="center">
-          Event Scheduler
-        </Typography>
         <CalendarGrid />
       </Container>
     </>
