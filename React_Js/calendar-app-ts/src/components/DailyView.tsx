@@ -33,20 +33,14 @@ const DailyView: React.FC<DailyViewProps> = ({
       new Date(event.date).toDateString() === selectedDate.toDateString() &&
       (selectedCategory === 'All' || event.category === selectedCategory)
   );
-
   
-
   // Sort events based on the number of intervals they occupy
   const sortedDayEvents = [...dayEvents].sort((a, b) => {
     const intervalsOccupiedA = getIntervalsOccupiedByEvent(a, intervals);
     const intervalsOccupiedB = getIntervalsOccupiedByEvent(b, intervals);
     return intervalsOccupiedB - intervalsOccupiedA; // Sort in descending order
   });
-
   
-
-  
-
   return (
     <Box>
       <Typography variant="h5">{format(selectedDate, 'EEEE, MMMM d, yyyy')}</Typography>

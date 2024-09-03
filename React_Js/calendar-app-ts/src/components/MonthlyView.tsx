@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Grid, Typography, Tooltip, useTheme } from '@mui/material';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, endOfWeek } from 'date-fns';
 import { useSelector } from 'react-redux';
@@ -14,14 +14,18 @@ interface MonthlyViewProps {
 const MonthlyView: React.FC<MonthlyViewProps> = ({ selectedDate, selectedCategory, openModal }) => {
   const theme = useTheme();
   const events = useSelector((state: RootState) => state.events);
+  const [days, setDays] = useState<Date[]>([]);
 
   const generateCalendar = () => {
     const start = startOfWeek(startOfMonth(selectedDate), { weekStartsOn: 1 }); // Week starts on Monday
     const end = endOfWeek(endOfMonth(selectedDate), { weekStartsOn: 1 }); // Week ends on Sunday
-    return eachDayOfInterval({ start, end });
+    const days = eachDayOfInterval({ start, end });
+    setDays(days);
   };
 
-  const days = generateCalendar();
+  useEffect(() => {
+      generateCalendar();
+  }, [selectedDate]);
 
   return (
     <>

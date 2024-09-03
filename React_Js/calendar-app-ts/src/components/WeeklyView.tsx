@@ -39,14 +39,6 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
       weekDays.some((day) => new Date(event.date).toDateString() === day.toDateString())
   );
 
-  // Helper function to convert 'HH:mm' string to total minutes since midnight
-  const convertTimeStringToMinutes = (timeString: string) => {
-    const [hours, minutes] = timeString.split(':').map(Number);
-    return hours * 60 + minutes;
-  };
-
-  
-
   return (
     <Box>
       {/* Display Week Days at the Top */}
@@ -78,7 +70,7 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
                   new Date(event.date).toDateString() === day.toDateString() &&
                   doesEventOverlapWithInterval(event, interval)
               );
-              const sortedDayEvents = [...eventsInInterval].sort((a, b) => {
+              const sortedIntervalEvents = [...eventsInInterval].sort((a, b) => {
                 const intervalsOccupiedA = getIntervalsOccupiedByEvent(a, intervals);
                 const intervalsOccupiedB = getIntervalsOccupiedByEvent(b, intervals);
                 return intervalsOccupiedB - intervalsOccupiedA; // Sort in descending order
@@ -107,7 +99,7 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
                     }}
                     onClick={() => openModal(null, day)}
                   >
-                    {sortedDayEvents.slice(0, 2).map((event, index) => {
+                    {sortedIntervalEvents.slice(0, 2).map((event, index) => {
                       const { topPosition, eventHeight } = calculateEventPositionInInterval(event, interval);
   
                       return (

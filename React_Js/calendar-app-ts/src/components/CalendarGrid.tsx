@@ -1,36 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { Box, Button, Typography, Grid, Tooltip, useTheme } from '@mui/material';
+import { Box, Button, Typography, useTheme } from '@mui/material';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, addDays, subDays, subWeeks, addWeeks, startOfWeek, endOfWeek } from 'date-fns';
 import EventModal from './EventModal';
 import CategoryFilter from './CategoryFilter';
-import { categoryColors } from '../utils/categoryColors';
 import DailyView from './DailyView';
 import WeeklyView from './WeeklyView';
 import { Event, Category } from '../utils/types';
-import { RootState, modalMode } from '../utils/types'; // Import RootState interface
+import { modalMode } from '../utils/types'; // Import RootState interface
 import MonthlyView from './MonthlyView';
 
 type ViewMode = 'monthly' | 'weekly' | 'daily';
 
 const CalendarGrid: React.FC = () => {
   const theme = useTheme(); // Get theme from MUI
-  const events = useSelector((state: RootState) => state.events);
+  
   const [current, setCurrent] = useState<Date>(new Date());
-  const [days, setDays] = useState<Date[]>([]);
+  
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<Category>('All');
   const [viewMode, setViewMode] = useState<ViewMode>('monthly'); // State to manage the view mode
   const [mode, setMode] = useState<modalMode>('view'); // State to manage modal mode
-
-  const generateCalendar = () => {
-    const start = startOfWeek(startOfMonth(current), { weekStartsOn: 1 }); // Week starts on Monday
-    const end = endOfWeek(endOfMonth(current), { weekStartsOn: 1 }); // Week ends on Sunday
-    const days = eachDayOfInterval({ start, end });
-    setDays(days);
-  };
 
   const handlePrev = () => {
     if (viewMode === 'daily') {
@@ -72,12 +63,6 @@ const CalendarGrid: React.FC = () => {
   const handleViewChange = (mode: ViewMode) => {
     setViewMode(mode);
   };
-
-  useEffect(() => {
-    if (viewMode === 'monthly') {
-      generateCalendar();
-    }
-  }, [current, viewMode]);
 
   return (
     <Box

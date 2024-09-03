@@ -2,7 +2,6 @@
  import { Event } from '../utils/types';
  
  
- 
  // Helper function to convert 'HH:mm' string to total minutes since midnight
  const convertTimeStringToMinutes = (timeString: string) => {
     const [hours, minutes] = timeString.split(':').map(Number);
