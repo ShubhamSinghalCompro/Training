@@ -7,7 +7,8 @@ import {
   IconButton,
   SelectChangeEvent,
 } from '@mui/material';
-import { format } from 'date-fns';
+
+import { clearScheduledNotification } from '../utils/requestNotificationPermission';
 import { addEvent, updateEvent, deleteEvent } from '../store/eventsSlice';
 import { showSnackbar } from '../store/snackbarSlice';
 import CloseIcon from '@mui/icons-material/Close';
@@ -86,6 +87,7 @@ const EventModal: React.FC<EventModalProps> = ({
       if (selectedEvent) {
         dispatch(updateEvent(event));
         dispatch(showSnackbar({ message: 'Event updated successfully!', color: 'success' }));
+        clearScheduledNotification(selectedEvent.id);
       } else {
         dispatch(addEvent(event));
         dispatch(showSnackbar({ message: 'Event added successfully!', color: 'success' })); // Show success snackbar when a new event is added
@@ -100,6 +102,7 @@ const EventModal: React.FC<EventModalProps> = ({
   const handleDelete = (id: number) => {
     dispatch(deleteEvent(id));
     dispatch(showSnackbar({ message: 'Event deleted successfully!', color: 'error' })); // Show error snackbar when an event is deleted
+    clearScheduledNotification(id);
     onClose();
     setMode('view'); // Reset mode after closing
   };

@@ -1,12 +1,9 @@
-// requestNotificationPermission.ts
+import { Event } from './types';
+import { format } from 'date-fns';
 
-/**
- * Requests the user's permission to display notifications.
- * If granted, it logs a success message; if denied, it logs a denial message.
- */
 
-import { Event } from '../utils/types';
-import {format} from 'date-fns';
+// Map to store timeout IDs for scheduled notifications
+const notificationTimeouts: Record<number, NodeJS.Timeout> = {};
 
 // Requests permission to show notifications
 export const requestNotificationPermission = async (): Promise<void> => {
@@ -66,10 +63,27 @@ export const scheduleNotification = (event: Event): void => {
   console.log('Time Until Reminder:', timeUntilReminder);
 
   if (timeUntilReminder > 0) {
-    setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       showNotification(event);
+      // Clean up the timeout ID after notification is shown
+      delete notificationTimeouts[event.id];
     }, timeUntilReminder);
+
+    // Store the timeout ID for this event
+    notificationTimeouts[event.id] = timeoutId;
   } else {
     console.warn('Reminder time is in the past. Cannot schedule notification.');
+  }
+};
+
+// Clears the notification for a given event
+export const clearScheduledNotification = (eventId: number): void => {
+  const timeoutId = notificationTimeouts[eventId];
+  if (timeoutId) {
+    clearTimeout(timeoutId);
+    delete notificationTimeouts[eventId];
+    console.log(`Notification for event ${eventId} cleared.`);
+  } else {
+    console.warn(`No scheduled notification found for event ${eventId}.`);
   }
 };
