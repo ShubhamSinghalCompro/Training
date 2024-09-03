@@ -68,7 +68,7 @@ const CalendarGrid: React.FC = () => {
     <Box
       sx={{
         maxWidth: 1200,
-        height: '90vh',
+        maxHeight: '95vh',
         margin: '10px auto',
         padding: 2,
         border: `2px solid ${theme.palette.grey[800]}`, // Dark border using theme colors
