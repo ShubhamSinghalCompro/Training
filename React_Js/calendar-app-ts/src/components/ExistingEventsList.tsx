@@ -27,9 +27,15 @@ const ExistingEventsList: React.FC<ExistingEventsListProps> = ({
 }) => {
   return (
     <>
-      <Typography variant="h6" sx={{ mt: 2 }}>
-        Existing Events
-      </Typography>
+     {events
+          .filter(event => {
+            if (!selectedDay) return false; // If selectedDay is null, skip filtering
+            return format(new Date(event.date), 'yyyy-MM-dd') === format(new Date(selectedDay), 'yyyy-MM-dd');
+          })
+          .filter(event => selectedCategory === 'All' || event.category === selectedCategory).length > 0 && (<Typography variant="h6" sx={{ mt: 2 }}>
+            Existing Events
+          </Typography>
+    )}
       <Grid container spacing={1}>
         {events
           .filter(event => {
@@ -48,6 +54,7 @@ const ExistingEventsList: React.FC<ExistingEventsListProps> = ({
                   border: '1px solid #ddd',
                   borderRadius: 1,
                   cursor: 'pointer',
+                  
                 }}
                 onClick={() => {
                   setSelectedEvent(event);
@@ -101,7 +108,7 @@ const ExistingEventsList: React.FC<ExistingEventsListProps> = ({
         color="primary"
         onClick={handleAddClick}
         startIcon={<AddIcon />}
-        sx={{ mt: 2 }}
+        sx={{ mt: 5 }}
         fullWidth
       >
         Add Event

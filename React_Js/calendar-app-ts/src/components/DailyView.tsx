@@ -1,20 +1,23 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { Box, Typography, Grid, IconButton, Tooltip } from '@mui/material';
+import { Box, Typography, Grid, IconButton, Tooltip, Theme } from '@mui/material';
 import { format, addHours, startOfDay } from 'date-fns';
 import { Event, RootState, modalMode } from '../utils/types';
 import AddIcon from '@mui/icons-material/Add';
+import {getIntervalsOccupiedByEvent, calculateEventPositionInInterval, doesEventOverlapWithInterval} from '../utils/calendarViewFuncs';
 
 interface DailyViewProps {
   selectedDate: Date;
   openModal: (event: Event | null, day: Date | null, mode?: modalMode) => void;
   selectedCategory: string;
+  theme: Theme
 }
 
 const DailyView: React.FC<DailyViewProps> = ({
   selectedDate,
   openModal,
   selectedCategory,
+  theme
 }) => {
   const events = useSelector((state: RootState) => state.events);
 
@@ -30,75 +33,36 @@ const DailyView: React.FC<DailyViewProps> = ({
       new Date(event.date).toDateString() === selectedDate.toDateString() &&
       (selectedCategory === 'All' || event.category === selectedCategory)
   );
-
-  // Helper function to convert 'HH:mm' string to total minutes since midnight
-  const convertTimeStringToMinutes = (timeString: string) => {
-    const [hours, minutes] = timeString.split(':').map(Number);
-    return hours * 60 + minutes;
-  };
-
-  // Function to determine how many intervals an event spans
-  const getIntervalsOccupiedByEvent = (event: Event, intervals: Date[]) => {
-    const eventStart = convertTimeStringToMinutes(event.startTime);
-    const eventEnd = convertTimeStringToMinutes(event.endTime);
-
-    // Count how many intervals are covered by the event
-    return intervals.filter(interval => {
-      const intervalStart = convertTimeStringToMinutes(format(interval, 'HH:mm'));
-      const nextIntervalStart = convertTimeStringToMinutes(format(addHours(interval, 1), 'HH:mm'));
-
-      return eventStart < nextIntervalStart && eventEnd > intervalStart;
-    }).length;
-  };
-
+  
   // Sort events based on the number of intervals they occupy
   const sortedDayEvents = [...dayEvents].sort((a, b) => {
     const intervalsOccupiedA = getIntervalsOccupiedByEvent(a, intervals);
     const intervalsOccupiedB = getIntervalsOccupiedByEvent(b, intervals);
     return intervalsOccupiedB - intervalsOccupiedA; // Sort in descending order
   });
-
-  // Function to determine if an event overlaps with a given interval
-  const doesEventOverlapWithInterval = (event: Event, interval: Date) => {
-    const eventStart = convertTimeStringToMinutes(event.startTime);
-    const eventEnd = convertTimeStringToMinutes(event.endTime);
-    const intervalStart = convertTimeStringToMinutes(format(interval, 'HH:mm'));
-    const nextIntervalStart = convertTimeStringToMinutes(format(addHours(interval, 1), 'HH:mm'));
-
-    // Check if event starts before the end of this interval and ends after the start of this interval
-    return eventStart < nextIntervalStart && eventEnd > intervalStart;
-  };
-
-  // Calculate the position and height for an event in a given interval
-  const calculateEventPositionInInterval = (event: Event, interval: Date) => {
-    const eventStart = convertTimeStringToMinutes(event.startTime);
-    const eventEnd = convertTimeStringToMinutes(event.endTime);
-    const intervalStart = convertTimeStringToMinutes(format(interval, 'HH:mm'));
-    const nextIntervalStart = convertTimeStringToMinutes(format(addHours(interval, 1), 'HH:mm'));
-
-    // Determine the visible start and end within this interval
-    const visibleStart = Math.max(eventStart, intervalStart);
-    const visibleEnd = Math.min(eventEnd, nextIntervalStart);
-
-    // Calculate top position and height in pixels (1 minute = 2 pixels)
-    const pixelsPerMinute = 1;
-    const topPosition = (visibleStart - intervalStart) * pixelsPerMinute;
-    const eventHeight = (visibleEnd - visibleStart) * pixelsPerMinute;
-    debugger
-
-    return { topPosition, eventHeight };
-  };
-
+  
   return (
     <Box>
+      <Box sx={{ display: 'flex', justifyContent: 'start', alignItems: 'center', p: 1 }}>
       <Typography variant="h5">{format(selectedDate, 'EEEE, MMMM d, yyyy')}</Typography>
+      <IconButton
+        color="primary"
+        sx={{
+           ml: 1, 
+          '&:hover': { backgroundColor: theme.palette.grey[300]}
+        }}
+        onClick={() => openModal(null, selectedDate)}
+      >
+        <AddIcon />
+      </IconButton>
+      </Box>
       <Grid container spacing={0}>
         {intervals.map((interval) => {
           const eventsInInterval = sortedDayEvents.filter((event) =>
             doesEventOverlapWithInterval(event, interval)
           );
           const intervalKey = format(interval, 'HH:mm');
-          const displayMore = eventsInInterval.length > 2;
+          const displayMore = eventsInInterval.length > 3;
 
           return (
             <Grid item xs={12} key={intervalKey}>
@@ -112,7 +76,12 @@ const DailyView: React.FC<DailyViewProps> = ({
                   display: 'flex',
                   flexDirection: 'column',
                   backgroundColor: '#f9f9f9',
+                  '&:hover': {
+                        backgroundColor: theme.palette.action.selected, // Hover color from theme
+                        cursor:'pointer'
+                      },
                 }}
+                onClick={() => openModal(null, selectedDate)}
               >
                 {/* Time Label */}
                 <Typography sx={{ position: 'absolute', left: 8, top: 8 }}>{format(interval, 'HH:mm')}</Typography>
@@ -127,8 +96,9 @@ const DailyView: React.FC<DailyViewProps> = ({
                     flexDirection: 'row',
                     flexWrap: 'wrap',
                   }}
+                  
                 >
-                  {eventsInInterval.slice(0, 2).map((event) => {
+                  {eventsInInterval.slice(0, 3).map((event) => {
                     const { topPosition, eventHeight } = calculateEventPositionInInterval(event, interval);
 
                     return (
@@ -141,40 +111,52 @@ const DailyView: React.FC<DailyViewProps> = ({
                             position: 'absolute',
                             top: `${topPosition}px`,
                             left: `${eventsInInterval.indexOf(event) * 220}px`, // Adjust this value for spacing between events
-                            width: '200px', // Reduced width of the event box
+                            width: '20%', // Reduced width of the event box
                             height: `${eventHeight}px`,
                             backgroundColor: event.color,
                             cursor: 'pointer',
-                            borderRadius: '4px',
                             overflow: 'hidden', // Ensure no content overflows the box
                           }}
-                          onClick={() => openModal(event, new Date(event.date), 'viewEvent')}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openModal(event, new Date(event.date), 'viewEvent')}}
                         />
                       </Tooltip>
                     );
                   })}
                   {displayMore && (
-                    <Typography
-                      variant="body2"
-                      sx={{ cursor: 'pointer', color: 'blue', marginLeft: 'auto', zIndex: 1 }}
-                      onClick={() => openModal(null, selectedDate)}
+                      <Tooltip
+                    title= "View more"
                     >
-                      View More
-                    </Typography>
-                  )}
+
+                      <Box
+                        sx={{
+                          position: 'absolute',
+                          left: `${2 * (100 / 3)}%`,
+                          width: '20%', // Adjust width for better spacing
+                          height: `${60}px`,
+                          backgroundColor: theme.palette.grey[500],
+                          cursor: 'pointer',
+                          borderRadius: '4px',
+                          overflow: 'hidden',
+                          display: 'flex', // Use flexbox to center content
+                          justifyContent: 'center', // Center horizontally
+                          alignItems: 'center', // Center vertically
+                        }}
+                        onClick={() => {
+                          
+                          openModal(null, selectedDate)}}
+                      >
+                        <Typography sx={{ color: 'white' }}>{`+${eventsInInterval.length - 3}`}</Typography>
+                      </Box>
+                    </Tooltip>
+                    )}
                 </Box>
               </Box>
             </Grid>
           );
         })}
       </Grid>
-      <IconButton
-        color="primary"
-        onClick={() => openModal(null, selectedDate)}
-        sx={{ position: 'fixed', bottom: 16, right: 16 }}
-      >
-        <AddIcon />
-      </IconButton>
     </Box>
   );
 };

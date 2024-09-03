@@ -1,21 +1,28 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { Box, Typography, Grid, Tooltip } from '@mui/material';
-import { format, addHours, startOfDay, addDays } from 'date-fns';
+import { Box, Typography, Grid, Tooltip, IconButton, Theme } from '@mui/material';
+import { format, addHours, startOfDay, addDays, startOfWeek,  } from 'date-fns';
 import { Event, RootState, modalMode } from '../utils/types';
+import {getIntervalsOccupiedByEvent, calculateEventPositionInInterval, doesEventOverlapWithInterval} from '../utils/calendarViewFuncs';
+import AddIcon from '@mui/icons-material/Add';
 
 interface WeeklyViewProps {
   selectedDate: Date;
   openModal: (event: Event | null, day: Date | null, mode?: modalMode) => void;
   selectedCategory: string;
+  theme:Theme;
 }
 
 const WeeklyView: React.FC<WeeklyViewProps> = ({
   selectedDate,
   openModal,
   selectedCategory,
+  theme
 }) => {
   const events = useSelector((state: RootState) => state.events);
+
+  // Calculate the Monday of the week for the selected date
+  const startOfWeekDate = startOfWeek(selectedDate, { weekStartsOn: 1 });
 
   // Generate an array of 1-hour intervals from 00:00 to 23:00
   const intervals = Array.from({ length: 24 }, (_, index) => {
@@ -23,8 +30,8 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
     return addHours(time, index);
   });
 
-  // Generate days of the week based on the selected date
-  const weekDays = Array.from({ length: 7 }, (_, index) => addDays(startOfDay(selectedDate), index));
+  // Generate days of the week starting from Monday
+  const weekDays = Array.from({ length: 7 }, (_, index) => addDays(startOfWeekDate, index));
 
   // Filter events by selected category and the week
   const weeklyEvents = events.filter(
@@ -33,44 +40,39 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
       weekDays.some((day) => new Date(event.date).toDateString() === day.toDateString())
   );
 
-  // Helper function to convert 'HH:mm' string to total minutes since midnight
-  const convertTimeStringToMinutes = (timeString: string) => {
-    const [hours, minutes] = timeString.split(':').map(Number);
-    return hours * 60 + minutes;
-  };
-
-  // Function to determine how many intervals an event spans
-  const getIntervalsOccupiedByEvent = (event: Event, intervals: Date[]) => {
-    const eventStart = convertTimeStringToMinutes(event.startTime);
-    const eventEnd = convertTimeStringToMinutes(event.endTime);
-
-    // Count how many intervals are covered by the event
-    return intervals.filter(interval => {
-      const intervalStart = convertTimeStringToMinutes(format(interval, 'HH:mm'));
-      const nextIntervalStart = convertTimeStringToMinutes(format(addHours(interval, 1), 'HH:mm'));
-
-      return eventStart < nextIntervalStart && eventEnd > intervalStart;
-    }).length;
-  };
-
-  
-
   return (
     <Box>
       {/* Display Week Days at the Top */}
       <Grid container spacing={0}>
         <Grid item xs={1}>
-          <Typography sx={{ padding: '8px', fontWeight: 'bold' }}>Time</Typography>
+
+          <Typography sx={{ padding: '12px', fontWeight: 'bold' }}>Time</Typography>
         </Grid>
         {weekDays.map((day) => (
           <Grid item xs key={day.toDateString()}>
-            <Typography sx={{ padding: '8px', fontWeight: 'bold', textAlign: 'center' }}>
+            <Box sx={{ display: 'flex', justifyContent: 'start', alignItems: 'center' }}>
+            <Typography sx={{ padding: '8px', textAlign: 'center' }}>
               {format(day, 'EEE, MMM d')}
             </Typography>
+            <IconButton
+              color="primary"
+              sx={{
+                ml: 1, 
+                width: '20px',
+                height: '20px',
+                '&:hover': { backgroundColor: theme.palette.grey[300],
+                  
+                }
+              }}
+              onClick={() => openModal(null, day)}
+              >
+                <AddIcon />
+              </IconButton>
+              </Box>
           </Grid>
         ))}
       </Grid>
-
+  
       {/* Display Time Intervals and Events */}
       <Grid container spacing={0}>
         {intervals.map((interval, rowIndex) => (
@@ -86,60 +88,89 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
                   new Date(event.date).toDateString() === day.toDateString() &&
                   doesEventOverlapWithInterval(event, interval)
               );
-              const sortedDayEvents = [...eventsInInterval].sort((a, b) => {
+              const sortedIntervalEvents = [...eventsInInterval].sort((a, b) => {
                 const intervalsOccupiedA = getIntervalsOccupiedByEvent(a, intervals);
                 const intervalsOccupiedB = getIntervalsOccupiedByEvent(b, intervals);
                 return intervalsOccupiedB - intervalsOccupiedA; // Sort in descending order
               });
-              const displayMore = eventsInInterval.length > 1;
-
+              const displayMore = eventsInInterval.length > 2;
+  
               return (
                 <Grid item xs key={`${day.toDateString()}-${interval.toString()}`}>
                   <Box
                     sx={{
                       borderBottom: '1px solid #ddd',
+                      borderRight: colIndex < weekDays.length - 1 ? '1px solid #ddd' : 'none',
                       position: 'relative',
-                      minHeight: 60, // Fixed height for each time slot
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
+                      minHeight: 60,
+                      display: 'flex',  // Use flexbox to align items
+                      flexDirection: 'row', // Row direction for side-by-side alignment
+                      justifyContent: 'start', // Align items at the start
+                      alignItems: 'start',  // Align items at the start vertically
                       backgroundColor: '#f9f9f9',
-                      boxSizing: 'border-box', // Ensure the box sizing includes padding and borders
+                      boxSizing: 'border-box',
+                      paddingLeft: '5px',
+                      '&:hover': {
+                        backgroundColor: theme.palette.action.selected,
+                        cursor: 'pointer',
+                      },
                     }}
+                    onClick={() => openModal(null, day)}
                   >
-                    {sortedDayEvents.slice(0, 1).map((event) => {
+                    {sortedIntervalEvents.slice(0, 2).map((event, index) => {
                       const { topPosition, eventHeight } = calculateEventPositionInInterval(event, interval);
-
+  
                       return (
                         <Tooltip
                           title={`${event.title} (${event.startTime} - ${event.endTime})`}
                           key={event.id}
                         >
+
                           <Box
                             sx={{
                               position: 'absolute',
+                              left: `${index * (100 / 3)}%`,
                               top: `${topPosition}px`,
-                              width: '90%', // Adjust width for better spacing
+                              width: `${100 / 3}%`, // Adjust width for better spacing
                               height: `${eventHeight}px`,
                               backgroundColor: event.color,
                               cursor: 'pointer',
-                              borderRadius: '4px',
-                              overflow: 'hidden', // Prevent content overflow
+                              overflow: 'hidden',
                             }}
-                            onClick={() => openModal(event, new Date(event.date), 'viewEvent')}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openModal(event, new Date(event.date), 'viewEvent')}}
                           />
                         </Tooltip>
                       );
                     })}
                     {displayMore && (
-                    <Typography
-                      variant="body2"
-                      sx={{ cursor: 'pointer', color: 'blue', marginLeft: 'auto', zIndex: 1 }}
-                      onClick={() => openModal(null, day)}
+                      <Tooltip
+                    title= "View more"
                     >
-                      View More
-                    </Typography>
-                  )}
+
+                      <Box
+                        sx={{
+                          position: 'absolute',
+                          left: `${2 * (100 / 3)}%`,
+                          width: `${100 / 3}%`, // Adjust width for better spacing
+                          height: `${60}px`,
+                          backgroundColor: theme.palette.grey[500],
+                          cursor: 'pointer',
+                          borderRadius: '4px',
+                          overflow: 'hidden',
+                          display: 'flex', // Use flexbox to center content
+                          justifyContent: 'center', // Center horizontally
+                          alignItems: 'center', // Center vertically
+                        }}
+                        onClick={() => {
+                          
+                          openModal(null, day)}}
+                      >
+                        <Typography sx={{ color: 'white' }}>{`+${eventsInInterval.length - 2}`}</Typography>
+                      </Box>
+                    </Tooltip>
+                    )}
                   </Box>
                 </Grid>
               );
@@ -149,39 +180,7 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
       </Grid>
     </Box>
   );
-};
-
-// Helper function to check if an event overlaps with a given interval
-const doesEventOverlapWithInterval = (event: Event, interval: Date) => {
-  const eventStart = convertTimeStringToMinutes(event.startTime);
-  const eventEnd = convertTimeStringToMinutes(event.endTime);
-  const intervalStart = convertTimeStringToMinutes(format(interval, 'HH:mm'));
-  const nextIntervalStart = convertTimeStringToMinutes(format(addHours(interval, 1), 'HH:mm'));
-
-  return eventStart < nextIntervalStart && eventEnd > intervalStart;
-};
-
-// Helper function to convert time strings to minutes
-const convertTimeStringToMinutes = (timeString: string) => {
-  const [hours, minutes] = timeString.split(':').map(Number);
-  return hours * 60 + minutes;
-};
-
-// Helper function to calculate event position and height
-const calculateEventPositionInInterval = (event: Event, interval: Date) => {
-  const eventStart = convertTimeStringToMinutes(event.startTime);
-  const eventEnd = convertTimeStringToMinutes(event.endTime);
-  const intervalStart = convertTimeStringToMinutes(format(interval, 'HH:mm'));
-  const nextIntervalStart = convertTimeStringToMinutes(format(addHours(interval, 1), 'HH:mm'));
-
-  const visibleStart = Math.max(eventStart, intervalStart);
-  const visibleEnd = Math.min(eventEnd, nextIntervalStart);
-
-  const pixelsPerMinute = 1; // Adjust this to control the height
-  const topPosition = (visibleStart - intervalStart) * pixelsPerMinute;
-  const eventHeight = (visibleEnd - visibleStart) * pixelsPerMinute;
-
-  return { topPosition, eventHeight };
+  
 };
 
 export default WeeklyView;

@@ -1,3 +1,4 @@
+// EventModal.tsx
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -6,13 +7,16 @@ import {
   IconButton,
   SelectChangeEvent,
 } from '@mui/material';
-import { format } from 'date-fns';
+
+import { clearScheduledNotification } from '../utils/requestNotificationPermission';
 import { addEvent, updateEvent, deleteEvent } from '../store/eventsSlice';
+import { showSnackbar } from '../store/snackbarSlice';
 import CloseIcon from '@mui/icons-material/Close';
 import { categoryColors } from '../utils/categoryColors';
 import { Event, Category, RootState, modalMode } from '../utils/types';
 import EventDetails from './EventDetails';
 import ExistingEventsList from './ExistingEventsList'; // Import your new component
+import {scheduleNotification} from '../utils/requestNotificationPermission';
 
 interface EventModalProps {
   open: boolean;
@@ -21,7 +25,7 @@ interface EventModalProps {
   selectedDay: Date | null;
   setSelectedEvent: (event: Event | null) => void;
   selectedCategory: string;
-  mode: modalMode,
+  mode: modalMode;
   setMode: (mode: modalMode) => void;
 }
 
@@ -33,7 +37,7 @@ const EventModal: React.FC<EventModalProps> = ({
   setSelectedEvent,
   selectedCategory,
   mode,
-  setMode
+  setMode,
 }) => {
   const dispatch = useDispatch();
   const events = useSelector((state: RootState) => state.events);
@@ -44,7 +48,6 @@ const EventModal: React.FC<EventModalProps> = ({
   const [color, setColor] = useState<string>(categoryColors.General);
   const [startTime, setStartTime] = useState<string>('00:00');
   const [endTime, setEndTime] = useState<string>('00:00');
-  
 
   const resetForm = () => {
     setTitle('');
@@ -83,16 +86,23 @@ const EventModal: React.FC<EventModalProps> = ({
     } else {
       if (selectedEvent) {
         dispatch(updateEvent(event));
+        dispatch(showSnackbar({ message: 'Event updated successfully!', color: 'success' }));
+        clearScheduledNotification(selectedEvent.id);
       } else {
         dispatch(addEvent(event));
+        dispatch(showSnackbar({ message: 'Event added successfully!', color: 'success' })); // Show success snackbar when a new event is added
       }
       onClose();
       setMode('view'); // Reset mode after closing
     }
+    // Schedule notification for the event
+    scheduleNotification(event);
   };
 
   const handleDelete = (id: number) => {
     dispatch(deleteEvent(id));
+    dispatch(showSnackbar({ message: 'Event deleted successfully!', color: 'error' })); // Show error snackbar when an event is deleted
+    clearScheduledNotification(id);
     onClose();
     setMode('view'); // Reset mode after closing
   };
