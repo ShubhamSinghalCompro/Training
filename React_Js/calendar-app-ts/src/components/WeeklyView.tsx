@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { Box, Typography, Grid, Tooltip, IconButton, Theme } from '@mui/material';
 import { format, addHours, startOfDay, addDays, startOfWeek,  } from 'date-fns';
 import { Event, RootState, modalMode } from '../utils/types';
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import {getIntervalsOccupiedByEvent, calculateEventPositionInInterval, doesEventOverlapWithInterval} from '../utils/calendarViewFuncs';
 
 interface WeeklyViewProps {
   selectedDate: Date;
@@ -45,19 +45,7 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
     return hours * 60 + minutes;
   };
 
-  // Function to determine how many intervals an event spans
-  const getIntervalsOccupiedByEvent = (event: Event, intervals: Date[]) => {
-    const eventStart = convertTimeStringToMinutes(event.startTime);
-    const eventEnd = convertTimeStringToMinutes(event.endTime);
-
-    // Count how many intervals are covered by the event
-    return intervals.filter(interval => {
-      const intervalStart = convertTimeStringToMinutes(format(interval, 'HH:mm'));
-      const nextIntervalStart = convertTimeStringToMinutes(format(addHours(interval, 1), 'HH:mm'));
-
-      return eventStart < nextIntervalStart && eventEnd > intervalStart;
-    }).length;
-  };
+  
 
   return (
     <Box>
@@ -95,30 +83,31 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
                 const intervalsOccupiedB = getIntervalsOccupiedByEvent(b, intervals);
                 return intervalsOccupiedB - intervalsOccupiedA; // Sort in descending order
               });
-              const displayMore = eventsInInterval.length > 1;
+              const displayMore = eventsInInterval.length > 2;
   
               return (
                 <Grid item xs key={`${day.toDateString()}-${interval.toString()}`}>
                   <Box
                     sx={{
                       borderBottom: '1px solid #ddd',
-                      borderRight: colIndex < weekDays.length - 1 ? '1px solid #ddd' : 'none', // Add this for vertical lines
+                      borderRight: colIndex < weekDays.length - 1 ? '1px solid #ddd' : 'none',
                       position: 'relative',
-                      minHeight: 60, // Fixed height for each time slot
-                      display: 'flex',
-                      justifyContent: 'flex-start', // Align items at the start
-                      alignItems: 'flex-start', // Align items at the top
+                      minHeight: 60,
+                      display: 'flex',  // Use flexbox to align items
+                      flexDirection: 'row', // Row direction for side-by-side alignment
+                      justifyContent: 'start', // Align items at the start
+                      alignItems: 'start',  // Align items at the start vertically
                       backgroundColor: '#f9f9f9',
-                      boxSizing: 'border-box', // Ensure the box sizing includes padding and borders
-                      paddingLeft: '5px', // Optional padding for spacing
+                      boxSizing: 'border-box',
+                      paddingLeft: '5px',
                       '&:hover': {
-                        backgroundColor: theme.palette.action.selected, // Hover color from theme
-                        cursor:'pointer'
+                        backgroundColor: theme.palette.action.selected,
+                        cursor: 'pointer',
                       },
                     }}
                     onClick={() => openModal(null, day)}
                   >
-                    {sortedDayEvents.slice(0, 1).map((event) => {
+                    {sortedDayEvents.slice(0, 2).map((event, index) => {
                       const { topPosition, eventHeight } = calculateEventPositionInInterval(event, interval);
   
                       return (
@@ -126,16 +115,18 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
                           title={`${event.title} (${event.startTime} - ${event.endTime})`}
                           key={event.id}
                         >
+
                           <Box
                             sx={{
                               position: 'absolute',
+                              left: `${index * (100 / 3)}%`,
                               top: `${topPosition}px`,
-                              width: '50%', // Adjust width for better spacing
+                              width: `${100 / 3}%`, // Adjust width for better spacing
                               height: `${eventHeight}px`,
                               backgroundColor: event.color,
                               cursor: 'pointer',
                               borderRadius: '4px',
-                              overflow: 'hidden', // Prevent content overflow
+                              overflow: 'hidden',
                             }}
                             onClick={(e) => {
                               e.stopPropagation();
@@ -145,12 +136,31 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
                       );
                     })}
                     {displayMore && (
-                      <IconButton
-                      sx={{ marginLeft: 'auto', zIndex: 1 }}
-                      onClick={() => openModal(null, day)}
+                      <Tooltip
+                    title= "View more"
                     >
-                      <MoreHorizIcon color="primary" />
-                    </IconButton>
+
+                      <Box
+                        sx={{
+                          position: 'absolute',
+                          left: `${2 * (100 / 3)}%`,
+                          width: `${100 / 3}%`, // Adjust width for better spacing
+                          height: `${60}px`,
+                          backgroundColor: theme.palette.grey[500],
+                          cursor: 'pointer',
+                          borderRadius: '4px',
+                          overflow: 'hidden',
+                          display: 'flex', // Use flexbox to center content
+                          justifyContent: 'center', // Center horizontally
+                          alignItems: 'center', // Center vertically
+                        }}
+                        onClick={() => {
+                          
+                          openModal(null, day)}}
+                      >
+                        <Typography sx={{ color: 'white' }}>{`+${eventsInInterval.length - 2}`}</Typography>
+                      </Box>
+                    </Tooltip>
                     )}
                   </Box>
                 </Grid>
@@ -162,39 +172,6 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
     </Box>
   );
   
-};
-
-// Helper function to check if an event overlaps with a given interval
-const doesEventOverlapWithInterval = (event: Event, interval: Date) => {
-  const eventStart = convertTimeStringToMinutes(event.startTime);
-  const eventEnd = convertTimeStringToMinutes(event.endTime);
-  const intervalStart = convertTimeStringToMinutes(format(interval, 'HH:mm'));
-  const nextIntervalStart = convertTimeStringToMinutes(format(addHours(interval, 1), 'HH:mm'));
-
-  return eventStart < nextIntervalStart && eventEnd > intervalStart;
-};
-
-// Helper function to convert time strings to minutes
-const convertTimeStringToMinutes = (timeString: string) => {
-  const [hours, minutes] = timeString.split(':').map(Number);
-  return hours * 60 + minutes;
-};
-
-// Helper function to calculate event position and height
-const calculateEventPositionInInterval = (event: Event, interval: Date) => {
-  const eventStart = convertTimeStringToMinutes(event.startTime);
-  const eventEnd = convertTimeStringToMinutes(event.endTime);
-  const intervalStart = convertTimeStringToMinutes(format(interval, 'HH:mm'));
-  const nextIntervalStart = convertTimeStringToMinutes(format(addHours(interval, 1), 'HH:mm'));
-
-  const visibleStart = Math.max(eventStart, intervalStart);
-  const visibleEnd = Math.min(eventEnd, nextIntervalStart);
-
-  const pixelsPerMinute = 1; // Adjust this to control the height
-  const topPosition = (visibleStart - intervalStart) * pixelsPerMinute;
-  const eventHeight = (visibleEnd - visibleStart) * pixelsPerMinute;
-
-  return { topPosition, eventHeight };
 };
 
 export default WeeklyView;

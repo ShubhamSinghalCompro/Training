@@ -4,7 +4,7 @@ import { Box, Typography, Grid, IconButton, Tooltip, Theme } from '@mui/material
 import { format, addHours, startOfDay } from 'date-fns';
 import { Event, RootState, modalMode } from '../utils/types';
 import AddIcon from '@mui/icons-material/Add';
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import {getIntervalsOccupiedByEvent, calculateEventPositionInInterval, doesEventOverlapWithInterval} from '../utils/calendarViewFuncs';
 
 interface DailyViewProps {
   selectedDate: Date;
@@ -34,25 +34,7 @@ const DailyView: React.FC<DailyViewProps> = ({
       (selectedCategory === 'All' || event.category === selectedCategory)
   );
 
-  // Helper function to convert 'HH:mm' string to total minutes since midnight
-  const convertTimeStringToMinutes = (timeString: string) => {
-    const [hours, minutes] = timeString.split(':').map(Number);
-    return hours * 60 + minutes;
-  };
-
-  // Function to determine how many intervals an event spans
-  const getIntervalsOccupiedByEvent = (event: Event, intervals: Date[]) => {
-    const eventStart = convertTimeStringToMinutes(event.startTime);
-    const eventEnd = convertTimeStringToMinutes(event.endTime);
-
-    // Count how many intervals are covered by the event
-    return intervals.filter(interval => {
-      const intervalStart = convertTimeStringToMinutes(format(interval, 'HH:mm'));
-      const nextIntervalStart = convertTimeStringToMinutes(format(addHours(interval, 1), 'HH:mm'));
-
-      return eventStart < nextIntervalStart && eventEnd > intervalStart;
-    }).length;
-  };
+  
 
   // Sort events based on the number of intervals they occupy
   const sortedDayEvents = [...dayEvents].sort((a, b) => {
@@ -61,36 +43,9 @@ const DailyView: React.FC<DailyViewProps> = ({
     return intervalsOccupiedB - intervalsOccupiedA; // Sort in descending order
   });
 
-  // Function to determine if an event overlaps with a given interval
-  const doesEventOverlapWithInterval = (event: Event, interval: Date) => {
-    const eventStart = convertTimeStringToMinutes(event.startTime);
-    const eventEnd = convertTimeStringToMinutes(event.endTime);
-    const intervalStart = convertTimeStringToMinutes(format(interval, 'HH:mm'));
-    const nextIntervalStart = convertTimeStringToMinutes(format(addHours(interval, 1), 'HH:mm'));
+  
 
-    // Check if event starts before the end of this interval and ends after the start of this interval
-    return eventStart < nextIntervalStart && eventEnd > intervalStart;
-  };
-
-  // Calculate the position and height for an event in a given interval
-  const calculateEventPositionInInterval = (event: Event, interval: Date) => {
-    const eventStart = convertTimeStringToMinutes(event.startTime);
-    const eventEnd = convertTimeStringToMinutes(event.endTime);
-    const intervalStart = convertTimeStringToMinutes(format(interval, 'HH:mm'));
-    const nextIntervalStart = convertTimeStringToMinutes(format(addHours(interval, 1), 'HH:mm'));
-
-    // Determine the visible start and end within this interval
-    const visibleStart = Math.max(eventStart, intervalStart);
-    const visibleEnd = Math.min(eventEnd, nextIntervalStart);
-
-    // Calculate top position and height in pixels (1 minute = 2 pixels)
-    const pixelsPerMinute = 1;
-    const topPosition = (visibleStart - intervalStart) * pixelsPerMinute;
-    const eventHeight = (visibleEnd - visibleStart) * pixelsPerMinute;
-    debugger
-
-    return { topPosition, eventHeight };
-  };
+  
 
   return (
     <Box>
@@ -137,7 +92,7 @@ const DailyView: React.FC<DailyViewProps> = ({
                   }}
                   
                 >
-                  {eventsInInterval.slice(0, 2).map((event) => {
+                  {eventsInInterval.slice(0, 3).map((event) => {
                     const { topPosition, eventHeight } = calculateEventPositionInInterval(event, interval);
 
                     return (
@@ -150,7 +105,7 @@ const DailyView: React.FC<DailyViewProps> = ({
                             position: 'absolute',
                             top: `${topPosition}px`,
                             left: `${eventsInInterval.indexOf(event) * 220}px`, // Adjust this value for spacing between events
-                            width: '200px', // Reduced width of the event box
+                            width: '20%', // Reduced width of the event box
                             height: `${eventHeight}px`,
                             backgroundColor: event.color,
                             cursor: 'pointer',
@@ -165,13 +120,32 @@ const DailyView: React.FC<DailyViewProps> = ({
                     );
                   })}
                   {displayMore && (
-                    <IconButton
-                    sx={{ marginLeft: 'auto', zIndex: 1 }}
-                    onClick={() => openModal(null, selectedDate)}
-                  >
-                    <MoreHorizIcon color="primary" />
-                  </IconButton>
-                  )}
+                      <Tooltip
+                    title= "View more"
+                    >
+
+                      <Box
+                        sx={{
+                          position: 'absolute',
+                          left: `${2 * (100 / 3)}%`,
+                          width: '20%', // Adjust width for better spacing
+                          height: `${60}px`,
+                          backgroundColor: theme.palette.grey[500],
+                          cursor: 'pointer',
+                          borderRadius: '4px',
+                          overflow: 'hidden',
+                          display: 'flex', // Use flexbox to center content
+                          justifyContent: 'center', // Center horizontally
+                          alignItems: 'center', // Center vertically
+                        }}
+                        onClick={() => {
+                          
+                          openModal(null, selectedDate)}}
+                      >
+                        <Typography sx={{ color: 'white' }}>{`+${eventsInInterval.length - 3}`}</Typography>
+                      </Box>
+                    </Tooltip>
+                    )}
                 </Box>
               </Box>
             </Grid>
