@@ -13,6 +13,7 @@ export interface Event {
 // Define the RootState interface for TypeScript
 export interface RootState {
   events: Event[];
+  snackbar: { open: boolean; message: string; color?: 'success' | 'error' | 'warning' | 'info' };
 }
 
 export type modalMode = 'view' | 'add' | 'edit' | 'viewEvent';

@@ -4,6 +4,7 @@ import { Box, Typography, Grid, Tooltip, IconButton, Theme } from '@mui/material
 import { format, addHours, startOfDay, addDays, startOfWeek,  } from 'date-fns';
 import { Event, RootState, modalMode } from '../utils/types';
 import {getIntervalsOccupiedByEvent, calculateEventPositionInInterval, doesEventOverlapWithInterval} from '../utils/calendarViewFuncs';
+import AddIcon from '@mui/icons-material/Add';
 
 interface WeeklyViewProps {
   selectedDate: Date;
@@ -44,13 +45,30 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
       {/* Display Week Days at the Top */}
       <Grid container spacing={0}>
         <Grid item xs={1}>
-          <Typography sx={{ padding: '8px', fontWeight: 'bold' }}>Time</Typography>
+
+          <Typography sx={{ padding: '12px', fontWeight: 'bold' }}>Time</Typography>
         </Grid>
         {weekDays.map((day) => (
           <Grid item xs key={day.toDateString()}>
-            <Typography sx={{ padding: '8px', fontWeight: 'bold', textAlign: 'center' }}>
+            <Box sx={{ display: 'flex', justifyContent: 'start', alignItems: 'center' }}>
+            <Typography sx={{ padding: '8px', textAlign: 'center' }}>
               {format(day, 'EEE, MMM d')}
             </Typography>
+            <IconButton
+              color="primary"
+              sx={{
+                ml: 1, 
+                width: '20px',
+                height: '20px',
+                '&:hover': { backgroundColor: theme.palette.grey[300],
+                  
+                }
+              }}
+              onClick={() => openModal(null, day)}
+              >
+                <AddIcon />
+              </IconButton>
+              </Box>
           </Grid>
         ))}
       </Grid>
@@ -117,7 +135,6 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
                               height: `${eventHeight}px`,
                               backgroundColor: event.color,
                               cursor: 'pointer',
-                              borderRadius: '4px',
                               overflow: 'hidden',
                             }}
                             onClick={(e) => {

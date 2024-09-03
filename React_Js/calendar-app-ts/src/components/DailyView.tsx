@@ -43,7 +43,19 @@ const DailyView: React.FC<DailyViewProps> = ({
   
   return (
     <Box>
+      <Box sx={{ display: 'flex', justifyContent: 'start', alignItems: 'center', p: 1 }}>
       <Typography variant="h5">{format(selectedDate, 'EEEE, MMMM d, yyyy')}</Typography>
+      <IconButton
+        color="primary"
+        sx={{
+           ml: 1, 
+          '&:hover': { backgroundColor: theme.palette.grey[300]}
+        }}
+        onClick={() => openModal(null, selectedDate)}
+      >
+        <AddIcon />
+      </IconButton>
+      </Box>
       <Grid container spacing={0}>
         {intervals.map((interval) => {
           const eventsInInterval = sortedDayEvents.filter((event) =>
@@ -103,7 +115,6 @@ const DailyView: React.FC<DailyViewProps> = ({
                             height: `${eventHeight}px`,
                             backgroundColor: event.color,
                             cursor: 'pointer',
-                            borderRadius: '4px',
                             overflow: 'hidden', // Ensure no content overflows the box
                           }}
                           onClick={(e) => {
@@ -146,13 +157,6 @@ const DailyView: React.FC<DailyViewProps> = ({
           );
         })}
       </Grid>
-      <IconButton
-        color="primary"
-        onClick={() => openModal(null, selectedDate)}
-        sx={{ position: 'fixed', bottom: 16, right: 16 }}
-      >
-        <AddIcon />
-      </IconButton>
     </Box>
   );
 };
