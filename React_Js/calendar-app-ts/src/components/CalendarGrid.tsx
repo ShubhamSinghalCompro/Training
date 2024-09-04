@@ -63,6 +63,37 @@ const CalendarGrid: React.FC = () => {
   const handleViewChange = (mode: ViewMode) => {
     setViewMode(mode);
   };
+  
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      console.log('Received message:', event.data);
+
+      // Type guard to check the message structure
+      if (event.data && event.data.type === 'OPEN_MODAL' && event.data.event && event.data.event.date) {
+        // Construct the Event object based on the data received
+        const eventData: Event = {
+          id: event.data.event.id,
+          title: event.data.event.title,
+          category: event.data.event.category,
+          color: event.data.event.color,
+          date: event.data.event.date,
+          startTime: event.data.event.startTime,
+          endTime: event.data.event.endTime,
+        };
+
+        // Open the modal with the event data
+        handleOpenModal(eventData, new Date(event.data.event.date), 'viewEvent');
+      } else {
+        console.warn('Invalid message data:', event.data);
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    };
+  }, []);
 
   return (
     <Box
