@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { Box, Typography, Grid, IconButton, Tooltip, Theme } from '@mui/material';
+import { Box, Typography, Grid, Grid2, IconButton, Tooltip, Theme } from '@mui/material';
 import { format, addHours, startOfDay } from 'date-fns';
 import { Event, RootState, modalMode } from '../utils/types';
 import AddIcon from '@mui/icons-material/Add';
@@ -56,7 +56,7 @@ const DailyView: React.FC<DailyViewProps> = ({
         <AddIcon />
       </IconButton>
       </Box>
-      <Grid container spacing={0}>
+      <Grid2 spacing={0}>
         {intervals.map((interval) => {
           const eventsInInterval = sortedDayEvents.filter((event) =>
             doesEventOverlapWithInterval(event, interval)
@@ -65,7 +65,7 @@ const DailyView: React.FC<DailyViewProps> = ({
           const displayMore = eventsInInterval.length > 3;
 
           return (
-            <Grid item xs={12} key={intervalKey}>
+            <Grid2  key={intervalKey}>
               {/* Time Slot */}
               <Box
                 sx={{
@@ -153,10 +153,10 @@ const DailyView: React.FC<DailyViewProps> = ({
                     )}
                 </Box>
               </Box>
-            </Grid>
+            </Grid2>
           );
         })}
-      </Grid>
+      </Grid2>
     </Box>
   );
 };

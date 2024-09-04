@@ -24,7 +24,7 @@ export const requestNotificationPermission = async (): Promise<void> => {
   }
 };
 
-// Calculates the time for a reminder, 30 minutes before the event
+
 const calculateReminderTime = (eventDate: string, startTime: string): Date => {
   const eventDateObj = new Date(eventDate);
   const eventDateNew = format(eventDateObj, 'yyyy-MM-dd');
@@ -37,8 +37,8 @@ const showNotification = (event: Event): void => {
   if ('Notification' in window && Notification.permission === 'granted') {
     const notification = new Notification('Event Reminder', {
       body: `Your event "${event.title}" is starting in 30 minutes.`,
-      icon: 'path/to/icon.png', // Replace with your icon path
-      data: event, // Pass the event data to the notification
+      icon: 'path/to/icon.png', 
+      data: event,
     });
 
     // Handle notification clicks
@@ -54,8 +54,6 @@ const showNotification = (event: Event): void => {
   }
 };
 
-
-// Schedules a notification for an event
 export const scheduleNotification = (event: Event): void => {
   const reminderTime = calculateReminderTime(event.date, event.startTime);
   const now = new Date();
@@ -64,18 +62,15 @@ export const scheduleNotification = (event: Event): void => {
   if (timeUntilReminder > 0) {
     const timeoutId = setTimeout(() => {
       showNotification(event);
-      // Clean up the timeout ID after notification is shown
       delete notificationTimeouts[event.id];
     }, timeUntilReminder);
 
-    // Store the timeout ID for this event
     notificationTimeouts[event.id] = timeoutId;
   } else {
     console.warn('Reminder time is in the past. Cannot schedule notification.');
   }
 };
 
-// Clears the notification for a given event
 export const clearScheduledNotification = (eventId: number): void => {
   const timeoutId = notificationTimeouts[eventId];
   if (timeoutId) {

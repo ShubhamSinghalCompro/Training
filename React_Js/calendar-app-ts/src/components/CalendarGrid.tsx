@@ -63,6 +63,10 @@ const CalendarGrid: React.FC = () => {
   const handleViewChange = (mode: ViewMode) => {
     setViewMode(mode);
   };
+
+  const handleToday = () => {
+    setCurrent(new Date()); // Set the current date to today's date
+  };
   
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
@@ -132,6 +136,7 @@ const CalendarGrid: React.FC = () => {
         {/* Box for buttons */}
         <Box sx={{ display: 'flex', alignItems: 'center', flex: 1 }}>
           <Button variant="contained" onClick={handlePrev} sx={{ mr: 1 }}>Prev</Button>
+          <Button variant="contained" onClick={handleToday} sx={{ mr: 1 }}>Today</Button> {/* Add Today button here */}
           <Button variant="contained" onClick={handleNext}>Next</Button>
         </Box>
 
