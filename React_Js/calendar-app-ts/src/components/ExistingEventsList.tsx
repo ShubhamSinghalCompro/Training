@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Grid, Typography, IconButton, Button } from '@mui/material';
+import { Box, Grid2, Typography, IconButton, Button } from '@mui/material';
 import { format } from 'date-fns';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -36,7 +36,7 @@ const ExistingEventsList: React.FC<ExistingEventsListProps> = ({
             Existing Events
           </Typography>
     )}
-      <Grid container spacing={1}>
+      <Grid2 spacing={1}>
         {events
           .filter(event => {
             if (!selectedDay) return false; // If selectedDay is null, skip filtering
@@ -44,7 +44,7 @@ const ExistingEventsList: React.FC<ExistingEventsListProps> = ({
           })
           .filter(event => selectedCategory === 'All' || event.category === selectedCategory)
           .map(event => (
-            <Grid item xs={12} key={event.id}>
+            <Grid2 spacing={{xs: 12} } key={event.id}>
               <Box
                 sx={{
                   display: 'flex',
@@ -99,9 +99,9 @@ const ExistingEventsList: React.FC<ExistingEventsListProps> = ({
                   </IconButton>
                 </Box>
               </Box>
-            </Grid>
+            </Grid2>
           ))}
-      </Grid>
+      </Grid2>
       {/* Add Event Button */}
       <Button
         variant="contained"

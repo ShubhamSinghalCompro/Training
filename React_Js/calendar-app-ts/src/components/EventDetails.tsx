@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button, Typography, TextField, Grid, Select, MenuItem, FormControl, InputLabel, SelectChangeEvent } from '@mui/material';
+import { Box, Button, Typography, TextField, Select, MenuItem, FormControl, InputLabel, SelectChangeEvent } from '@mui/material';
 import { categoryColors } from '../utils/categoryColors';
 import { Event, Category, modalMode } from '../utils/types';
 import DeleteIcon from '@mui/icons-material/Delete';

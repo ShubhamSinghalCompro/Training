@@ -103,7 +103,6 @@ const EventModal: React.FC<EventModalProps> = ({
     dispatch(deleteEvent(id));
     dispatch(showSnackbar({ message: 'Event deleted successfully!', color: 'error' })); // Show error snackbar when an event is deleted
     clearScheduledNotification(id);
-    onClose();
     setMode('view'); // Reset mode after closing
   };
 

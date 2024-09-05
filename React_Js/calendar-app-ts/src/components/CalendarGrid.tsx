@@ -64,6 +64,41 @@ const CalendarGrid: React.FC = () => {
     setViewMode(mode);
   };
 
+  const handleToday = () => {
+    setCurrent(new Date()); // Set the current date to today's date
+  };
+  
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      console.log('Received message:', event.data);
+
+      // Type guard to check the message structure
+      if (event.data && event.data.type === 'OPEN_MODAL' && event.data.event && event.data.event.date) {
+        // Construct the Event object based on the data received
+        const eventData: Event = {
+          id: event.data.event.id,
+          title: event.data.event.title,
+          category: event.data.event.category,
+          color: event.data.event.color,
+          date: event.data.event.date,
+          startTime: event.data.event.startTime,
+          endTime: event.data.event.endTime,
+        };
+
+        // Open the modal with the event data
+        handleOpenModal(eventData, new Date(event.data.event.date), 'viewEvent');
+      } else {
+        console.warn('Invalid message data:', event.data);
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    };
+  }, []);
+
   return (
     <Box
       sx={{
@@ -101,6 +136,7 @@ const CalendarGrid: React.FC = () => {
         {/* Box for buttons */}
         <Box sx={{ display: 'flex', alignItems: 'center', flex: 1 }}>
           <Button variant="contained" onClick={handlePrev} sx={{ mr: 1 }}>Prev</Button>
+          <Button variant="contained" onClick={handleToday} sx={{ mr: 1 }}>Today</Button> {/* Add Today button here */}
           <Button variant="contained" onClick={handleNext}>Next</Button>
         </Box>
 
