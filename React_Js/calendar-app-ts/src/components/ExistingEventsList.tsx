@@ -25,24 +25,30 @@ const ExistingEventsList: React.FC<ExistingEventsListProps> = ({
   handleDelete,
   handleAddClick,
 }) => {
+
+   const dailyEvents = (
+    events: Event[],
+    selectedDay: Date | null,
+  ): Event[] => {
+    return events
+      .filter(event => {
+        if (!selectedDay) return false; // If selectedDay is null, skip filtering
+        return format(new Date(event.date), 'yyyy-MM-dd') === format(new Date(selectedDay), 'yyyy-MM-dd');
+      })
+  }
+
+  const categoryEvents : Event[] = dailyEvents(events, selectedDay).filter(event => selectedCategory === 'All' || event.category === selectedCategory);
+
+
   return (
     <>
-     {events
-          .filter(event => {
-            if (!selectedDay) return false; // If selectedDay is null, skip filtering
-            return format(new Date(event.date), 'yyyy-MM-dd') === format(new Date(selectedDay), 'yyyy-MM-dd');
-          })
+     {dailyEvents(events, selectedDay)
           .filter(event => selectedCategory === 'All' || event.category === selectedCategory).length > 0 && (<Typography variant="h6" sx={{ mt: 2 }}>
             Existing Events
           </Typography>
     )}
       <Grid2 spacing={1}>
-        {events
-          .filter(event => {
-            if (!selectedDay) return false; // If selectedDay is null, skip filtering
-            return format(new Date(event.date), 'yyyy-MM-dd') === format(new Date(selectedDay), 'yyyy-MM-dd');
-          })
-          .filter(event => selectedCategory === 'All' || event.category === selectedCategory)
+        {categoryEvents
           .map(event => (
             <Grid2 spacing={{xs: 12} } key={event.id}>
               <Box

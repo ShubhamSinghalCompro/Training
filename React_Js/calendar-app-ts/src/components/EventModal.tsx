@@ -13,7 +13,7 @@ import { addEvent, updateEvent, deleteEvent } from '../store/eventsSlice';
 import { showSnackbar } from '../store/snackbarSlice';
 import CloseIcon from '@mui/icons-material/Close';
 import { categoryColors } from '../utils/categoryColors';
-import { Event, Category, RootState, modalMode } from '../utils/types';
+import { Event, Category, RootState, modalMode, EventObject} from '../utils/types';
 import EventDetails from './EventDetails';
 import ExistingEventsList from './ExistingEventsList'; // Import your new component
 import {scheduleNotification} from '../utils/requestNotificationPermission';
@@ -43,27 +43,33 @@ const EventModal: React.FC<EventModalProps> = ({
   const events = useSelector((state: RootState) => state.events);
 
   // State variables for the event modal
-  const [title, setTitle] = useState<string>('');
-  const [category, setCategory] = useState<Category>('General');
-  const [color, setColor] = useState<string>(categoryColors.General);
-  const [startTime, setStartTime] = useState<string>('00:00');
-  const [endTime, setEndTime] = useState<string>('00:00');
+  const [eventState, setEventState] = useState<EventObject>({
+    title: '',
+    category: 'General',
+    color: categoryColors['General'],
+    startTime: '00:00',
+    endTime: '00:00',
+  });
 
   const resetForm = () => {
-    setTitle('');
-    setCategory('General');
-    setColor(categoryColors['General']);
-    setStartTime('00:00');
-    setEndTime('00:00');
+    setEventState({
+      title: '',
+      category: 'General',
+      color: categoryColors['General'],
+      startTime: '00:00',
+      endTime: '00:00',
+    });
   };
 
   useEffect(() => {
     if (selectedEvent) {
-      setTitle(selectedEvent.title);
-      setCategory(selectedEvent.category);
-      setColor(categoryColors[selectedEvent.category]);
-      setStartTime(selectedEvent.startTime || '00:00');
-      setEndTime(selectedEvent.endTime || '00:00');
+      setEventState({
+        title: selectedEvent.title,
+        category: selectedEvent.category,
+        color: selectedEvent.color,
+        startTime: selectedEvent.startTime,
+        endTime: selectedEvent.endTime,
+      });
     } else {
       resetForm();
       setMode('view');
@@ -73,12 +79,12 @@ const EventModal: React.FC<EventModalProps> = ({
   const handleSave = () => {
     const event: Event = {
       id: selectedEvent ? selectedEvent.id : Date.now(),
-      title,
-      category,
-      color: categoryColors[category],
+      title: eventState.title,
+      category: eventState.category,
+      color: eventState.color,
       date: selectedDay?.toISOString() || '',
-      startTime,
-      endTime,
+      startTime: eventState.startTime,
+      endTime: eventState.endTime,
     };
 
     if (mode === 'viewEvent') {
@@ -108,8 +114,7 @@ const EventModal: React.FC<EventModalProps> = ({
 
   const handleCategoryChange = (event: SelectChangeEvent<string>) => {
     const newCategory: Category = event.target.value as Category;
-    setCategory(newCategory);
-    setColor(categoryColors[newCategory]);
+    setEventState({ ...eventState, category: newCategory, color: categoryColors[newCategory] });
   };
 
   const handleAddClick = () => {
@@ -159,14 +164,8 @@ const EventModal: React.FC<EventModalProps> = ({
           <EventDetails
             mode={mode}
             selectedEvent={selectedEvent}
-            title={title}
-            category={category}
-            color={color}
-            startTime={startTime}
-            endTime={endTime}
-            setTitle={setTitle}
-            setStartTime={setStartTime}
-            setEndTime={setEndTime}
+            eventState={eventState}
+            setEventState={setEventState}
             handleSave={handleSave}
             handleDelete={handleDelete}
             handleCategoryChange={handleCategoryChange}

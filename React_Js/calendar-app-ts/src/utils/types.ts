@@ -17,3 +17,11 @@ export interface RootState {
 }
 
 export type modalMode = 'view' | 'add' | 'edit' | 'viewEvent';
+
+export interface EventObject{
+  title: string;
+  category: Category;
+  color: string;
+  startTime: string;
+  endTime: string;
+}

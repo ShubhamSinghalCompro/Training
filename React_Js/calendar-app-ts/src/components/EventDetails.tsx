@@ -1,38 +1,33 @@
 import React from 'react';
 import { Box, Button, Typography, TextField, Select, MenuItem, FormControl, InputLabel, SelectChangeEvent } from '@mui/material';
 import { categoryColors } from '../utils/categoryColors';
-import { Event, Category, modalMode } from '../utils/types';
+import { Event, Category, modalMode, EventObject } from '../utils/types';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 
 
+
 interface EventDetailsProps {
     mode: modalMode;
     selectedEvent: Event | null;
-    title: string;
-    startTime: string;
-    endTime: string;
-    category: Category;
-    color: string;
-    setTitle: (title: string) => void;
-    setStartTime: (startTime: string) => void;
-    setEndTime: (endTime: string) => void;
+    eventState: EventObject;
+    setEventState: (event: EventObject) => void;
     handleSave: () => void;
     handleDelete: (id: number) => void;
     handleCategoryChange: (event: SelectChangeEvent<string>) => void;
 
   }
 
-const EventDetails: React.FC<EventDetailsProps> = ({mode, selectedEvent, title, startTime, endTime, category, color, setTitle, setStartTime, setEndTime, handleSave, handleDelete, handleCategoryChange}) => {
+const EventDetails: React.FC<EventDetailsProps> = ({mode, selectedEvent, eventState, setEventState, handleSave, handleDelete, handleCategoryChange}) => {
     return (
         <>
             <Typography variant="h6">
               {mode === 'add' ? 'Add Event' : (mode === 'edit' ? 'Edit Event' : 'Event')}
             </Typography>
             <Box
-              sx={{ backgroundColor: color, height: 8, borderRadius: 1, mb: 2 }}
+              sx={{ backgroundColor: eventState.color, height: 8, borderRadius: 1, mb: 2 }}
             />
          
 
@@ -41,8 +36,8 @@ const EventDetails: React.FC<EventDetailsProps> = ({mode, selectedEvent, title, 
               {/* Title Field */}
               <TextField
                 label="Title"
-                value={title}
-                onChange={(event) => setTitle(event.target.value)}
+                value={eventState.title}
+                onChange={(event) => setEventState({ ...eventState, title: event.target.value })}
                 fullWidth
                 sx={{ mt: 2, mb: 2 }}
                 disabled={mode === 'viewEvent'}
@@ -52,8 +47,8 @@ const EventDetails: React.FC<EventDetailsProps> = ({mode, selectedEvent, title, 
                 label="Start Time"
                 type="time"
                 fullWidth
-                value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
+                value={eventState.startTime}
+                onChange={(e) => {setEventState({ ...eventState, startTime: e.target.value })}}
                 sx={{ mb: 2 }}
                 InputLabelProps={{ shrink: true }}
                 disabled={mode === 'viewEvent'}
@@ -63,8 +58,10 @@ const EventDetails: React.FC<EventDetailsProps> = ({mode, selectedEvent, title, 
                 label="End Time"
                 type="time"
                 fullWidth
-                value={endTime}
-                onChange={(e) => setEndTime(e.target.value)}
+                value={eventState.endTime}
+                onChange={(e) => {
+                  setEventState({ ...eventState, endTime: e.target.value });
+                }}
                 sx={{ mb: 2 }}
                 InputLabelProps={{ shrink: true }}
                 disabled={mode === 'viewEvent'}
@@ -73,7 +70,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({mode, selectedEvent, title, 
               <FormControl fullWidth sx={{ mb: 2 }}>
                 <InputLabel>Category</InputLabel>
                 <Select
-                  value={category}
+                  value={eventState.category}
                   onChange={handleCategoryChange}
                   label="Category"
                   disabled={mode === 'viewEvent'}

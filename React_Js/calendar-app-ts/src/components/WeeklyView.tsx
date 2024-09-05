@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { Box, Typography, Grid, Tooltip, IconButton, Theme } from '@mui/material';
 import { format, addHours, startOfDay, addDays, startOfWeek,  } from 'date-fns';
 import { Event, RootState, modalMode } from '../utils/types';
-import {getIntervalsOccupiedByEvent, calculateEventPositionInInterval, doesEventOverlapWithInterval} from '../utils/calendarViewFuncs';
+import {calculateEventPositionInInterval, doesEventOverlapWithInterval, sortEventsByIntervals} from '../utils/calendarViewFuncs';
 import AddIcon from '@mui/icons-material/Add';
 
 interface WeeklyViewProps {
@@ -34,11 +34,23 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
   const weekDays = Array.from({ length: 7 }, (_, index) => addDays(startOfWeekDate, index));
 
   // Filter events by selected category and the week
-  const weeklyEvents = events.filter(
+  const categoryEvents = events.filter((event) =>
+    (selectedCategory === 'All' || event.category === selectedCategory));
+    
+  const weeklyEvents = categoryEvents.filter(
     (event) =>
-      (selectedCategory === 'All' || event.category === selectedCategory) &&
       weekDays.some((day) => new Date(event.date).toDateString() === day.toDateString())
   );
+
+  const getEventsInInterval = (
+    weeklyEvents: Event[],
+    day: Date,
+    interval: Date,
+  ): Event[]  => {
+    return weeklyEvents
+      .filter(event => new Date(event.date).toDateString() === day.toDateString())
+      .filter(event => doesEventOverlapWithInterval(event, interval)); // Adjust sort function as needed
+  }
 
   return (
     <Box>
@@ -75,7 +87,7 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
   
       {/* Display Time Intervals and Events */}
       <Grid container spacing={0}>
-        {intervals.map((interval, rowIndex) => (
+        {intervals.map((interval) => (
           <Grid container spacing={0} key={interval.toString()}>
             {/* Time Column */}
             <Grid item xs={1}>
@@ -83,16 +95,8 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
             </Grid>
             {/* Days Columns */}
             {weekDays.map((day, colIndex) => {
-              const eventsInInterval = weeklyEvents.filter(
-                (event) =>
-                  new Date(event.date).toDateString() === day.toDateString() &&
-                  doesEventOverlapWithInterval(event, interval)
-              );
-              const sortedIntervalEvents = [...eventsInInterval].sort((a, b) => {
-                const intervalsOccupiedA = getIntervalsOccupiedByEvent(a, intervals);
-                const intervalsOccupiedB = getIntervalsOccupiedByEvent(b, intervals);
-                return intervalsOccupiedB - intervalsOccupiedA; // Sort in descending order
-              });
+              const eventsInInterval = getEventsInInterval(weeklyEvents, day, interval);
+              const sortedIntervalEvents = sortEventsByIntervals(eventsInInterval, intervals);
               const displayMore = eventsInInterval.length > 2;
   
               return (

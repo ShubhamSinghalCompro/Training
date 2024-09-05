@@ -4,7 +4,7 @@ import { Box, Typography, Grid, Grid2, IconButton, Tooltip, Theme } from '@mui/m
 import { format, addHours, startOfDay } from 'date-fns';
 import { Event, RootState, modalMode } from '../utils/types';
 import AddIcon from '@mui/icons-material/Add';
-import {getIntervalsOccupiedByEvent, calculateEventPositionInInterval, doesEventOverlapWithInterval} from '../utils/calendarViewFuncs';
+import {calculateEventPositionInInterval, doesEventOverlapWithInterval, sortEventsByIntervals } from '../utils/calendarViewFuncs';
 
 interface DailyViewProps {
   selectedDate: Date;
@@ -35,11 +35,7 @@ const DailyView: React.FC<DailyViewProps> = ({
   );
   
   // Sort events based on the number of intervals they occupy
-  const sortedDayEvents = [...dayEvents].sort((a, b) => {
-    const intervalsOccupiedA = getIntervalsOccupiedByEvent(a, intervals);
-    const intervalsOccupiedB = getIntervalsOccupiedByEvent(b, intervals);
-    return intervalsOccupiedB - intervalsOccupiedA; // Sort in descending order
-  });
+  const sortedDayEvents = sortEventsByIntervals(dayEvents, intervals);
   
   return (
     <Box>

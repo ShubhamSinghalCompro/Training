@@ -21,6 +21,16 @@
       return eventStart < nextIntervalStart && eventEnd > intervalStart;
     }).length;
   };
+
+  // Function to sort events based on the intervals they occupy
+  export const  sortEventsByIntervals = (events: Event[], intervals: Date[]): Event[] => {
+    return [...events].sort((a, b) => {
+      const intervalsOccupiedA = getIntervalsOccupiedByEvent(a, intervals);
+      const intervalsOccupiedB = getIntervalsOccupiedByEvent(b, intervals);
+      return intervalsOccupiedB - intervalsOccupiedA; // Sort in descending order
+    });
+  }
+
  
  // Function to determine if an event overlaps with a given interval
  export const doesEventOverlapWithInterval = (event: Event, interval: Date) => {
