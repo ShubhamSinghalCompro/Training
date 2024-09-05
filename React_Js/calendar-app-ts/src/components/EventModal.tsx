@@ -76,7 +76,7 @@ const EventModal: React.FC<EventModalProps> = ({
     }
   }, [selectedEvent, open]);
 
-  const handleSave = () => {
+  const handleSaveOrEdit = () => {
     const event: Event = {
       id: selectedEvent ? selectedEvent.id : Date.now(),
       title: eventState.title,
@@ -166,7 +166,7 @@ const EventModal: React.FC<EventModalProps> = ({
             selectedEvent={selectedEvent}
             eventState={eventState}
             setEventState={setEventState}
-            handleSave={handleSave}
+            handleSaveOrEdit={handleSaveOrEdit}
             handleDelete={handleDelete}
             handleCategoryChange={handleCategoryChange}
           />

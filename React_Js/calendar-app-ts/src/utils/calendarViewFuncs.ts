@@ -58,7 +58,6 @@
     const pixelsPerMinute = 1;
     const topPosition = (visibleStart - intervalStart) * pixelsPerMinute;
     const eventHeight = (visibleEnd - visibleStart) * pixelsPerMinute;
-    debugger
 
     return { topPosition, eventHeight };
   };

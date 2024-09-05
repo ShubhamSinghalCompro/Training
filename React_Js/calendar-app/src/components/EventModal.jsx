@@ -57,7 +57,7 @@ const EventModal = ({ open, onClose, selectedEvent, selectedDay, setSelectedEven
     setEndTime('00:00');
   };
 
-  const handleSave = () => {
+  const handleSaveOrEdit = () => {
     const event = {
       id: selectedEvent ? selectedEvent.id : Date.now(),
       title,
@@ -184,7 +184,7 @@ const EventModal = ({ open, onClose, selectedEvent, selectedDay, setSelectedEven
               <Button
                 variant="contained"
                 color="primary"
-                onClick={handleSave}
+                onClick={handleSaveOrEdit}
                 endIcon={selectedEvent ? <SaveIcon /> : <AddIcon />}
               >
                 {selectedEvent ? 'Update Event' : 'Add Event'}
