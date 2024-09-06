@@ -27,6 +27,13 @@ const MonthlyView: React.FC<MonthlyViewProps> = ({ selectedDate, selectedCategor
     generateCalendar();
   }, [selectedDate]);
 
+  const handleKeyDown = (event: React.KeyboardEvent, day: Date, selectedEvent: Event | null) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      openModal(selectedEvent, day, selectedEvent ? 'viewEvent' : undefined);
+    }
+  };
+
   return (
     <>
       {/* Render days of the week */}
@@ -88,9 +95,12 @@ const MonthlyView: React.FC<MonthlyViewProps> = ({ selectedDate, selectedCategor
                   },
                   opacity: isDifferentMonth ? 0.5 : 1,
                 }}
-                onClick={() => (isDifferentMonth ? null : openModal(null, day))}
+                tabIndex={isDifferentMonth ? -1 : 0} // Make focusable
+                role="button" // Improve accessibility by making it a button-like element
+                aria-label={`Day ${format(day, 'd')}, ${hasEvents ? dayEvents.length : 0} events`}
+                onClick={() => !isDifferentMonth && openModal(null, day)}
+                onKeyDown={(e) => handleKeyDown(e, day, null)} // Handle keyboard event
               >
-                {/* Display the date */}
                 <Typography variant="body2" sx={{ fontWeight: 'bold', marginBottom: 1 }}>
                   {format(day, 'd')}
                 </Typography>
@@ -123,12 +133,16 @@ const MonthlyView: React.FC<MonthlyViewProps> = ({ selectedDate, selectedCategor
                             margin: '0 4px 0 0',
                             cursor: isDifferentMonth ? 'not-allowed' : 'pointer',
                           }}
+                          tabIndex={isDifferentMonth ? -1 : 0} // Make dots focusable
+                          role="button"
+                          aria-label={`${event.title} (${event.startTime} - ${event.endTime})`}
                           onClick={(e) => {
                             e.stopPropagation(); // Prevents triggering day click when clicking on dot
                             if (!isDifferentMonth) {
                               openModal(event, day, 'viewEvent');
                             }
                           }}
+                          onKeyDown={(e) => handleKeyDown(e, day, event)} // Handle keyboard for event dots
                         />
                       </Tooltip>
                     ))}
@@ -139,13 +153,21 @@ const MonthlyView: React.FC<MonthlyViewProps> = ({ selectedDate, selectedCategor
                 {displayMore && (
                   <Typography
                     variant="body2"
-                    sx={{ cursor: isDifferentMonth ? 'not-allowed' : 'pointer', color: theme.palette.primary.main, marginTop: 'auto' }} // Use primary color for "View More"
+                    sx={{
+                      cursor: isDifferentMonth ? 'not-allowed' : 'pointer',
+                      color: theme.palette.primary.main,
+                      marginTop: 'auto',
+                    }}
+                    tabIndex={isDifferentMonth ? -1 : 0}
+                    role="button"
+                    aria-label={`View more events for ${format(day, 'd')}`}
                     onClick={(e) => {
-                      e.stopPropagation(); // Prevents triggering day click when clicking on "View More"
-                      if (!isDifferentMonth){
+                      e.stopPropagation();
+                      if (!isDifferentMonth) {
                         openModal(null, day);
                       }
                     }}
+                    onKeyDown={(e) => handleKeyDown(e, day, null)} // Handle keyboard for View More
                   >
                     View More
                   </Typography>

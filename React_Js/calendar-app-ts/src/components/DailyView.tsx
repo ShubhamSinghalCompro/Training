@@ -4,7 +4,7 @@ import { Box, Typography, Grid, Grid2, IconButton, Tooltip, Theme } from '@mui/m
 import { format, addHours, startOfDay } from 'date-fns';
 import { Event, RootState, modalMode } from '../utils/types';
 import AddIcon from '@mui/icons-material/Add';
-import {calculateEventPositionInInterval, doesEventOverlapWithInterval, sortEventsByIntervals } from '../utils/calendarViewFuncs';
+import { calculateEventPositionInInterval, doesEventOverlapWithInterval, sortEventsByIntervals } from '../utils/calendarViewFuncs';
 
 interface DailyViewProps {
   selectedDate: Date;
@@ -40,17 +40,19 @@ const DailyView: React.FC<DailyViewProps> = ({
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'start', alignItems: 'center', p: 1 }}>
-      <Typography variant="h5">{format(selectedDate, 'EEEE, MMMM d, yyyy')}</Typography>
-      <IconButton
-        color="primary"
-        sx={{
-           ml: 1, 
-          '&:hover': { backgroundColor: theme.palette.grey[300]}
-        }}
-        onClick={() => openModal(null, selectedDate)}
-      >
-        <AddIcon />
-      </IconButton>
+        <Typography variant="h5">{format(selectedDate, 'EEEE, MMMM d, yyyy')}</Typography>
+        <IconButton
+          color="primary"
+          sx={{
+            ml: 1, 
+            '&:hover': { backgroundColor: theme.palette.grey[300] }
+          }}
+          onClick={() => openModal(null, selectedDate)}
+          aria-label="Add event"
+          tabIndex={0}
+        >
+          <AddIcon />
+        </IconButton>
       </Box>
       <Grid2 spacing={0}>
         {intervals.map((interval) => {
@@ -61,7 +63,7 @@ const DailyView: React.FC<DailyViewProps> = ({
           const displayMore = eventsInInterval.length > 3;
 
           return (
-            <Grid2  key={intervalKey}>
+            <Grid2 key={intervalKey}>
               {/* Time Slot */}
               <Box
                 sx={{
@@ -73,11 +75,20 @@ const DailyView: React.FC<DailyViewProps> = ({
                   flexDirection: 'column',
                   backgroundColor: '#f9f9f9',
                   '&:hover': {
-                        backgroundColor: theme.palette.action.selected, // Hover color from theme
-                        cursor:'pointer'
-                      },
+                    backgroundColor: theme.palette.action.selected, // Hover color from theme
+                    cursor: 'pointer'
+                  },
                 }}
                 onClick={() => openModal(null, selectedDate)}
+                aria-label={`Time slot at ${format(interval, 'HH:mm')}`}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    openModal(null, selectedDate);
+                  }
+                }}
               >
                 {/* Time Label */}
                 <Typography sx={{ position: 'absolute', left: 8, top: 8 }}>{format(interval, 'HH:mm')}</Typography>
@@ -92,7 +103,6 @@ const DailyView: React.FC<DailyViewProps> = ({
                     flexDirection: 'row',
                     flexWrap: 'wrap',
                   }}
-                  
                 >
                   {eventsInInterval.slice(0, 3).map((event) => {
                     const { topPosition, eventHeight } = calculateEventPositionInInterval(event, interval);
@@ -115,16 +125,25 @@ const DailyView: React.FC<DailyViewProps> = ({
                           }}
                           onClick={(e) => {
                             e.stopPropagation();
-                            openModal(event, new Date(event.date), 'viewEvent')}}
+                            openModal(event, new Date(event.date), 'viewEvent');
+                          }}
+                          aria-label={`${event.title} (${event.startTime} - ${event.endTime})`}
+                          role="button"
+                          tabIndex={0}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault();
+                              openModal(event, new Date(event.date), 'viewEvent');
+                            }
+                          }}
                         />
                       </Tooltip>
                     );
                   })}
                   {displayMore && (
-                      <Tooltip
-                    title= "View more"
+                    <Tooltip
+                      title="View more"
                     >
-
                       <Box
                         sx={{
                           position: 'absolute',
@@ -139,14 +158,21 @@ const DailyView: React.FC<DailyViewProps> = ({
                           justifyContent: 'center', // Center horizontally
                           alignItems: 'center', // Center vertically
                         }}
-                        onClick={() => {
-                          
-                          openModal(null, selectedDate)}}
+                        onClick={() => openModal(null, selectedDate)}
+                        aria-label="View more events"
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            openModal(null, selectedDate);
+                          }
+                        }}
                       >
                         <Typography sx={{ color: 'white' }}>{`+${eventsInInterval.length - 3}`}</Typography>
                       </Box>
                     </Tooltip>
-                    )}
+                  )}
                 </Box>
               </Box>
             </Grid2>

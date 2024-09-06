@@ -77,6 +77,8 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
                 }
               }}
               onClick={() => openModal(null, day)}
+              aria-label="Add event"
+              tabIndex={0}
               >
                 <AddIcon />
               </IconButton>
@@ -120,6 +122,15 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
                       },
                     }}
                     onClick={() => openModal(null, day)}
+                    aria-label={`Time slot at ${format(interval, 'HH:mm')}`}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        openModal(null, selectedDate);
+                      }
+                    }}
                   >
                     {sortedIntervalEvents.slice(0, 2).map((event, index) => {
                       const { topPosition, eventHeight } = calculateEventPositionInInterval(event, interval);
@@ -144,6 +155,15 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
                             onClick={(e) => {
                               e.stopPropagation();
                               openModal(event, new Date(event.date), 'viewEvent')}}
+                              aria-label={`${event.title} (${event.startTime} - ${event.endTime})`}
+                          role="button"
+                          tabIndex={0}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault();
+                              openModal(event, new Date(event.date), 'viewEvent');
+                            }
+                          }}
                           />
                         </Tooltip>
                       );
@@ -170,6 +190,16 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
                         onClick={() => {
                           
                           openModal(null, day)}}
+
+                          aria-label="View more events"
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            openModal(null, selectedDate);
+                          }
+                        }}
                       >
                         <Typography sx={{ color: 'white' }}>{`+${eventsInInterval.length - 2}`}</Typography>
                       </Box>
