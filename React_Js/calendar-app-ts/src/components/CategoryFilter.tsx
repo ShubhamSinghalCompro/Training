@@ -2,17 +2,16 @@
 
 import React, { useState } from 'react';
 import { Select, MenuItem, Box, FormControl, InputLabel, SelectChangeEvent } from '@mui/material';
-import { Category } from '../utils/types';
-import { categoryColors } from '../utils/categoryColors';
 
 interface CategoryFilterProps {
-  onChange: (category: Category) => void;
+  categoryColors: Record<string, string>;
+  onChange: (category: string) => void;
 }
 
-const CategoryFilter: React.FC<CategoryFilterProps> = ({ onChange }) => {
-  const[selectedCategory, setSelectedCategory] = useState<Category>('All');
+const CategoryFilter: React.FC<CategoryFilterProps> = ({ categoryColors, onChange }) => {
+  const[selectedCategory, setSelectedCategory] = useState<string>('All');
   const handleCategoryChange = (event: SelectChangeEvent<string>) => {
-    const value = event.target.value as Category;
+    const value = event.target.value;
     setSelectedCategory(value);
     onChange(value);
   };

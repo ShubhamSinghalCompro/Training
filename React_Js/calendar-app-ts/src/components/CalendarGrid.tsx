@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Button, Typography, useTheme } from '@mui/material';
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, addDays, subDays, subWeeks, addWeeks } from 'date-fns';
+import { format, addDays, subDays, subWeeks, addWeeks } from 'date-fns';
 import EventModal from './EventModal';
 import CategoryFilter from './CategoryFilter';
 import DailyView from './DailyView';
 import WeeklyView from './WeeklyView';
-import { Event, Category } from '../utils/types';
+import { Event } from '../utils/types';
 import { modalMode } from '../utils/types';
 import MonthlyView from './MonthlyView';
 
@@ -28,8 +28,9 @@ const CalendarGrid: React.FC = () => {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<Category>('All');
+  const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [mode, setMode] = useState<modalMode>('view');
+  const [categoryColors, setCategoryColors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     // Save current and viewMode to localStorage whenever they change
@@ -70,7 +71,7 @@ const CalendarGrid: React.FC = () => {
     setModalOpen(false);
   };
 
-  const handleCategoryChange = (category: Category) => {
+  const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
   };
 
@@ -104,6 +105,20 @@ const CalendarGrid: React.FC = () => {
     };
 
     window.addEventListener('message', handleMessage);
+
+    const storedColors = localStorage.getItem('categoryColors');
+    if (storedColors) {
+      setCategoryColors(JSON.parse(storedColors));
+    } else {
+      setCategoryColors({
+        All:        '#00000000',  // transparent  
+        General:    'rgba(0, 128, 255, 0.2)',  // Soft Blue
+        Meeting:    'rgba(0, 128, 128, 0.2)',  // Soft Teal
+        Birthday:   'rgba(255, 165, 0, 0.2)',  // Soft Orange
+        Anniversary:'rgba(128, 0, 128, 0.2)',  // Soft Purple
+        Important:  'rgba(60, 179, 113, 0.2)', // Soft Green
+      });
+    }
 
     return () => {
       window.removeEventListener('message', handleMessage);
@@ -159,7 +174,7 @@ const CalendarGrid: React.FC = () => {
         {/* Box for filter */}
         <Box sx={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
           <Box sx={{ minWidth: 120 }}>
-            <CategoryFilter onChange={handleCategoryChange} />
+            <CategoryFilter onChange={handleCategoryChange} categoryColors={categoryColors} />
           </Box>
         </Box>
       </Box>
@@ -175,6 +190,7 @@ const CalendarGrid: React.FC = () => {
           selectedDate={current}
           openModal={handleOpenModal}
           selectedCategory={selectedCategory}
+          categoryColors={categoryColors}
           />
       )}
       {viewMode === 'weekly' && (
@@ -202,6 +218,8 @@ const CalendarGrid: React.FC = () => {
         selectedCategory={selectedCategory}
         mode = {mode}
         setMode = {setMode}
+        categoryColors={categoryColors}
+        setCategoryColors={setCategoryColors}
       />
     </Box>
   );

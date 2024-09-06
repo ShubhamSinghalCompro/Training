@@ -34,17 +34,21 @@
  
  // Function to determine if an event overlaps with a given interval
  export const doesEventOverlapWithInterval = (event: Event, interval: Date) => {
+  debugger
     const eventStart = convertTimeStringToMinutes(event.startTime);
     const eventEnd = convertTimeStringToMinutes(event.endTime);
     const intervalStart = convertTimeStringToMinutes(format(interval, 'HH:mm'));
     const nextIntervalStart = convertTimeStringToMinutes(format(addHours(interval, 1), 'HH:mm'));
 
     // Check if event starts before the end of this interval and ends after the start of this interval
-    return eventStart < nextIntervalStart && eventEnd > intervalStart;
+    const ans = eventEnd >= 1380 ? ( eventStart < 1440 && eventEnd > intervalStart ) : (eventStart < nextIntervalStart && eventEnd > intervalStart);
+
+    return ans;
   };
 
   // Calculate the position and height for an event in a given interval
   export const calculateEventPositionInInterval = (event: Event, interval: Date) => {
+    debugger
     const eventStart = convertTimeStringToMinutes(event.startTime);
     const eventEnd = convertTimeStringToMinutes(event.endTime);
     const intervalStart = convertTimeStringToMinutes(format(interval, 'HH:mm'));
@@ -52,7 +56,7 @@
 
     // Determine the visible start and end within this interval
     const visibleStart = Math.max(eventStart, intervalStart);
-    const visibleEnd = Math.min(eventEnd, nextIntervalStart);
+    const visibleEnd = eventEnd >= 1380 ? eventEnd :Math.min(eventEnd, nextIntervalStart);
 
     // Calculate top position and height in pixels (1 minute = 2 pixels)
     const pixelsPerMinute = 1;

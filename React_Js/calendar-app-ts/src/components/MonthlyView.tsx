@@ -2,16 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { Box, Grid, Typography, Tooltip, useTheme } from '@mui/material';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, endOfWeek } from 'date-fns';
 import { useSelector } from 'react-redux';
-import { Event, Category, RootState } from '../utils/types';
-import { categoryColors } from '../utils/categoryColors';
+import { Event, RootState } from '../utils/types';
 
 interface MonthlyViewProps {
   selectedDate: Date;
-  selectedCategory: Category;
+  selectedCategory: string;
   openModal: (event: Event | null, day: Date | null, mode?: 'viewEvent' | 'add' | 'edit' | 'view') => void;
+  categoryColors: Record<string, string>;
 }
 
-const MonthlyView: React.FC<MonthlyViewProps> = ({ selectedDate, selectedCategory, openModal }) => {
+const MonthlyView: React.FC<MonthlyViewProps> = ({ selectedDate, selectedCategory, openModal, categoryColors }) => {
   const theme = useTheme();
   const events = useSelector((state: RootState) => state.events);
   const [days, setDays] = useState<Date[]>([]);

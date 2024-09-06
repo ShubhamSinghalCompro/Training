@@ -12,8 +12,7 @@ import { clearScheduledNotification } from '../utils/requestNotificationPermissi
 import { addEvent, updateEvent, deleteEvent } from '../store/eventsSlice';
 import { showSnackbar } from '../store/snackbarSlice';
 import CloseIcon from '@mui/icons-material/Close';
-import { categoryColors } from '../utils/categoryColors';
-import { Event, Category, RootState, modalMode, EventObject} from '../utils/types';
+import { Event, RootState, modalMode, EventObject} from '../utils/types';
 import EventDetails from './EventDetails';
 import ExistingEventsList from './ExistingEventsList'; // Import your new component
 import {scheduleNotification} from '../utils/requestNotificationPermission';
@@ -28,6 +27,8 @@ interface EventModalProps {
   selectedCategory: string;
   mode: modalMode;
   setMode: (mode: modalMode) => void;
+  categoryColors: Record<string, string>;
+  setCategoryColors: (colors: Record<string, string>) => void;
 }
 
 const EventModal: React.FC<EventModalProps> = ({
@@ -39,6 +40,9 @@ const EventModal: React.FC<EventModalProps> = ({
   selectedCategory,
   mode,
   setMode,
+  categoryColors,
+  setCategoryColors,
+
 }) => {
 
   const getCurrentTimeInterval = (intervalMinutes: number) => {
@@ -62,7 +66,7 @@ const EventModal: React.FC<EventModalProps> = ({
   const dispatch = useDispatch();
   const events = useSelector((state: RootState) => state.events);
 
-  const { startTime, endTime } = getCurrentTimeInterval(15);
+  const { startTime, endTime } = getCurrentTimeInterval(30);
 
   // State variables for the event modal
   const [eventState, setEventState] = useState<EventObject>({
@@ -74,7 +78,7 @@ const EventModal: React.FC<EventModalProps> = ({
   });
 
   const resetForm = () => {
-    const { startTime, endTime } = getCurrentTimeInterval(15);
+    const { startTime, endTime } = getCurrentTimeInterval(30);
     setEventState({
       title: '',
       category: 'General',
@@ -102,6 +106,7 @@ const EventModal: React.FC<EventModalProps> = ({
   }, [selectedEvent, open]);
 
   const handleSaveOrEdit = () => {
+    debugger
     const event: Event = {
       id: selectedEvent ? selectedEvent.id : Date.now(),
       title: eventState.title,
@@ -138,9 +143,9 @@ const EventModal: React.FC<EventModalProps> = ({
   };
 
   const handleCategoryChange = (event: SelectChangeEvent<string>) => {
-    const newCategory: Category = event.target.value as Category;
+    const newCategory: string = event.target.value;
     setEventState({ ...eventState, category: newCategory, color: categoryColors[newCategory] });
-  };
+};
 
   const handleAddClick = () => {
     resetForm();
@@ -194,6 +199,8 @@ const EventModal: React.FC<EventModalProps> = ({
             handleSaveOrEdit={handleSaveOrEdit}
             handleDelete={handleDelete}
             handleCategoryChange={handleCategoryChange}
+            categoryColors={categoryColors}
+            setCategoryColors={setCategoryColors}
           />
         ) : (
           <ExistingEventsList

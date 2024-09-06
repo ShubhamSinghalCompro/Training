@@ -1,9 +1,8 @@
-export type Category = 'All' | 'General' | 'Meeting' | 'Birthday' | 'Anniversary' | 'Important';
 
 export interface Event {
   id: number;
   title: string;
-  category: Category;
+  category: string;
   color: string;
   date: string;
   startTime: string;
@@ -20,7 +19,7 @@ export type modalMode = 'view' | 'add' | 'edit' | 'viewEvent';
 
 export interface EventObject{
   title: string;
-  category: Category;
+  category: string;
   color: string;
   startTime: string;
   endTime: string;
