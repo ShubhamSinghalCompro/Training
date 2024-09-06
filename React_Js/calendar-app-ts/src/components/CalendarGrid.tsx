@@ -1,27 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Button, Typography, useTheme } from '@mui/material';
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, addDays, subDays, subWeeks, addWeeks, startOfWeek, endOfWeek } from 'date-fns';
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, addDays, subDays, subWeeks, addWeeks } from 'date-fns';
 import EventModal from './EventModal';
 import CategoryFilter from './CategoryFilter';
 import DailyView from './DailyView';
 import WeeklyView from './WeeklyView';
 import { Event, Category } from '../utils/types';
-import { modalMode } from '../utils/types'; // Import RootState interface
+import { modalMode } from '../utils/types';
 import MonthlyView from './MonthlyView';
 
 type ViewMode = 'monthly' | 'weekly' | 'daily';
 
 const CalendarGrid: React.FC = () => {
-  const theme = useTheme(); // Get theme from MUI
-  
-  const [current, setCurrent] = useState<Date>(new Date());
-  
+  const theme = useTheme();
+
+  // Load initial state from localStorage or fallback to defaults
+  const [current, setCurrent] = useState<Date>(() => {
+    const savedDate = localStorage.getItem('current');
+    return savedDate ? new Date(savedDate) : new Date();
+  });
+
+  const [viewMode, setViewMode] = useState<ViewMode>(() => {
+    const savedViewMode = localStorage.getItem('viewMode');
+    return (savedViewMode as ViewMode) || 'monthly';
+  });
+
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<Category>('All');
-  const [viewMode, setViewMode] = useState<ViewMode>('monthly'); // State to manage the view mode
-  const [mode, setMode] = useState<modalMode>('view'); // State to manage modal mode
+  const [mode, setMode] = useState<modalMode>('view');
+
+  useEffect(() => {
+    // Save current and viewMode to localStorage whenever they change
+    localStorage.setItem('current', current.toISOString());
+    localStorage.setItem('viewMode', viewMode);
+  }, [current, viewMode]);
 
   const handlePrev = () => {
     if (viewMode === 'daily') {
@@ -67,12 +81,9 @@ const CalendarGrid: React.FC = () => {
   const handleToday = () => {
     setCurrent(new Date()); // Set the current date to today's date
   };
-  
+
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
-      console.log('Received message:', event.data);
-
-      // Type guard to check the message structure
       if (event.data && event.data.type === 'OPEN_MODAL' && event.data.event && event.data.event.date) {
         // Construct the Event object based on the data received
         const eventData: Event = {

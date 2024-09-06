@@ -17,6 +17,7 @@ import { Event, Category, RootState, modalMode, EventObject} from '../utils/type
 import EventDetails from './EventDetails';
 import ExistingEventsList from './ExistingEventsList'; // Import your new component
 import {scheduleNotification} from '../utils/requestNotificationPermission';
+import { format, addMinutes } from 'date-fns';
 
 interface EventModalProps {
   open: boolean;
@@ -39,27 +40,51 @@ const EventModal: React.FC<EventModalProps> = ({
   mode,
   setMode,
 }) => {
+
+  const getCurrentTimeInterval = (intervalMinutes: number) => {
+    const now = new Date();
+    const minutes = now.getMinutes();
+    
+    // Round down to the nearest interval (e.g., 15 minutes)
+    const roundedMinutes = Math.ceil(minutes / intervalMinutes) * intervalMinutes;
+    const roundedStartTime = new Date(now.setMinutes(roundedMinutes));
+  
+    // Calculate the end time by adding the interval duration
+    const roundedEndTime = addMinutes(roundedStartTime, intervalMinutes);
+  
+    return {
+      startTime: format(roundedStartTime, 'HH:mm'),
+      endTime: format(roundedEndTime, 'HH:mm'),
+    };
+  };
+
+
   const dispatch = useDispatch();
   const events = useSelector((state: RootState) => state.events);
+
+  const { startTime, endTime } = getCurrentTimeInterval(15);
 
   // State variables for the event modal
   const [eventState, setEventState] = useState<EventObject>({
     title: '',
     category: 'General',
     color: categoryColors['General'],
-    startTime: '00:00',
-    endTime: '00:00',
+    startTime: startTime,
+    endTime: endTime,
   });
 
   const resetForm = () => {
+    const { startTime, endTime } = getCurrentTimeInterval(15);
     setEventState({
       title: '',
       category: 'General',
       color: categoryColors['General'],
-      startTime: '00:00',
-      endTime: '00:00',
+      startTime: startTime,
+      endTime: endTime,
     });
   };
+
+  
 
   useEffect(() => {
     if (selectedEvent) {
