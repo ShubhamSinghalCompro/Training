@@ -8,7 +8,7 @@ import { calculateEventPositionInInterval, doesEventOverlapWithInterval, sortEve
 
 interface DailyViewProps {
   selectedDate: Date;
-  openModal: (event: Event | null, day: Date | null, mode?: modalMode) => void;
+  openModal: (event: Event | null, day: Date | null, mode: modalMode) => void;
   selectedCategory: string;
   theme: Theme
 }
@@ -47,7 +47,7 @@ const DailyView: React.FC<DailyViewProps> = ({
             ml: 1, 
             '&:hover': { backgroundColor: theme.palette.grey[300] }
           }}
-          onClick={() => openModal(null, selectedDate)}
+          onClick={() => openModal(null, selectedDate, 'add')}
           aria-label="Add event"
           tabIndex={0}
         >

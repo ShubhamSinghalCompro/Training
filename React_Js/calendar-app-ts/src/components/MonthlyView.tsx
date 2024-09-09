@@ -7,7 +7,7 @@ import { Event, RootState } from '../utils/types';
 interface MonthlyViewProps {
   selectedDate: Date;
   selectedCategory: string;
-  openModal: (event: Event | null, day: Date | null, mode?: 'viewEvent' | 'add' | 'edit' | 'view') => void;
+  openModal: (event: Event | null, day: Date | null, mode: 'viewEvent' | 'add' | 'edit' | 'view') => void;
   categoryColors: Record<string, string>;
 }
 

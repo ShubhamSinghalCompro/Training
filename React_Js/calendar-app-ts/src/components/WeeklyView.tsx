@@ -8,7 +8,7 @@ import AddIcon from '@mui/icons-material/Add';
 
 interface WeeklyViewProps {
   selectedDate: Date;
-  openModal: (event: Event | null, day: Date | null, mode?: modalMode) => void;
+  openModal: (event: Event | null, day: Date | null, mode: modalMode) => void;
   selectedCategory: string;
   theme:Theme;
 }
