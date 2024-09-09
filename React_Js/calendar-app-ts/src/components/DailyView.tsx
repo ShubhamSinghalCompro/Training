@@ -8,7 +8,7 @@ import { calculateEventPositionInInterval, doesEventOverlapWithInterval, sortEve
 
 interface DailyViewProps {
   selectedDate: Date;
-  openModal: (event: Event | null, day: Date | null, mode?: modalMode) => void;
+  openModal: (event: Event | null, day: Date | null, mode: modalMode) => void;
   selectedCategory: string;
   theme: Theme
 }
@@ -47,7 +47,7 @@ const DailyView: React.FC<DailyViewProps> = ({
             ml: 1, 
             '&:hover': { backgroundColor: theme.palette.grey[300] }
           }}
-          onClick={() => openModal(null, selectedDate)}
+          onClick={() => openModal(null, selectedDate, 'add')}
           aria-label="Add event"
           tabIndex={0}
         >
@@ -79,14 +79,14 @@ const DailyView: React.FC<DailyViewProps> = ({
                     cursor: 'pointer'
                   },
                 }}
-                onClick={() => openModal(null, selectedDate)}
+                onClick={() => eventsInInterval.length ===0 ? openModal(null, selectedDate, 'add') : openModal(null, selectedDate, 'view')}
                 aria-label={`Time slot at ${format(interval, 'HH:mm')}`}
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
-                    openModal(null, selectedDate);
+                    eventsInInterval.length ===0 ? openModal(null, selectedDate, 'add') : openModal(null, selectedDate, 'view');
                   }
                 }}
               >
@@ -158,14 +158,14 @@ const DailyView: React.FC<DailyViewProps> = ({
                           justifyContent: 'center', // Center horizontally
                           alignItems: 'center', // Center vertically
                         }}
-                        onClick={() => openModal(null, selectedDate)}
+                        onClick={() => openModal(null, selectedDate, 'view')}
                         aria-label="View more events"
                         role="button"
                         tabIndex={0}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' || e.key === ' ') {
                             e.preventDefault();
-                            openModal(null, selectedDate);
+                            openModal(null, selectedDate, 'view');
                           }
                         }}
                       >

@@ -58,7 +58,7 @@ const CalendarGrid: React.FC = () => {
     }
   };
 
-  const handleOpenModal = (event: Event | null = null, day: Date | null = null, mode: 'viewEvent' | 'add' | 'edit' | 'view' = 'view') => {
+  const handleOpenModal = (event: Event | null = null, day: Date | null = null, mode: 'viewEvent' | 'add' | 'edit' | 'view') => {
     setSelectedEvent(event);
     setSelectedDay(day);
     setModalOpen(true);

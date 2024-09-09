@@ -7,7 +7,7 @@ import { Event, RootState } from '../utils/types';
 interface MonthlyViewProps {
   selectedDate: Date;
   selectedCategory: string;
-  openModal: (event: Event | null, day: Date | null, mode?: 'viewEvent' | 'add' | 'edit' | 'view') => void;
+  openModal: (event: Event | null, day: Date | null, mode: 'viewEvent' | 'add' | 'edit' | 'view') => void;
   categoryColors: Record<string, string>;
 }
 
@@ -30,7 +30,7 @@ const MonthlyView: React.FC<MonthlyViewProps> = ({ selectedDate, selectedCategor
   const handleKeyDown = (event: React.KeyboardEvent, day: Date, selectedEvent: Event | null) => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
-      openModal(selectedEvent, day, selectedEvent ? 'viewEvent' : undefined);
+      openModal(selectedEvent, day, selectedEvent ? 'viewEvent' : 'view');
     }
   };
 
@@ -98,7 +98,14 @@ const MonthlyView: React.FC<MonthlyViewProps> = ({ selectedDate, selectedCategor
                 tabIndex={isDifferentMonth ? -1 : 0} // Make focusable
                 role="button" // Improve accessibility by making it a button-like element
                 aria-label={`Day ${format(day, 'd')}, ${hasEvents ? dayEvents.length : 0} events`}
-                onClick={() => !isDifferentMonth && openModal(null, day)}
+                onClick={() => {
+                  debugger;
+                  if(!isDifferentMonth){
+                  if(!hasEvents){
+                    openModal(null, day, 'add');
+                  }
+                else{openModal(null, day, 'view');}}}}
+
                 onKeyDown={(e) => handleKeyDown(e, day, null)} // Handle keyboard event
               >
                 <Typography variant="body2" sx={{ fontWeight: 'bold', marginBottom: 1 }}>
@@ -164,7 +171,7 @@ const MonthlyView: React.FC<MonthlyViewProps> = ({ selectedDate, selectedCategor
                     onClick={(e) => {
                       e.stopPropagation();
                       if (!isDifferentMonth) {
-                        openModal(null, day);
+                        openModal(null, day, 'view');
                       }
                     }}
                     onKeyDown={(e) => handleKeyDown(e, day, null)} // Handle keyboard for View More
