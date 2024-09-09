@@ -101,7 +101,6 @@ const EventModal: React.FC<EventModalProps> = ({
       });
     } else {
       resetForm();
-      setMode('view');
     }
   }, [selectedEvent, open]);
 

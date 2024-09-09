@@ -76,7 +76,7 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
                   
                 }
               }}
-              onClick={() => openModal(null, day)}
+              onClick={() => openModal(null, day, 'add')}
               aria-label="Add event"
               tabIndex={0}
               >
@@ -121,14 +121,14 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
                         cursor: 'pointer',
                       },
                     }}
-                    onClick={() => openModal(null, day)}
+                    onClick={() => eventsInInterval.length ===0 ? openModal(null, day, 'add') : openModal(null, day, 'view')}
                     aria-label={`Time slot at ${format(interval, 'HH:mm')}`}
                     role="button"
                     tabIndex={0}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' || e.key === ' ') {
                         e.preventDefault();
-                        openModal(null, selectedDate);
+                        eventsInInterval.length ===0 ? openModal(null, day, 'add') : openModal(null, day, 'view');
                       }
                     }}
                   >
@@ -189,7 +189,7 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
                         }}
                         onClick={() => {
                           
-                          openModal(null, day)}}
+                          openModal(null, day, 'view')}}
 
                           aria-label="View more events"
                         role="button"
@@ -197,7 +197,7 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' || e.key === ' ') {
                             e.preventDefault();
-                            openModal(null, selectedDate);
+                            openModal(null, selectedDate, 'view');
                           }
                         }}
                       >

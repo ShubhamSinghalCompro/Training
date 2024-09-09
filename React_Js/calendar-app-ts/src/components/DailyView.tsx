@@ -79,14 +79,14 @@ const DailyView: React.FC<DailyViewProps> = ({
                     cursor: 'pointer'
                   },
                 }}
-                onClick={() => openModal(null, selectedDate)}
+                onClick={() => eventsInInterval.length ===0 ? openModal(null, selectedDate, 'add') : openModal(null, selectedDate, 'view')}
                 aria-label={`Time slot at ${format(interval, 'HH:mm')}`}
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
-                    openModal(null, selectedDate);
+                    eventsInInterval.length ===0 ? openModal(null, selectedDate, 'add') : openModal(null, selectedDate, 'view');
                   }
                 }}
               >
@@ -158,14 +158,14 @@ const DailyView: React.FC<DailyViewProps> = ({
                           justifyContent: 'center', // Center horizontally
                           alignItems: 'center', // Center vertically
                         }}
-                        onClick={() => openModal(null, selectedDate)}
+                        onClick={() => openModal(null, selectedDate, 'view')}
                         aria-label="View more events"
                         role="button"
                         tabIndex={0}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' || e.key === ' ') {
                             e.preventDefault();
-                            openModal(null, selectedDate);
+                            openModal(null, selectedDate, 'view');
                           }
                         }}
                       >
