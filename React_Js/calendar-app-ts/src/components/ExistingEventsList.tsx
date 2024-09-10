@@ -42,7 +42,7 @@ const ExistingEventsList: React.FC<ExistingEventsListProps> = ({
 
   return (
     <>
-     <Typography variant="h6" sx={{ mt: 2 }}>
+     <Typography variant="h6" sx={{ mt: 2, mb: 1, textAlign: 'center' }}>
             Existing Events
           </Typography>
       <Grid2 spacing={1}>

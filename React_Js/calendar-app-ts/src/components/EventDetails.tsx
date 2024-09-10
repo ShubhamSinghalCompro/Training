@@ -46,30 +46,6 @@ const EventDetails: React.FC<EventDetailsProps> = ({ mode, selectedEvent, eventS
 
   const handleAddCategory = () => {
     const { category, color } = eventState;
-    let hasErrors = false;
-    const errors: Partial<FormErrors> = {};
-
-    if (category.trim() === '') {
-      errors.category = 'Category name is required';
-      hasErrors = true;
-    } else if (categoryColors[category]) {
-      errors.category = 'Category already exists';
-      hasErrors = true;
-    }
-
-    if (color.trim() === '') {
-      errors.color = 'Category color is required';
-      hasErrors = true;
-    } else if (Object.values(categoryColors).includes(color)) {
-      errors.color = 'Color is already used';
-      hasErrors = true;
-    }
-
-    if (hasErrors) {
-      setFormErrors(prev => ({ ...prev, ...errors }));
-      return;
-    }
-
     const updatedCategories = { ...categoryColors, [category]: color };
     setCategoryColors(updatedCategories);
     localStorage.setItem('categoryColors', JSON.stringify(updatedCategories));
@@ -79,28 +55,54 @@ const EventDetails: React.FC<EventDetailsProps> = ({ mode, selectedEvent, eventS
   const validateForm = (): boolean => {
     let errors: FormErrors = { title: '', time: '', category: '', color: '' };
     let isValid = true;
-
+  
     if (eventState.title.trim() === '') {
       errors.title = 'Title is required';
       isValid = false;
     }
-
+  
     if (eventState.endTime <= eventState.startTime) {
       errors.time = 'End time should be greater than start time';
       isValid = false;
     }
-
+  
+    // Validate the category if the user is adding a new category
+    if (showNewCategoryInput) {
+      if (eventState.category.trim() === '') {
+        errors.category = 'New category name is required';
+        isValid = false;
+      } else if (categoryColors[eventState.category.trim()] !== undefined) {
+        errors.category = 'Category already exists';
+        isValid = false;
+      }
+  
+      if (eventState.color.trim() === '') {
+        errors.color = 'Category color is required';
+        isValid = false;
+      } else if (Object.values(categoryColors).includes(eventState.color.trim())) {
+        errors.color = 'This color is already assigned to another category';
+        isValid = false;
+      }
+    }
+  
+    // Validate the selected category if not adding a new one
+    if (!showNewCategoryInput && eventState.category.trim() === '') {
+      errors.category = 'Category is required';
+      isValid = false;
+    }
+  
     setFormErrors(errors);
     return isValid;
   };
+  
 
   return (
     <>
-      <Typography variant="h6">
+      <Typography variant="h6" sx={{ textAlign: 'center' }}>
         {mode === 'add' ? 'Add Event' : (mode === 'edit' ? 'Edit Event' : 'Event')}
       </Typography>
       <Box
-        sx={{ backgroundColor: showNewCategoryInput ? eventState.color : categoryColors[eventState.category] || '#fff', height: 8, borderRadius: 1, mb: 2 }}
+        sx={{ backgroundColor: showNewCategoryInput ? eventState.color : categoryColors[eventState.category] || '#fff', height: 12, borderRadius: 1, mb: 1, mt: 2 }}
       />
 
       <TextField
@@ -189,9 +191,13 @@ const EventDetails: React.FC<EventDetailsProps> = ({ mode, selectedEvent, eventS
         color="primary"
         onClick={() => {
           if (showNewCategoryInput) {
-            handleAddCategory();
+            
+            if (validateForm()) {
+              handleAddCategory();
+              handleSaveOrEdit();
+            }
           }
-          if (validateForm()) {
+          else if (validateForm()) {
             handleSaveOrEdit();
           }
         }}
