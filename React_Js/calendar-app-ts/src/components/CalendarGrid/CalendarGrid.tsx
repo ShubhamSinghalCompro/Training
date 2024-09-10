@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Button, Typography, useTheme } from '@mui/material';
 import { format, addDays, subDays, subWeeks, addWeeks } from 'date-fns';
-import EventModal from './EventModal';
-import CategoryFilter from './CategoryFilter';
-import DailyView from './DailyView';
-import WeeklyView from './WeeklyView';
-import { Event } from '../utils/types';
-import { modalMode } from '../utils/types';
-import MonthlyView from './MonthlyView';
-
+import EventModal from '../EventModal';
+import CategoryFilter from '../CategoryFilter';
+import DailyView from '../DailyView';
+import WeeklyView from '../WeeklyView';
+import MonthlyView from '../MonthlyView';
+import { Event } from '../../utils/types';
+import { modalMode } from '../../utils/types';
+import {StyledContainer} from './StyleComponents';
 type ViewMode = 'monthly' | 'weekly' | 'daily';
 
 const CalendarGrid: React.FC = () => {
@@ -126,7 +126,7 @@ const CalendarGrid: React.FC = () => {
   }, []);
 
   return (
-    <Box
+    <StyledContainer
       sx={{
         maxWidth: 1200,
         maxHeight: '95vh',
@@ -221,8 +221,9 @@ const CalendarGrid: React.FC = () => {
         categoryColors={categoryColors}
         setCategoryColors={setCategoryColors}
       />
-    </Box>
+    </StyledContainer>
   );
 };
+
 
 export default CalendarGrid;

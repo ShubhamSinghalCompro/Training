@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
-import CalendarGrid from './components/CalendarGrid';
+import CalendarGrid from './components/CalendarGrid/CalendarGrid';
 import { CssBaseline, Container, Typography } from '@mui/material';
 import SnackbarNotification from './components/SnackbarNotification';
 import { requestNotificationPermission } from './utils/requestNotificationPermission';
 
-  
+
 
 const App: React.FC = () => {
   useEffect(() => {

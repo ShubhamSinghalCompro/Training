@@ -42,11 +42,9 @@ const ExistingEventsList: React.FC<ExistingEventsListProps> = ({
 
   return (
     <>
-     {dailyEvents(events, selectedDay)
-          .filter(event => selectedCategory === 'All' || event.category === selectedCategory).length > 0 && (<Typography variant="h6" sx={{ mt: 2 }}>
+     <Typography variant="h6" sx={{ mt: 2 }}>
             Existing Events
           </Typography>
-    )}
       <Grid2 spacing={1}>
         {categoryEvents
           .map(event => (
@@ -113,7 +111,7 @@ const ExistingEventsList: React.FC<ExistingEventsListProps> = ({
         variant="contained"
         color="primary"
         onClick={handleAddClick}
-        startIcon={<AddIcon />}
+        endIcon={<AddIcon />}
         sx={{ mt: 5 }}
         fullWidth
       >
