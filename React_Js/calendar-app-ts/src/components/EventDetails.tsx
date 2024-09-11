@@ -5,6 +5,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
+import styled from '@emotion/styled';
 
 interface FormErrors {
   title: string;
@@ -98,12 +99,10 @@ const EventDetails: React.FC<EventDetailsProps> = ({ mode, selectedEvent, eventS
 
   return (
     <>
-      <Typography variant="h6" sx={{ textAlign: 'center' }}>
+      <Typography variant="h6">
         {mode === 'add' ? 'Add Event' : (mode === 'edit' ? 'Edit Event' : 'Event')}
       </Typography>
-      <Box
-        sx={{ backgroundColor: showNewCategoryInput ? eventState.color : categoryColors[eventState.category] || '#fff', height: 12, borderRadius: 1, mb: 1, mt: 2 }}
-      />
+      <ColorBar eventState={eventState} categoryColors={categoryColors} showNewCategoryInput={showNewCategoryInput}/>
 
       <TextField
         label="Title"
@@ -165,7 +164,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({ mode, selectedEvent, eventS
       </FormControl>
 
       {showNewCategoryInput && (
-        <Box sx={{ mb: 2 }}>
+        <Box marginBottom={2}>
           <TextField
             label="New Category"
             value={eventState.category}
@@ -202,6 +201,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({ mode, selectedEvent, eventS
           }
         }}
         endIcon={mode === 'viewEvent' ? <EditIcon /> : selectedEvent ? <SaveIcon /> : <AddIcon />}
+        sx= {mode !== 'add' ? {} : { display: 'flex', justifyContent: 'center', mx: 'auto',}}
       >
         {mode === 'viewEvent' ? 'Edit Event' : (selectedEvent ? 'Update Event' : 'Add Event')}
       </Button>
@@ -219,5 +219,20 @@ const EventDetails: React.FC<EventDetailsProps> = ({ mode, selectedEvent, eventS
     </>
   );
 };
+
+
+interface ColorBarInterface  {
+  eventState: EventObject
+  categoryColors: Record<string, string>
+  showNewCategoryInput: boolean
+}
+
+const ColorBar = styled(Box)<ColorBarInterface>(({ eventState, categoryColors, showNewCategoryInput }) => ({
+  backgroundColor: showNewCategoryInput ? eventState.color : categoryColors[eventState.category] || '#fff',
+  height: 12, 
+  borderRadius: 1, 
+  mb: 1, 
+  mt: 2 
+}))
 
 export default EventDetails;

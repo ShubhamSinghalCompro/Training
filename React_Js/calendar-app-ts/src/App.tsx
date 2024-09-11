@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import CalendarGrid from './components/CalendarGrid/CalendarGrid';
-import { CssBaseline, Container, Typography } from '@mui/material';
+import CalendarGrid from './components/CalendarGrid';
+import { CssBaseline, Container } from '@mui/material';
 import SnackbarNotification from './components/SnackbarNotification';
 import { requestNotificationPermission } from './utils/requestNotificationPermission';
 

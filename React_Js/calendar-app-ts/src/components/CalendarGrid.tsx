@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Button, Typography, useTheme } from '@mui/material';
 import { format, addDays, subDays, subWeeks, addWeeks } from 'date-fns';
-import EventModal from '../EventModal';
-import CategoryFilter from '../CategoryFilter';
-import DailyView from '../DailyView';
-import WeeklyView from '../WeeklyView';
-import MonthlyView from '../MonthlyView';
-import { Event } from '../../utils/types';
-import { modalMode } from '../../utils/types';
-import {StyledContainer} from './StyleComponents';
+import EventModal from './EventModal';
+import CategoryFilter from './CategoryFilter';
+import DailyView from './DailyView';
+import WeeklyView from './WeeklyView';
+import MonthlyView from './MonthlyView';
+import { Event } from '../utils/types';
+import { modalMode } from '../utils/types';
+import {styled} from '@mui/material/styles';
+
 type ViewMode = 'monthly' | 'weekly' | 'daily';
 
 const CalendarGrid: React.FC = () => {
@@ -126,19 +127,7 @@ const CalendarGrid: React.FC = () => {
   }, []);
 
   return (
-    <StyledContainer
-      sx={{
-        maxWidth: 1200,
-        maxHeight: '95vh',
-        margin: '10px auto',
-        padding: 2,
-        border: `2px solid ${theme.palette.grey[800]}`, // Dark border using theme colors
-        borderRadius: 2,
-        backgroundColor: theme.palette.background.default, // Background color from theme
-        overflowY: 'auto',
-        overflowX: 'auto',
-      }}
-    >
+    <CalendarContainer>
       <Typography
         variant="h3"
         gutterBottom
@@ -152,34 +141,28 @@ const CalendarGrid: React.FC = () => {
       >
         Event Scheduler
       </Typography>
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          marginBottom: 2,
-        }}
-      >
+      <Box display={'flex'} alignItems={'center'} marginBottom={2}>
         {/* Box for buttons */}
-        <Box sx={{ display: 'flex', alignItems: 'center', flex: 1 }}>
+        <Box display = "flex" alignItems={'center'} flex={1} >
           <Button variant="contained" onClick={handlePrev} sx={{ mr: 1 }}>Prev</Button>
           <Button variant="contained" onClick={handleToday} sx={{ mr: 1 }}>Today</Button> {/* Add Today button here */}
           <Button variant="contained" onClick={handleNext}>Next</Button>
         </Box>
 
         {/* Centered month display */}
-        <Typography variant="h4" sx={{ flex: 2, textAlign: 'center' }}>
+        <Typography variant="h4" textAlign={'center'} flex={2}>
           {format(current, 'MMMM yyyy')}
         </Typography>
 
         {/* Box for filter */}
         <Box sx={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
-          <Box sx={{ minWidth: 120 }}>
+          <Box minWidth={120} >
             <CategoryFilter onChange={handleCategoryChange} categoryColors={categoryColors} />
           </Box>
         </Box>
       </Box>
 
-      <Box sx={{ display: 'flex', justifyContent: 'center', marginBottom: 2 }}>
+      <Box display = 'flex' justifyContent = 'center' marginBottom = {2} >
         <Button variant={viewMode === 'monthly' ? 'contained' : 'outlined'} onClick={() => handleViewChange('monthly')} sx={{ mr: 1 }}>Monthly</Button>
         <Button variant={viewMode === 'weekly' ? 'contained' : 'outlined'} onClick={() => handleViewChange('weekly')} sx={{ mr: 1 }}>Weekly</Button>
         <Button variant={viewMode === 'daily' ? 'contained' : 'outlined'} onClick={() => handleViewChange('daily')} sx={{ mr: 1 }}>Daily</Button>
@@ -221,9 +204,20 @@ const CalendarGrid: React.FC = () => {
         categoryColors={categoryColors}
         setCategoryColors={setCategoryColors}
       />
-    </StyledContainer>
+    </CalendarContainer>
   );
 };
 
+const CalendarContainer = styled(Box)(({ theme }) => ({
+  maxWidth: 1200,
+  height: '95vh',
+  margin: '10px auto',
+  padding: theme.spacing(2),
+  border: `2px solid ${theme.palette.grey[800]}`,
+  borderRadius: 2,
+  backgroundColor: theme.palette.background.default,
+  overflowY: 'auto',
+  overflowX: 'auto',
+}));
 
 export default CalendarGrid;

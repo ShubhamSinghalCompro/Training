@@ -34,7 +34,7 @@
  
  // Function to determine if an event overlaps with a given interval
  export const doesEventOverlapWithInterval = (event: Event, interval: Date) => {
-  debugger
+  
     const eventStart = convertTimeStringToMinutes(event.startTime);
     const eventEnd = convertTimeStringToMinutes(event.endTime);
     const intervalStart = convertTimeStringToMinutes(format(interval, 'HH:mm'));
@@ -48,7 +48,7 @@
 
   // Calculate the position and height for an event in a given interval
   export const calculateEventPositionInInterval = (event: Event, interval: Date) => {
-    debugger
+
     const eventStart = convertTimeStringToMinutes(event.startTime);
     const eventEnd = convertTimeStringToMinutes(event.endTime);
     const intervalStart = convertTimeStringToMinutes(format(interval, 'HH:mm'));

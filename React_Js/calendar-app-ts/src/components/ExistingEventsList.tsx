@@ -42,7 +42,7 @@ const ExistingEventsList: React.FC<ExistingEventsListProps> = ({
 
   return (
     <>
-     <Typography variant="h6" sx={{ mt: 2, mb: 1, textAlign: 'center' }}>
+     <Typography variant="h6" sx={{ mb: 2 }}>
             Existing Events
           </Typography>
       <Grid2 spacing={1}>
@@ -66,7 +66,7 @@ const ExistingEventsList: React.FC<ExistingEventsListProps> = ({
                 }}
               >
               <Box
-                sx={{ display: 'flex', alignItems: 'center' }}>
+                sx={{ display: 'flex', alignItems: 'center', }}>
                  <Box
                     sx={{
                       width: 16,
@@ -112,10 +112,9 @@ const ExistingEventsList: React.FC<ExistingEventsListProps> = ({
         color="primary"
         onClick={handleAddClick}
         endIcon={<AddIcon />}
-        sx={{ mt: 5 }}
-        fullWidth
+        sx={{ display: 'flex', justifyContent: 'center',mx : 'auto', mt: 2,}}
       >
-        Add Event
+      Add Event
       </Button>
     </>
   );

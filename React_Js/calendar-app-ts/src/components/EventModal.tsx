@@ -17,6 +17,7 @@ import EventDetails from './EventDetails';
 import ExistingEventsList from './ExistingEventsList'; // Import your new component
 import {scheduleNotification} from '../utils/requestNotificationPermission';
 import { format, addMinutes } from 'date-fns';
+import { ViewHeadline } from '@mui/icons-material';
 
 interface EventModalProps {
   open: boolean;
@@ -105,7 +106,7 @@ const EventModal: React.FC<EventModalProps> = ({
   }, [selectedEvent, open]);
 
   const handleSaveOrEdit = () => {
-    debugger
+    
     const event: Event = {
       id: selectedEvent ? selectedEvent.id : Date.now(),
       title: eventState.title,
@@ -160,16 +161,21 @@ const EventModal: React.FC<EventModalProps> = ({
         setSelectedEvent(null);
         setMode('view');
       }}
+      aria-labelledby="modal-modal-title"
+      aria-describedby="modal-modal-description"
+
     >
       <Box
         sx={{
           maxWidth: 400,
-          margin: 'auto',
-          mt: 8,
+          minWidth: Math.min(400, window.innerWidth * 0.7),
           padding: 2,
           backgroundColor: '#fff',
           borderRadius: 2,
-          position: 'relative',
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+            transform: 'translate(-50%, -50%)',
         }}
       >
         {/* Close Button */}

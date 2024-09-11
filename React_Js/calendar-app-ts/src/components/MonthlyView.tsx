@@ -94,12 +94,12 @@ const MonthlyView: React.FC<MonthlyViewProps> = ({ selectedDate, selectedCategor
                     backgroundColor: isDifferentMonth ? bgColor :theme.palette.action.selected, // Hover color from theme
                   },
                   opacity: isDifferentMonth ? 0.5 : 1,
+                  userSelect: isDifferentMonth ? 'none' : 'auto',
                 }}
                 tabIndex={isDifferentMonth ? -1 : 0} // Make focusable
                 role="button" // Improve accessibility by making it a button-like element
                 aria-label={`Day ${format(day, 'd')}, ${hasEvents ? dayEvents.length : 0} events`}
                 onClick={() => {
-                  debugger;
                   if(!isDifferentMonth){
                   if(!hasEvents){
                     openModal(null, day, 'add');

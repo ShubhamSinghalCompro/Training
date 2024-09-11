@@ -1,10 +1,11 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { Box, Typography, Grid, Grid2, IconButton, Tooltip, Theme } from '@mui/material';
+import { Box, Typography, Grid2, IconButton, Tooltip, Theme } from '@mui/material';
 import { format, addHours, startOfDay } from 'date-fns';
 import { Event, RootState, modalMode } from '../utils/types';
 import AddIcon from '@mui/icons-material/Add';
 import { calculateEventPositionInInterval, doesEventOverlapWithInterval, sortEventsByIntervals } from '../utils/calendarViewFuncs';
+import {styled} from  '@mui/material/styles';
 
 interface DailyViewProps {
   selectedDate: Date;
@@ -36,10 +37,14 @@ const DailyView: React.FC<DailyViewProps> = ({
   
   // Sort events based on the number of intervals they occupy
   const sortedDayEvents = sortEventsByIntervals(dayEvents, intervals);
+
+  const handleOnClick = (event: Event | null, day: Date | null, mode: modalMode, length: number) => {
+    length ===0 ? openModal(null, selectedDate, 'add') : openModal(null, selectedDate, 'view');
+  };
   
   return (
     <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'start', alignItems: 'center', p: 1 }}>
+      <Box display = 'flex' justifyContent = 'start' alignItems = 'center' padding={1}>
         <Typography variant="h5">{format(selectedDate, 'EEEE, MMMM d, yyyy')}</Typography>
         <IconButton
           color="primary"
@@ -65,45 +70,23 @@ const DailyView: React.FC<DailyViewProps> = ({
           return (
             <Grid2 key={intervalKey}>
               {/* Time Slot */}
-              <Box
-                sx={{
-                  padding: '0 16px',
-                  borderBottom: '1px solid #ddd',
-                  position: 'relative',
-                  minHeight: 60, // Constant height for each time slot
-                  display: 'flex',
-                  flexDirection: 'column',
-                  backgroundColor: '#f9f9f9',
-                  '&:hover': {
-                    backgroundColor: theme.palette.action.selected, // Hover color from theme
-                    cursor: 'pointer'
-                  },
-                }}
-                onClick={() => eventsInInterval.length ===0 ? openModal(null, selectedDate, 'add') : openModal(null, selectedDate, 'view')}
+              <AllIntervalContainer
+                onClick={ () => handleOnClick( null, selectedDate, 'view', eventsInInterval.length) }
                 aria-label={`Time slot at ${format(interval, 'HH:mm')}`}
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
-                    eventsInInterval.length ===0 ? openModal(null, selectedDate, 'add') : openModal(null, selectedDate, 'view');
+                    handleOnClick(null, selectedDate, 'view', eventsInInterval.length);
                   }
                 }}
               >
                 {/* Time Label */}
-                <Typography sx={{ position: 'absolute', left: 8, top: 8 }}>{format(interval, 'HH:mm')}</Typography>
+                <Typography position = 'absolute' left = {8} top={8}>{format(interval, 'HH:mm')}</Typography>
 
                 {/* Container for all events in this interval */}
-                <Box
-                  sx={{
-                    marginLeft: '60px', // Margin to position events away from the time label
-                    position: 'relative',
-                    height: '100%', // Fill the parent container
-                    display: 'flex',
-                    flexDirection: 'row',
-                    flexWrap: 'wrap',
-                  }}
-                >
+                <IntervalBox>
                   {eventsInInterval.slice(0, 3).map((event) => {
                     const { topPosition, eventHeight } = calculateEventPositionInInterval(event, interval);
 
@@ -112,17 +95,11 @@ const DailyView: React.FC<DailyViewProps> = ({
                         title={`${event.title} (${event.startTime} - ${event.endTime})`}
                         key={event.id}
                       >
-                        <Box
-                          sx={{
-                            position: 'absolute',
-                            top: `${topPosition}px`,
-                            left: `${eventsInInterval.indexOf(event) * 220}px`, // Adjust this value for spacing between events
-                            width: '20%', // Reduced width of the event box
-                            height: `${eventHeight}px`,
-                            backgroundColor: event.color,
-                            cursor: 'pointer',
-                            overflow: 'hidden', // Ensure no content overflows the box
-                          }}
+                        <EventBox
+                          topPosition={topPosition}
+                          eventHeight={eventHeight}
+                          event = {event}
+                          eventsInInterval={eventsInInterval}
                           onClick={(e) => {
                             e.stopPropagation();
                             openModal(event, new Date(event.date), 'viewEvent');
@@ -144,20 +121,8 @@ const DailyView: React.FC<DailyViewProps> = ({
                     <Tooltip
                       title="View more"
                     >
-                      <Box
-                        sx={{
-                          position: 'absolute',
-                          left: `${2 * (100 / 3)}%`,
-                          width: '20%', // Adjust width for better spacing
-                          height: `${60}px`,
-                          backgroundColor: theme.palette.grey[500],
-                          cursor: 'pointer',
-                          borderRadius: '4px',
-                          overflow: 'hidden',
-                          display: 'flex', // Use flexbox to center content
-                          justifyContent: 'center', // Center horizontally
-                          alignItems: 'center', // Center vertically
-                        }}
+                      <ViewMoreBox
+                        
                         onClick={() => openModal(null, selectedDate, 'view')}
                         aria-label="View more events"
                         role="button"
@@ -169,12 +134,12 @@ const DailyView: React.FC<DailyViewProps> = ({
                           }
                         }}
                       >
-                        <Typography sx={{ color: 'white' }}>{`+${eventsInInterval.length - 3}`}</Typography>
-                      </Box>
+                        <Typography color = "white">{`+${eventsInInterval.length - 3}`}</Typography>
+                      </ViewMoreBox>
                     </Tooltip>
                   )}
-                </Box>
-              </Box>
+                </IntervalBox>
+              </AllIntervalContainer>
             </Grid2>
           );
         })}
@@ -182,5 +147,60 @@ const DailyView: React.FC<DailyViewProps> = ({
     </Box>
   );
 };
+
+interface EventBoxProps {
+  topPosition: number;
+  eventHeight: number;
+  event: Event;
+  eventsInInterval: Event[]; // Define the type of `eventsInInterval` based on your actual data structure
+}
+
+const EventBox = styled(Box)<EventBoxProps>(({ theme, topPosition, eventHeight, event, eventsInInterval }) => ({
+  position: 'absolute',
+  top: `${topPosition}px`,
+  left: `${eventsInInterval.indexOf(event) * 220}px`, // Adjust this value for spacing between events
+  width: '20%', // Reduced width of the event box
+  height: `${eventHeight}px`,
+  backgroundColor: event.color,
+  cursor: 'pointer',
+  overflow: 'hidden', // Ensure no content overflows the box
+}));
+
+const ViewMoreBox = styled(Box)(({theme}) => ({
+  position: 'absolute',
+  left: `${2 * (100 / 3)}%`,
+  width: '20%', // Adjust width for better spacing
+  height: `${60}px`,
+  backgroundColor: theme.palette.grey[500],
+  cursor: 'pointer',
+  borderRadius: '4px',
+  overflow: 'hidden',
+  display: 'flex', // Use flexbox to center content
+  justifyContent: 'center', // Center horizontally
+  alignItems: 'center', // Center vertically  
+}));
+
+const AllIntervalContainer = styled(Box)(({ theme }) => ({
+  padding: '0 16px',
+  borderBottom: '1px solid #ddd',
+  position: 'relative',
+  minHeight: 60, // Constant height for each time slot
+  display: 'flex',
+  flexDirection: 'column',
+  backgroundColor: '#f9f9f9',
+  '&:hover': {
+    backgroundColor: theme.palette.action.selected, // Hover color from theme
+    cursor: 'pointer'
+  },
+}));
+
+const IntervalBox = styled(Box)(({ theme }) => ({
+  marginLeft: '60px', // Margin to position events away from the time label
+  position: 'relative',
+  height: '100%', // Fill the parent container
+  display: 'flex',
+  flexDirection: 'row',
+  flexWrap: 'wrap',
+}));
 
 export default DailyView;
