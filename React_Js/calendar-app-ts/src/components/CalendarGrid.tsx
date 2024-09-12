@@ -10,7 +10,11 @@ import { Event } from '../utils/types';
 import { modalMode } from '../utils/types';
 import {styled} from 'styled-components';
 
-type ViewMode = 'monthly' | 'weekly' | 'daily';
+enum ViewMode {
+  Daily = 'daily',
+  Weekly = 'weekly',
+  Monthly = 'monthly',
+}
 
 const CalendarGrid: React.FC = () => {
   const theme = useTheme();
@@ -23,7 +27,7 @@ const CalendarGrid: React.FC = () => {
 
   const [viewMode, setViewMode] = useState<ViewMode>(() => {
     const savedViewMode = localStorage.getItem('viewMode');
-    return (savedViewMode as ViewMode) || 'monthly';
+    return (savedViewMode as ViewMode) || ViewMode.Monthly;
   });
 
   const [modalOpen, setModalOpen] = useState<boolean>(false);
@@ -40,9 +44,9 @@ const CalendarGrid: React.FC = () => {
   }, [current, viewMode]);
 
   const handlePrev = () => {
-    if (viewMode === 'daily') {
+    if (viewMode === ViewMode.Daily) {
       setCurrent(subDays(current, 1)); // Subtract one day
-    } else if (viewMode === 'weekly') {
+    } else if (viewMode === ViewMode.Weekly) {
       setCurrent(subWeeks(current, 1)); // Subtract one week
     } else {
       setCurrent(new Date(current.setMonth(current.getMonth() - 1))); // Subtract one month
@@ -50,9 +54,9 @@ const CalendarGrid: React.FC = () => {
   };
 
   const handleNext = () => {
-    if (viewMode === 'daily') {
+    if (viewMode === ViewMode.Daily) {
       setCurrent(addDays(current, 1)); // Add one day
-    } else if (viewMode === 'weekly') {
+    } else if (viewMode === ViewMode.Weekly) {
       setCurrent(addWeeks(current, 1)); // Add one week
     } else {
       setCurrent(new Date(current.setMonth(current.getMonth() + 1))); // Add one month
@@ -163,12 +167,12 @@ const CalendarGrid: React.FC = () => {
       </Box>
 
       <Box display = 'flex' justifyContent = 'center' marginBottom = {2} >
-        <Button variant={viewMode === 'monthly' ? 'contained' : 'outlined'} onClick={() => handleViewChange('monthly')} sx={{ mr: 1 }}>Monthly</Button>
-        <Button variant={viewMode === 'weekly' ? 'contained' : 'outlined'} onClick={() => handleViewChange('weekly')} sx={{ mr: 1 }}>Weekly</Button>
-        <Button variant={viewMode === 'daily' ? 'contained' : 'outlined'} onClick={() => handleViewChange('daily')} sx={{ mr: 1 }}>Daily</Button>
+        <Button variant={viewMode === ViewMode.Monthly ? 'contained' : 'outlined'} onClick={() => handleViewChange(ViewMode.Monthly)} sx={{ mr: 1 }}>Monthly</Button>
+        <Button variant={viewMode === ViewMode.Weekly ? 'contained' : 'outlined'} onClick={() => handleViewChange(ViewMode.Weekly)} sx={{ mr: 1 }}>ViewMode.Weekly</Button>
+        <Button variant={viewMode === ViewMode.Daily ? 'contained' : 'outlined'} onClick={() => handleViewChange(ViewMode.Daily)} sx={{ mr: 1 }}>Daily</Button>
       </Box>
 
-      {viewMode === 'monthly' && (
+      {viewMode === ViewMode.Monthly && (
         <MonthlyView
           selectedDate={current}
           openModal={handleOpenModal}
@@ -176,7 +180,7 @@ const CalendarGrid: React.FC = () => {
           categoryColors={categoryColors}
           />
       )}
-      {viewMode === 'weekly' && (
+      {viewMode === ViewMode.Weekly && (
         <WeeklyView
           selectedDate={current}
           openModal={handleOpenModal}
@@ -184,7 +188,7 @@ const CalendarGrid: React.FC = () => {
           theme={theme}
         />
       )}
-      {viewMode === 'daily' && (
+      {viewMode === ViewMode.Daily && (
         <DailyView
           selectedDate={current}
           openModal={handleOpenModal}
