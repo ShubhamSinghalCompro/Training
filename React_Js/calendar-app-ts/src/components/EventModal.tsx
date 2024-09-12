@@ -128,11 +128,11 @@ const EventModal: React.FC<EventModalProps> = ({
         dispatch(addEvent(event));
         dispatch(showSnackbar({ message: 'Event added successfully!', color: 'success' })); // Show success snackbar when a new event is added
       }
+      scheduleNotification(event);
       onClose();
       setMode('view'); // Reset mode after closing
+     
     }
-    // Schedule notification for the event
-    scheduleNotification(event);
   };
 
   const handleDelete = (id: number) => {
