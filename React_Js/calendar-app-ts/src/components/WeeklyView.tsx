@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { Box, Typography, Grid, Tooltip, IconButton, Theme } from '@mui/material';
 import { format, addHours, startOfDay, addDays, startOfWeek,  } from 'date-fns';
 import { Event, RootState, modalMode } from '../utils/types';
 import {calculateEventPositionInInterval, doesEventOverlapWithInterval, sortEventsByIntervals} from '../utils/calendarViewFuncs';
 import AddIcon from '@mui/icons-material/Add';
+import { darken } from '@mui/system';
 
 interface WeeklyViewProps {
   selectedDate: Date;
@@ -21,37 +22,37 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
 }) => {
   const events = useSelector((state: RootState) => state.events);
 
-  // Calculate the Monday of the week for the selected date
-  const startOfWeekDate = startOfWeek(selectedDate, { weekStartsOn: 1 });
+  // Memoize startOfWeek calculation
+  const startOfWeekDate = useMemo(() => startOfWeek(selectedDate, { weekStartsOn: 1 }), [selectedDate]);
 
-  // Generate an array of 1-hour intervals from 00:00 to 23:00
-  const intervals = Array.from({ length: 24 }, (_, index) => {
+  // Memoize intervals generation
+  const intervals = useMemo(() => Array.from({ length: 24 }, (_, index) => {
     const time = startOfDay(selectedDate);
     return addHours(time, index);
-  });
+  }), []);
 
-  // Generate days of the week starting from Monday
-  const weekDays = Array.from({ length: 7 }, (_, index) => addDays(startOfWeekDate, index));
+  // Memoize weekDays generation
+  const weekDays = useMemo(() => Array.from({ length: 7 }, (_, index) => addDays(startOfWeekDate, index)), [startOfWeekDate]);
 
-  // Filter events by selected category and the week
-  const categoryEvents = events.filter((event) =>
-    (selectedCategory === 'All' || event.category === selectedCategory));
-    
-  const weeklyEvents = categoryEvents.filter(
-    (event) =>
+  // Memoize event filtering by category and week
+  const weeklyEvents = useMemo(() => {
+    const categoryEvents = events.filter((event) =>
+      selectedCategory === 'All' || event.category === selectedCategory
+    );
+    return categoryEvents.filter((event) =>
       weekDays.some((day) => new Date(event.date).toDateString() === day.toDateString())
+    );
+  }, [events, selectedCategory, weekDays]);
+
+  // Memoize getEventsInInterval function
+  const getEventsInInterval = useCallback(
+    (weeklyEvents: Event[], day: Date, interval: Date): Event[] => {
+      return weeklyEvents
+        .filter((event) => new Date(event.date).toDateString() === day.toDateString())
+        .filter((event) => doesEventOverlapWithInterval(event, interval));
+    },
+    []
   );
-
-  const getEventsInInterval = (
-    weeklyEvents: Event[],
-    day: Date,
-    interval: Date,
-  ): Event[]  => {
-    return weeklyEvents
-      .filter(event => new Date(event.date).toDateString() === day.toDateString())
-      .filter(event => doesEventOverlapWithInterval(event, interval)); // Adjust sort function as needed
-  }
-
   return (
     <Box>
       {/* Display Week Days at the Top */}
@@ -151,6 +152,7 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
                               backgroundColor: event.color,
                               cursor: 'pointer',
                               overflow: 'hidden',
+                              borderLeft: `1px solid ${darken(event.color, 0.2)}`,
                             }}
                             onClick={(e) => {
                               e.stopPropagation();
