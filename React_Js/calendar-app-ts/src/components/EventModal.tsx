@@ -17,7 +17,7 @@ import EventDetails from './EventDetails';
 import ExistingEventsList from './ExistingEventsList'; // Import your new component
 import {scheduleNotification} from '../utils/requestNotificationPermission';
 import { format, addMinutes } from 'date-fns';
-import { ViewHeadline } from '@mui/icons-material';
+import {styled} from '@mui/material/styles';
 
 interface EventModalProps {
   open: boolean;
@@ -165,19 +165,7 @@ const EventModal: React.FC<EventModalProps> = ({
       aria-describedby="modal-modal-description"
 
     >
-      <Box
-        sx={{
-          maxWidth: 400,
-          minWidth: Math.min(400, window.innerWidth * 0.7),
-          padding: 2,
-          backgroundColor: '#fff',
-          borderRadius: 2,
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-            transform: 'translate(-50%, -50%)',
-        }}
-      >
+      <ModalBox>
         {/* Close Button */}
         <IconButton
           sx={{
@@ -218,9 +206,20 @@ const EventModal: React.FC<EventModalProps> = ({
             handleAddClick={handleAddClick}
           />
         )}
-      </Box>
+      </ModalBox>
     </Modal>
   );
 };
+const ModalBox = styled(Box)(({ theme }) => ({
+  maxWidth: 400,
+  minWidth: Math.min(400, window.innerWidth * 0.7),
+  padding: 16,
+  backgroundColor: '#fff',
+  borderRadius: 8,
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)', 
+}));
 
 export default EventModal;

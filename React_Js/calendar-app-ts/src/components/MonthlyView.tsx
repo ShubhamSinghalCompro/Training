@@ -3,6 +3,7 @@ import { Box, Grid, Typography, Tooltip, useTheme } from '@mui/material';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, endOfWeek } from 'date-fns';
 import { useSelector } from 'react-redux';
 import { Event, RootState } from '../utils/types';
+import styled from 'styled-components';
 
 interface MonthlyViewProps {
   selectedDate: Date;
@@ -76,37 +77,23 @@ const MonthlyView: React.FC<MonthlyViewProps> = ({ selectedDate, selectedCategor
 
           return (
             <Grid item xs={12 / 7} key={index}>
-              <Box
-                sx={{
-                  height: 80,
-                  padding: 1,
-                  backgroundColor: bgColor,
-                  border: `1px solid ${theme.palette.grey[300]}`, // Light border using theme colors
-                  borderRadius: 1,
-                  textAlign: 'center',
-                  display: 'flex',
-                  flexDirection: 'column', // Align items in a single column
-                  alignItems: 'center', // Center items horizontally
-                  justifyContent: 'start', // Space between date, dots, and view more
-                  position: 'relative',
-                  cursor: isDifferentMonth ? 'not-allowed' : 'pointer',
-                  '&:hover': {
-                    backgroundColor: isDifferentMonth ? bgColor :theme.palette.action.selected, // Hover color from theme
-                  },
-                  opacity: isDifferentMonth ? 0.5 : 1,
-                  userSelect: isDifferentMonth ? 'none' : 'auto',
-                }}
-                tabIndex={isDifferentMonth ? -1 : 0} // Make focusable
-                role="button" // Improve accessibility by making it a button-like element
+              <DayBox
+                theme={theme} // Pass the theme to styled component
+                isDifferentMonth={isDifferentMonth}
+                bgColor={bgColor}
+                tabIndex={isDifferentMonth ? -1 : 0}
+                role="button"
                 aria-label={`Day ${format(day, 'd')}, ${hasEvents ? dayEvents.length : 0} events`}
                 onClick={() => {
-                  if(!isDifferentMonth){
-                  if(!hasEvents){
-                    openModal(null, day, 'add');
+                  if (!isDifferentMonth) {
+                    if (!hasEvents) {
+                      openModal(null, day, 'add');
+                    } else {
+                      openModal(null, day, 'view');
+                    }
                   }
-                else{openModal(null, day, 'view');}}}}
-
-                onKeyDown={(e) => handleKeyDown(e, day, null)} // Handle keyboard event
+                }}
+                onKeyDown={(e) => handleKeyDown(e, day, null)}
               >
                 <Typography variant="body2" sx={{ fontWeight: 'bold', marginBottom: 1 }}>
                   {format(day, 'd')}
@@ -140,23 +127,22 @@ const MonthlyView: React.FC<MonthlyViewProps> = ({ selectedDate, selectedCategor
                             margin: '0 4px 0 0',
                             cursor: isDifferentMonth ? 'not-allowed' : 'pointer',
                           }}
-                          tabIndex={isDifferentMonth ? -1 : 0} // Make dots focusable
+                          tabIndex={isDifferentMonth ? -1 : 0}
                           role="button"
                           aria-label={`${event.title} (${event.startTime} - ${event.endTime})`}
                           onClick={(e) => {
-                            e.stopPropagation(); // Prevents triggering day click when clicking on dot
+                            e.stopPropagation();
                             if (!isDifferentMonth) {
                               openModal(event, day, 'viewEvent');
                             }
                           }}
-                          onKeyDown={(e) => handleKeyDown(e, day, event)} // Handle keyboard for event dots
+                          onKeyDown={(e) => handleKeyDown(e, day, event)}
                         />
                       </Tooltip>
                     ))}
                   </Box>
                 )}
 
-                {/* Display "View More" if necessary */}
                 {displayMore && (
                   <Typography
                     variant="body2"
@@ -174,12 +160,12 @@ const MonthlyView: React.FC<MonthlyViewProps> = ({ selectedDate, selectedCategor
                         openModal(null, day, 'view');
                       }
                     }}
-                    onKeyDown={(e) => handleKeyDown(e, day, null)} // Handle keyboard for View More
+                    onKeyDown={(e) => handleKeyDown(e, day, null)}
                   >
                     View More
                   </Typography>
                 )}
-              </Box>
+              </DayBox>
             </Grid>
           );
         })}
@@ -187,5 +173,32 @@ const MonthlyView: React.FC<MonthlyViewProps> = ({ selectedDate, selectedCategor
     </>
   );
 };
+
+interface DayBoxProps {
+  bgColor: string;
+  isDifferentMonth: boolean;
+  theme: any; // Pass the theme here
+}
+
+const DayBox = styled(Box)<DayBoxProps>`
+  height: 80px;
+  padding: 8px;
+  background-color: ${(props) => props.bgColor};
+  border: 1px solid ${(props) => props.theme.palette.grey[300]}; // Access theme color
+  border-radius: 4px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: start;
+  position: relative;
+  cursor: ${(props) => (props.isDifferentMonth ? 'not-allowed' : 'pointer')};
+  &:hover {
+    background-color: ${(props) =>
+      props.isDifferentMonth ? props.bgColor : props.theme.palette.action.selected}; // Hover color from theme
+  }
+  opacity: ${(props) => (props.isDifferentMonth ? 0.5 : 1)};
+  user-select: ${(props) => (props.isDifferentMonth ? 'none' : 'auto')};
+`;
 
 export default MonthlyView;

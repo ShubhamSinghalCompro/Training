@@ -8,7 +8,7 @@ import WeeklyView from './WeeklyView';
 import MonthlyView from './MonthlyView';
 import { Event } from '../utils/types';
 import { modalMode } from '../utils/types';
-import {styled} from '@mui/material/styles';
+import {styled} from 'styled-components';
 
 type ViewMode = 'monthly' | 'weekly' | 'daily';
 
@@ -127,7 +127,7 @@ const CalendarGrid: React.FC = () => {
   }, []);
 
   return (
-    <CalendarContainer>
+    <CalendarContainer theme={theme}>
       <Typography
         variant="h3"
         gutterBottom
@@ -208,16 +208,17 @@ const CalendarGrid: React.FC = () => {
   );
 };
 
-const CalendarContainer = styled(Box)(({ theme }) => ({
-  maxWidth: 1200,
-  height: '95vh',
-  margin: '10px auto',
-  padding: theme.spacing(2),
-  border: `2px solid ${theme.palette.grey[800]}`,
-  borderRadius: 2,
-  backgroundColor: theme.palette.background.default,
-  overflowY: 'auto',
-  overflowX: 'auto',
-}));
+const CalendarContainer = styled(Box)`
+  max-width: 1200px; 
+  height: 95vh; 
+  margin: ${(props) => props.theme.spacing(2)} auto;
+  padding: ${(props) => props.theme.spacing(2)};
+  border: 2px solid ${(props) => props.theme.palette.grey[800]};
+  border-radius: 20px; 
+  background-color: ${(props) => props.theme.palette.background.default};
+  overflow-y: auto; 
+  overflow-x: auto; 
+`;
+
 
 export default CalendarGrid;

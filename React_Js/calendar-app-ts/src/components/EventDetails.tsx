@@ -5,7 +5,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
-import styled from '@emotion/styled';
+import {styled} from 'styled-components'; 
 
 interface FormErrors {
   title: string;
@@ -227,12 +227,12 @@ interface ColorBarInterface  {
   showNewCategoryInput: boolean
 }
 
-const ColorBar = styled(Box)<ColorBarInterface>(({ eventState, categoryColors, showNewCategoryInput }) => ({
-  backgroundColor: showNewCategoryInput ? eventState.color : categoryColors[eventState.category] || '#fff',
-  height: 12, 
-  borderRadius: 1, 
-  mb: 1, 
-  mt: 2 
-}))
+const ColorBar = styled(Box)<ColorBarInterface>`
+  background-color: ${(props) => props.showNewCategoryInput ? props.eventState.color : props.categoryColors[props.eventState.category] };
+  height: 12px;
+  border-radius: 8px; 
+  margin-bottom: 4px;
+  margin-top: 8px;
+`
 
 export default EventDetails;

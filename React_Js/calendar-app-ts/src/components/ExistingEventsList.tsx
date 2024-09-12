@@ -5,6 +5,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import { Event } from '../utils/types'; // Adjust the path as needed for your project structure
+import styled from '@emotion/styled';
 
 interface ExistingEventsListProps {
   events: Event[];
@@ -49,36 +50,18 @@ const ExistingEventsList: React.FC<ExistingEventsListProps> = ({
         {categoryEvents
           .map(event => (
             <Grid2 spacing={{xs: 12} } key={event.id}>
-              <Box
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  p: 1,
-                  border: '1px solid #ddd',
-                  borderRadius: 1,
-                  cursor: 'pointer',
-                  
-                }}
+              <ExistingEventsListContainer
                 onClick={() => {
                   setSelectedEvent(event);
                   setMode('viewEvent');
                 }}
               >
               <Box
-                sx={{ display: 'flex', alignItems: 'center', }}>
-                 <Box
-                    sx={{
-                      width: 16,
-                      height: 16,
-                      backgroundColor: event.color,
-                      borderRadius: '50%',
-                      mr: 1,
-                    }}
-                  />
+                display = 'flex' alignItems = 'center'>
+                 <ColorDot color={event.color}/>
                 <Typography>{event.title}</Typography>
                 </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Box display = 'flex' alignItems = 'center' >
                  
                   <IconButton
                     size="small"
@@ -102,7 +85,7 @@ const ExistingEventsList: React.FC<ExistingEventsListProps> = ({
                     <DeleteIcon />
                   </IconButton>
                 </Box>
-              </Box>
+              </ExistingEventsListContainer>
             </Grid2>
           ))}
       </Grid2>
@@ -120,4 +103,27 @@ const ExistingEventsList: React.FC<ExistingEventsListProps> = ({
   );
 };
 
+interface ColorDotProps {
+  color: string;
+}
+
+const ColorDot = styled(Box)<ColorDotProps>(({ color }) => ({
+  width: 16,
+  height: 16,
+  backgroundColor: color,
+  borderRadius: '50%',
+  marginRight: 8,
+  marginLeft: 8
+}));
+
+const ExistingEventsListContainer = styled(Box)(() => ({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  padding: 8,
+  border: '1px solid #ddd',
+  borderRadius: 8,
+  cursor: 'pointer',
+  marginBottom: 8,
+}));
 export default ExistingEventsList;
