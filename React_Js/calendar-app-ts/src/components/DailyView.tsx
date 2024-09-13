@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { Box, Typography, Grid2, IconButton, Tooltip, Theme } from '@mui/material';
 import { format, addHours, startOfDay } from 'date-fns';
@@ -22,6 +22,8 @@ const DailyView: React.FC<DailyViewProps> = ({
 }) => {
   const events = useSelector((state: RootState) => state.events);
 
+  const slotRefs = useRef<(HTMLDivElement | null)[]>([]); // Ref for time slot references
+
   // Generate an array of 1-hour intervals from 00:00 to 23:00
   const intervals = Array.from({ length: 24 }, (_, index) => {
     const time = startOfDay(selectedDate);
@@ -41,6 +43,29 @@ const DailyView: React.FC<DailyViewProps> = ({
   const handleOnClick = (event: Event | null, day: Date | null, mode: modalMode, length: number) => {
     length ===0 ? openModal(null, selectedDate, 'add') : openModal(null, selectedDate, 'view');
   };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>, index: number) => {
+    const gridLength = intervals.length;
+    
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      openModal(null, selectedDate, 'view');
+    }
+    else{
+      if(event.key === 'ArrowDown'){
+        event.preventDefault();
+        if(index < gridLength - 1){
+          slotRefs.current[index + 1]?.focus();
+        }
+      }
+      else if(event.key === 'ArrowUp'){
+        event.preventDefault();
+        if(index > 0){
+          slotRefs.current[index - 1]?.focus();
+        }
+      }
+    }
+  };
   
   return (
     <Box>
@@ -59,8 +84,9 @@ const DailyView: React.FC<DailyViewProps> = ({
           <AddIcon />
         </IconButton>
       </Box>
+      <ScrollableContainer>
       <Grid2 spacing={0}>
-        {intervals.map((interval) => {
+        {intervals.map((interval, index) => {
           const eventsInInterval = sortedDayEvents.filter((event) =>
             doesEventOverlapWithInterval(event, interval)
           );
@@ -70,17 +96,13 @@ const DailyView: React.FC<DailyViewProps> = ({
           return (
             <Grid2 key={intervalKey}>
               {/* Time Slot */}
-              <AllIntervalContainer
+              <AllIntervalContainer 
+                ref={(ref: HTMLDivElement | null) => (slotRefs.current[index] = ref)}
                 onClick={ () => handleOnClick( null, selectedDate, 'view', eventsInInterval.length) }
                 aria-label={`Time slot at ${format(interval, 'HH:mm')}`}
                 role="button"
                 tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    handleOnClick(null, selectedDate, 'view', eventsInInterval.length);
-                  }
-                }}
+                onKeyDown={(e) => handleKeyDown(e, index)}
               >
                 {/* Time Label */}
                 <Typography position = 'absolute' left = {8} top={8}>{format(interval, 'HH:mm')}</Typography>
@@ -144,6 +166,7 @@ const DailyView: React.FC<DailyViewProps> = ({
           );
         })}
       </Grid2>
+      </ScrollableContainer>
     </Box>
   );
 };
@@ -202,5 +225,12 @@ const IntervalBox = styled(Box)(({ theme }) => ({
   flexDirection: 'row',
   flexWrap: 'wrap',
 }));
+
+const ScrollableContainer = styled(Box)`
+  max-height: 50vh; /* Adjust this value based on padding, headers, or other elements */
+  overflow-y: auto;
+  padding-right: 10px; /* Padding to avoid content being cut off by the scrollbar */
+  margin-top: 10px;
+`;
 
 export default DailyView;

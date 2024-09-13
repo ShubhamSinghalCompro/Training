@@ -145,13 +145,13 @@ const CalendarGrid: React.FC = () => {
       >
         Event Scheduler
       </Typography>
-      <Box display={'flex'} alignItems={'center'} marginBottom={2}>
+      <HeaderBox >
         {/* Box for buttons */}
-        <Box display = "flex" alignItems={'center'} flex={1} >
+        <NavigationBox display = "flex" alignItems={'center'} flex={1} >
           <Button variant="contained" onClick={handlePrev} sx={{ mr: 1 }}>Prev</Button>
           <Button variant="contained" onClick={handleToday} sx={{ mr: 1 }}>Today</Button> {/* Add Today button here */}
           <Button variant="contained" onClick={handleNext}>Next</Button>
-        </Box>
+        </NavigationBox>
 
         {/* Centered month display */}
         <Typography variant="h4" textAlign={'center'} flex={2}>
@@ -159,16 +159,16 @@ const CalendarGrid: React.FC = () => {
         </Typography>
 
         {/* Box for filter */}
-        <Box sx={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+        <FilterBox >
           <Box minWidth={120} >
             <CategoryFilter onChange={handleCategoryChange} categoryColors={categoryColors} />
           </Box>
-        </Box>
-      </Box>
+        </FilterBox>
+      </HeaderBox>
 
       <Box display = 'flex' justifyContent = 'center' marginBottom = {2} >
         <Button variant={viewMode === ViewMode.Monthly ? 'contained' : 'outlined'} onClick={() => handleViewChange(ViewMode.Monthly)} sx={{ mr: 1 }}>Monthly</Button>
-        <Button variant={viewMode === ViewMode.Weekly ? 'contained' : 'outlined'} onClick={() => handleViewChange(ViewMode.Weekly)} sx={{ mr: 1 }}>ViewMode.Weekly</Button>
+        <Button variant={viewMode === ViewMode.Weekly ? 'contained' : 'outlined'} onClick={() => handleViewChange(ViewMode.Weekly)} sx={{ mr: 1 }}>Weekly</Button>
         <Button variant={viewMode === ViewMode.Daily ? 'contained' : 'outlined'} onClick={() => handleViewChange(ViewMode.Daily)} sx={{ mr: 1 }}>Daily</Button>
       </Box>
 
@@ -220,8 +220,50 @@ const CalendarContainer = styled(Box)`
   border: 2px solid ${(props) => props.theme.palette.grey[800]};
   border-radius: 20px; 
   background-color: ${(props) => props.theme.palette.background.default};
-  overflow-y: auto; 
-  overflow-x: auto; 
+
+  
+  @media (max-width: 600px) {
+    height: auto; 
+    padding: 10px;
+    border-radius: 10px; 
+    border-width: 1px;
+  }
+`;
+
+const HeaderBox = styled(Box)`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+
+
+  @media (max-width: 800px) {
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 10px;
+    justify-content: space-between;
+  }
+`;
+
+const NavigationBox = styled(Box)`
+  display: flex;
+  flex: 1;
+  align-items: center;
+
+  @media (max-width: 800px) {
+    margin-bottom: 10px;
+  }
+`;
+
+const FilterBox = styled(Box)`
+  flex: 1;
+  display: 'flex';
+  justifyContent: 'flex-end';
+  alignItems: 'center';
+
+  @media (max-width: 800px) {
+    margin-top: 10px;
+  }
 `;
 
 
