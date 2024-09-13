@@ -212,20 +212,21 @@ const CalendarGrid: React.FC = () => {
   );
 };
 
-const CalendarContainer = styled(Box)`
-  max-width: 1200px; 
-  height: 95vh; 
+const CalendarContainer = styled(Box)<{ theme: any }>`
+  max-width: 1200px;
+  height: calc(95vh - ${(props) => props.theme.spacing(6)}); /* Dynamic height */
   margin: ${(props) => props.theme.spacing(2)} auto;
   padding: ${(props) => props.theme.spacing(2)};
   border: 2px solid ${(props) => props.theme.palette.grey[800]};
-  border-radius: 20px; 
+  border-radius: 20px;
   background-color: ${(props) => props.theme.palette.background.default};
+  display: flex;
+  flex-direction: column; /* To make it stack elements vertically */
 
-  
   @media (max-width: 600px) {
-    height: auto; 
+    height: calc(95vh - ${(props) => props.theme.spacing(6)});
     padding: 10px;
-    border-radius: 10px; 
+    border-radius: 10px;
     border-width: 1px;
   }
 `;

@@ -4,7 +4,6 @@ import { format, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, endOf
 import { useSelector } from 'react-redux';
 import { Event, RootState } from '../utils/types';
 import styled from 'styled-components';
-import { forEachChild } from 'typescript';
 
 interface MonthlyViewProps {
   selectedDate: Date;
@@ -78,14 +77,18 @@ const MonthlyView: React.FC<MonthlyViewProps> = ({ selectedDate, selectedCategor
       <Grid container spacing={0}>
         {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((dayName, index) => (
           <Grid item xs={12 / 7} key={index}>
-            <Typography variant="subtitle2" align="center">
-              {dayName}
-            </Typography>
+            <WeekdayName 
+            theme={theme}
+            variant="subtitle2"
+            fullName={dayName}
+            align="center">
+            </WeekdayName>
           </Grid>
         ))}
       </Grid>
       {/* Render days in the calendar */}
-      <ScrollableContainer>
+      <ScrollableContainer
+        theme={theme}>
         <Grid container spacing={1}>
           {days.map((day, index) => {
             const dayStr = day.toDateString();
@@ -140,16 +143,7 @@ const MonthlyView: React.FC<MonthlyViewProps> = ({ selectedDate, selectedCategor
 
                   {/* Display event dots */}
                   {hasEvents && (
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        width: '100%',
-                        flexWrap: 'nowrap',
-                        overflow: 'hidden',
-                        marginBottom: '2px', // Adds space between dots and "View More"
-                      }}
+                    <EventList
                     >
                       {dayEvents.slice(0, 2).map((event) => (
                         <Tooltip
@@ -157,15 +151,9 @@ const MonthlyView: React.FC<MonthlyViewProps> = ({ selectedDate, selectedCategor
                           key={event.id}
                           disableHoverListener={isDifferentMonth}
                         >
-                          <Box
-                            sx={{
-                              width: 10,
-                              height: 10,
-                              borderRadius: '50%',
-                              backgroundColor: event.color,
-                              margin: '0 4px 0 0',
-                              cursor: isDifferentMonth ? 'not-allowed' : 'pointer',
-                            }}
+                          <EventDot
+                            color={event.color}
+                            isDifferentMonth={isDifferentMonth}
                             tabIndex={isDifferentMonth ? -1 : 0}
                             role="button"
                             aria-label={`${event.title} (${event.startTime} - ${event.endTime})`}
@@ -178,17 +166,13 @@ const MonthlyView: React.FC<MonthlyViewProps> = ({ selectedDate, selectedCategor
                           />
                         </Tooltip>
                       ))}
-                    </Box>
+                    </EventList>
                   )}
 
                   {displayMore && (
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        cursor: isDifferentMonth ? 'not-allowed' : 'pointer',
-                        color: theme.palette.primary.main,
-                        marginTop: 'auto',
-                      }}
+                    <ViewMoreLabel
+                      theme={theme}
+                      isDifferentMonth={isDifferentMonth}
                       tabIndex={isDifferentMonth ? -1 : 0}
                       role="button"
                       aria-label={`View more events for ${format(day, 'd')}`}
@@ -199,8 +183,7 @@ const MonthlyView: React.FC<MonthlyViewProps> = ({ selectedDate, selectedCategor
                         }
                       }}
                     >
-                      View More
-                    </Typography>
+                    </ViewMoreLabel>
                   )}
                 </DayBox>
               </Grid>
@@ -239,11 +222,95 @@ const DayBox = styled(Box)<DayBoxProps>`
   user-select: ${(props) => (props.isDifferentMonth ? 'none' : 'auto')};
 `;
 
-const ScrollableContainer = styled(Box)`
-  max-height: 56vh; /* Adjust this value based on padding, headers, or other elements */
-  overflow-y: auto;
-  padding-right: 10px; /* Padding to avoid content being cut off by the scrollbar */
-  margin-top: 10px;
+
+const ScrollableContainer = styled(Box)<{ theme: any }>`
+  flex: 1; /* Take up remaining space */
+  overflow-y: auto; /* Scrollable content */
+  padding-right: 10px;
+  margin-top: ${(props) => props.theme.spacing(2)};
+
+  @media (max-width: 600px) {
+    padding: 10px;
+    border-radius: 10px;
+    border-width: 1px;
+  }
+`;
+
+const EventList = styled(Box)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  flex-wrap: nowrap;
+  overflow: hidden;
+  margin-bottom: 2px;
+
+  @media (max-width: 800px) {
+    flex-direction: column; /* Stack event dots vertically on small screens */
+    justify-content: flex-start; /* Align dots at the top for small screens */
+  }
+`;
+
+const EventDot = styled(Box)<{ isDifferentMonth: boolean; color: string }>`
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 4px;
+  background-color: ${(props) => props.color};
+  cursor: ${(props) => (props.isDifferentMonth ? 'not-allowed' : 'pointer')};
+
+  @media (max-width: 800px) {
+    width: 8px;
+    height: 8px;
+    margin-right: 0;
+    margin-bottom: 2px; /* Space between vertically stacked dots */
+  }
+`;
+
+const ViewMoreLabel = styled(Typography)<{ theme: any, isDifferentMonth: boolean }>`
+  cursor: ${(props) => props.isDifferentMonth ? 'not-allowed' : 'pointer'};
+  color: ${(props) => props.isDifferentMonth ? props.theme.palette.text.disabled : props.theme.palette.primary.main};
+  margin-top: auto;
+  font-size: clamp(10px, 2vw, 12px); /* Responsive font size */
+  font-weight: 500;
+  text-align: center;
+
+  @media (max-width: 800px) {
+  &:before {
+      content: "...";
+      display: block;
+    }
+    margin-top: 0;
+    font-size: clamp(8px, 4vw, 8px); /* Smaller font size for small screens */
+  }
+    @media (min-width: 801px) {
+    &:before {
+      content: "View More";
+      display: block;
+    }
+    font-size: clamp(14px, 2vw, 16px);
+  }
+`;
+
+
+const WeekdayName = styled(Typography)<{ theme: any, fullName: string }>`
+  display: block; // Show full name by default
+
+  @media (max-width: 800px) {
+    &:before {
+      content: "${props => props.fullName.substring(0, 3)}";
+      display: block;
+    }
+    font-size: clamp(10px, 2vw, 12px);
+  }
+
+  @media (min-width: 801px) {
+    &:before {
+      content: "${props => props.fullName}";
+      display: block;
+    }
+    font-size: clamp(14px, 2vw, 16px);
+  }
 `;
 
 export default MonthlyView;
