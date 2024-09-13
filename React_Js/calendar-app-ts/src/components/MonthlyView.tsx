@@ -211,7 +211,6 @@ const DayBox = styled(Box)<DayBoxProps>`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: start;
   position: relative;
   cursor: ${(props) => (props.isDifferentMonth ? 'not-allowed' : 'pointer')};
   &:hover {

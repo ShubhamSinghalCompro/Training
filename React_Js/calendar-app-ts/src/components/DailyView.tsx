@@ -68,7 +68,7 @@ const DailyView: React.FC<DailyViewProps> = ({
   };
   
   return (
-    <Box>
+    <>
       <Box display = 'flex' justifyContent = 'start' alignItems = 'center' padding={1}>
         <Typography variant="h5">{format(selectedDate, 'EEEE, MMMM d, yyyy')}</Typography>
         <IconButton
@@ -167,7 +167,7 @@ const DailyView: React.FC<DailyViewProps> = ({
         })}
       </Grid2>
       </ScrollableContainer>
-    </Box>
+    </>
   );
 };
 
@@ -227,10 +227,16 @@ const IntervalBox = styled(Box)(({ theme }) => ({
 }));
 
 const ScrollableContainer = styled(Box)`
-  max-height: 50vh; /* Adjust this value based on padding, headers, or other elements */
-  overflow-y: auto;
-  padding-right: 10px; /* Padding to avoid content being cut off by the scrollbar */
-  margin-top: 10px;
+  flex: 1; /* Take up remaining space */
+  overflow-y: auto; /* Scrollable content */
+  padding-right: 10px;
+  margin-top: 20px;
+
+  @media (max-width: 600px) {
+    padding: 10px;
+    border-radius: 10px;
+    border-width: 1px;
+  }
 `;
 
 export default DailyView;

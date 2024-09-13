@@ -98,24 +98,29 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
   };
 
   return (
-    <Box>
+    <>
       {/* Display Week Days at the Top */}
       <Grid container spacing={0}>
         <Grid item xs={1}>
-          <Typography sx={{ padding: '12px', fontWeight: 'bold' }}>Time</Typography>
+          <TimeLabel theme={theme} fullName = 'HH:MM' shortName='H'></TimeLabel>
         </Grid>
-        {weekDays.map((day, index) => (
+        {weekDays.map((day) => {
+          const shortDayName = format(day, 'E').charAt(0); // Short day name, e.g., 'Mon'
+          const fullDayName = format(day, 'EEE'); // Full day name with 3 letters, e.g., 'Mon'
+          const fullDate = format(day, 'MMM d'); // Full date, e.g., 'Monday, September 13, 2024'
+          const shortDate = format(day, 'd'); // Short date, e.g., 'Sep 13'
+          return (
           <Grid item xs key={day.toDateString()}>
-            <Box sx={{ display: 'flex', justifyContent: 'start', alignItems: 'center' }}>
-              <Typography sx={{ padding: '8px', textAlign: 'center' }}>
-                {format(day, 'EEE, MMM d')}
-              </Typography>
-              <IconButton
+            <Box alignItems={'center'}>
+              <WeekDayLabel theme={theme} fullName = {fullDayName} shortName = {shortDayName} >
+              </WeekDayLabel>
+              <WeekDayLabel theme={theme} fullName = {fullDate} shortName = {shortDate} >
+              </WeekDayLabel>
+              <CustomIconButton
+
                 color="primary"
                 sx={{
-                  ml: 1,
-                  width: '20px',
-                  height: '20px',
+                  padding: 0,
                   '&:hover': { backgroundColor: theme.palette.grey[300] }
                 }}
                 onClick={() => openModal(null, day, 'add')}
@@ -123,20 +128,23 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
                 tabIndex={0}
               >
                 <AddIcon />
-              </IconButton>
+              </CustomIconButton>
             </Box>
           </Grid>
-        ))}
+        )})}
       </Grid>
 
       {/* Display Time Intervals and Events */}
-      <ScrollableContainer>
+      <ScrollableContainer theme={theme}>
         <Grid container spacing={0}>
-          {intervals.map((interval, rowIndex) => (
+          {intervals.map((interval, rowIndex) => {
+            const fullSltoName = format(interval, 'HH:mm');
+            const shortSltoName = format(interval, 'h');
+            return(
             <Grid container spacing={0} key={interval.toString()}>
               {/* Time Column */}
               <Grid item xs={1}>
-                <Typography sx={{ padding: '8px', textAlign: 'right' }}>{format(interval, 'HH:mm')}</Typography>
+                <IntervalSlotLabel theme={theme} fullName = {fullSltoName} shortName = {shortSltoName}></IntervalSlotLabel>
               </Grid>
               {/* Days Columns */}
               {weekDays.map((day, colIndex) => {
@@ -234,20 +242,92 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
                 );
               })}
             </Grid>
-          ))}
+          )})}
         </Grid>
       </ScrollableContainer>
-    </Box>
+    </>
   );
 };
 
-const ScrollableContainer = styled(Box)`
-  max-height: 50vh; /* Adjust this value based on padding, headers, or other elements */
-  overflow-y: auto;
-  padding-right: 10px; /* Padding to avoid content being cut off by the scrollbar */
-  margin-top: 10px;
+const ScrollableContainer = styled(Box)<{ theme: any }>`
+  flex: 1; /* Take up remaining space */
+  overflow-y: auto; /* Scrollable content */
+  padding-right: 10px;
+  margin-top: ${(props) => props.theme.spacing(2)};
+
+  @media (max-width: 600px) {
+    padding: 10px;
+    border-radius: 10px;
+    border-width: 1px;
+  }
 ;`
 
+const WeekDayLabel = styled(Typography)<{ theme: any, fullName: string, shortName: string }>`
 
+  @media (max-width: 800px) {
+    &:before {
+      content: "${props => props.shortName}";
+      display: block;
+    }
+    font-size: clamp(6px, 2vw, 8px);
+  }
+
+  @media (min-width: 801px) {
+    &:before {
+      content: "${props => props.fullName}";
+      display: block;
+    }
+    font-size: clamp(8px, 2vw, 10px);
+  }
+`;
+
+const CustomIconButton = styled(IconButton)`
+
+  @media (max-width: 600px) {
+    margin-left: 0;
+  }
+`;
+
+const IntervalSlotLabel = styled(Typography)<{fullName: string, shortName: string}>`
+
+  padding: '8px';
+  textAlign: 'right';
+
+  @media (max-width: 800px) {
+    &:before {
+      content: "${props => props.shortName}";
+      display: block;
+    }
+    font-size: clamp(6px, 2vw, 8px);
+  }
+
+  @media (min-width: 801px) {
+    &:before {
+      content: "${props => props.fullName}";
+      display: block;
+    }
+    font-size: clamp(8px, 2vw, 10px);
+  }
+`;
+
+const TimeLabel = styled(Typography)<{theme: any, fullName: string, shortName: string}>`
+  padding : '6px'; 
+  fontWeight: 'bold';
+  @media (max-width: 800px) {
+    &:before {
+      content: "${props => props.shortName}";
+      display: block;
+    }
+    font-size: clamp(6px, 2vw, 8px);
+  }
+
+  @media (min-width: 801px) {
+    &:before {
+      content: "${props => props.fullName}";
+      display: block;
+    }
+    font-size: clamp(8px, 2vw, 10px);
+  }
+    `;
 
 export default WeeklyView;
