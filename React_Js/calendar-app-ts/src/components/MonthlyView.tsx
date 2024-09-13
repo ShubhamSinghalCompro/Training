@@ -4,6 +4,7 @@ import { format, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, endOf
 import { useSelector } from 'react-redux';
 import { Event, RootState } from '../utils/types';
 import styled from 'styled-components';
+import { forEachChild } from 'typescript';
 
 interface MonthlyViewProps {
   selectedDate: Date;
@@ -29,6 +30,14 @@ const MonthlyView: React.FC<MonthlyViewProps> = ({ selectedDate, selectedCategor
     generateCalendar();
   }, [selectedDate]);
 
+   // Find first and last day of the month index
+   const firstDayofMonthIndex = days.findIndex(
+    (day) => format(day, 'd') === '1' && day.getMonth() === selectedDate.getMonth()
+  );
+  const lastDayofMonthIndex = days.findIndex(
+    (day) => format(day, 'd') === format(endOfMonth(selectedDate), 'd') && day.getMonth() === selectedDate.getMonth()
+  );
+
   const handleKeyDown = (event: React.KeyboardEvent, index: number, day: Date, selectedEvent: Event | null) => {
     const gridWidth = 7; // Number of columns (days of the week)
     let nextIndex = index;
@@ -47,7 +56,8 @@ const MonthlyView: React.FC<MonthlyViewProps> = ({ selectedDate, selectedCategor
         nextIndex = index + 1;
         break;
       case 'Enter':
-        { event.preventDefault();
+        {
+          event.preventDefault();
           openModal(selectedEvent, day, selectedEvent ? 'viewEvent' : 'view');
         }
         break;
@@ -55,9 +65,10 @@ const MonthlyView: React.FC<MonthlyViewProps> = ({ selectedDate, selectedCategor
         return;
     }
 
-    // Ensure the next index is within bounds
-    if (nextIndex >= 0 && nextIndex < days.length) {
-      dayRefs.current[nextIndex]?.focus(); // Focus on the next day
+    // Ensure the next index is within the valid range of the month
+    if (nextIndex >= 0 && nextIndex < days.length &&
+        nextIndex >= firstDayofMonthIndex && nextIndex <= lastDayofMonthIndex) {
+      dayRefs.current[nextIndex]?.focus(); // Focus on the next valid day
     }
   };
 
