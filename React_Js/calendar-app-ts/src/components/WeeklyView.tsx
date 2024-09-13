@@ -105,17 +105,19 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
           <TimeLabel theme={theme} fullName = 'HH:MM' shortName='H'></TimeLabel>
         </Grid>
         {weekDays.map((day) => {
-          const shortDayName = format(day, 'E').charAt(0); // Short day name, e.g., 'Mon'
-          const fullDayName = format(day, 'EEE'); // Full day name with 3 letters, e.g., 'Mon'
+          const shortDayName = format(day, 'E').charAt(0) + ','; // Short day name, e.g., 'Mon'
+          const fullDayName = format(day, 'EEE') + ','; // Full day name with 3 letters, e.g., 'Mon'
           const fullDate = format(day, 'MMM d'); // Full date, e.g., 'Monday, September 13, 2024'
           const shortDate = format(day, 'd'); // Short date, e.g., 'Sep 13'
           return (
           <Grid item xs key={day.toDateString()}>
             <Box alignItems={'center'}>
+              <CustBox>
               <WeekDayLabel theme={theme} fullName = {fullDayName} shortName = {shortDayName} >
               </WeekDayLabel>
-              <WeekDayLabel theme={theme} fullName = {fullDate} shortName = {shortDate} >
-              </WeekDayLabel>
+              <WeekDayLabel theme={theme} fullName = {fullDate} shortName = {shortDate} ></WeekDayLabel>
+              </CustBox>
+              
               <CustomIconButton
 
                 color="primary"
@@ -330,4 +332,10 @@ const TimeLabel = styled(Typography)<{theme: any, fullName: string, shortName: s
   }
     `;
 
+  const CustBox = styled(Box)<{theme: any}>`
+    display: flex;
+    @media (max-width: 600px) {
+      flex-direction: column;
+    }
+  `;
 export default WeeklyView;
