@@ -80,8 +80,8 @@ const MonthlyView: React.FC<MonthlyViewProps> = ({ selectedDate, selectedCategor
             <WeekdayName 
             theme={theme}
             variant="subtitle2"
-            fullName={dayName}
             align="center">
+              {dayName.substring(0, 3)}
             </WeekdayName>
           </Grid>
         ))}
@@ -293,22 +293,15 @@ const ViewMoreLabel = styled(Typography)<{ theme: any, isDifferentMonth: boolean
 `;
 
 
-const WeekdayName = styled(Typography)<{ theme: any, fullName: string }>`
+const WeekdayName = styled(Typography)<{ theme: any}>`
   display: block; // Show full name by default
 
   @media (max-width: 800px) {
-    &:before {
-      content: "${props => props.fullName.substring(0, 3)}";
-      display: block;
-    }
+    
     font-size: clamp(10px, 2vw, 12px);
   }
 
   @media (min-width: 801px) {
-    &:before {
-      content: "${props => props.fullName}";
-      display: block;
-    }
     font-size: clamp(14px, 2vw, 16px);
   }
 `;
