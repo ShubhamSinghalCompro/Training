@@ -1,162 +1,293 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Box, Grid, Typography, Tooltip, useTheme } from '@mui/material';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, endOfWeek } from 'date-fns';
 import { useSelector } from 'react-redux';
-import { Event, Category, RootState } from '../utils/types';
-import { categoryColors } from '../utils/categoryColors';
+import { Event, RootState } from '../utils/types';
+import styled from 'styled-components';
 
 interface MonthlyViewProps {
   selectedDate: Date;
-  selectedCategory: Category;
-  openModal: (event: Event | null, day: Date | null, mode?: 'viewEvent' | 'add' | 'edit' | 'view') => void;
+  selectedCategory: string;
+  openModal: (event: Event | null, day: Date | null, mode: 'viewEvent' | 'add' | 'edit' | 'view', startTime?: string | null, endTime?: string | null) => void;
+  categoryColors: Record<string, string>;
 }
 
-const MonthlyView: React.FC<MonthlyViewProps> = ({ selectedDate, selectedCategory, openModal }) => {
+const MonthlyView: React.FC<MonthlyViewProps> = ({ selectedDate, selectedCategory, openModal, categoryColors }) => {
   const theme = useTheme();
   const events = useSelector((state: RootState) => state.events);
   const [days, setDays] = useState<Date[]>([]);
+  const dayRefs = useRef<(HTMLDivElement | null)[]>([]); // ref for day references
 
-  const generateCalendar = () => {
+  const generateCalendar = useCallback(() => {
     const start = startOfWeek(startOfMonth(selectedDate), { weekStartsOn: 1 }); // Week starts on Monday
     const end = endOfWeek(endOfMonth(selectedDate), { weekStartsOn: 1 }); // Week ends on Sunday
     const days = eachDayOfInterval({ start, end });
     setDays(days);
-  };
+  }, [selectedDate]);
 
   useEffect(() => {
     generateCalendar();
-  }, [selectedDate]);
+  }, [selectedDate, generateCalendar]);
+
+   // Find first and last day of the month index
+   const firstDayofMonthIndex = days.findIndex(
+    (day) => format(day, 'd') === '1' && day.getMonth() === selectedDate.getMonth()
+  );
+  const lastDayofMonthIndex = days.findIndex(
+    (day) => format(day, 'd') === format(endOfMonth(selectedDate), 'd') && day.getMonth() === selectedDate.getMonth()
+  );
+
+  const handleKeyDown = (event: React.KeyboardEvent, index: number, day: Date, selectedEvent: Event | null) => {
+    const gridWidth = 7; // Number of columns (days of the week)
+    let nextIndex = index;
+
+    switch (event.key) {
+      case 'ArrowUp':
+        nextIndex = index - gridWidth;
+        break;
+      case 'ArrowDown':
+        nextIndex = index + gridWidth;
+        break;
+      case 'ArrowLeft':
+        nextIndex = index - 1;
+        break;
+      case 'ArrowRight':
+        nextIndex = index + 1;
+        break;
+      case 'Enter':
+        event.preventDefault();
+        openModal(selectedEvent, day, selectedEvent ? 'viewEvent' : 'view')
+        break;
+      default:
+        return;
+    }
+
+    // Ensure the next index is within the valid range of the month
+    if (nextIndex >= 0 && nextIndex < days.length &&
+        nextIndex >= firstDayofMonthIndex && nextIndex <= lastDayofMonthIndex) {
+      dayRefs.current[nextIndex]?.focus(); // Focus on the next valid day
+    }
+  };
 
   return (
     <>
       {/* Render days of the week */}
-      <Grid container spacing={0}>
+      <Grid container spacing={0} >
         {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((dayName, index) => (
           <Grid item xs={12 / 7} key={index}>
-            <Typography variant="subtitle2" align="center">
-              {dayName}
+            <Typography 
+            variant="subtitle2"
+            align="center">
+              {dayName.substring(0, 3)}
             </Typography>
           </Grid>
         ))}
       </Grid>
       {/* Render days in the calendar */}
-      <Grid container spacing={1}>
-        {days.map((day, index) => {
-          const dayStr = day.toDateString();
-          const isDifferentMonth = selectedDate.getMonth() !== day.getMonth();
+      <ScrollableContainer
+        theme={theme}>
+        <Grid container spacing={1} role = 'grid'>
+          {days.map((day, index) => {
+            const dayStr = day.toDateString();
+            const isDifferentMonth = selectedDate.getMonth() !== day.getMonth();
 
-          // Filter events by the selected day and category
-          const dayEvents = events.filter(
-            (event) =>
-              new Date(event.date).toDateString() === dayStr &&
-              (selectedCategory === 'All' || event.category === selectedCategory)
-          );
-          const hasEvents = dayEvents.length > 0;
+            // Filter events by the selected day and category
+            const dayEvents = events.filter(
+              (event) =>
+                new Date(event.date).toDateString() === dayStr &&
+                (selectedCategory === 'All' || event.category === selectedCategory)
+            );
+            const hasEvents = dayEvents.length > 0;
 
-          // Determine the background color based on selected category
-          const applicableCategories = dayEvents.map((event) => event.category);
-          const uniqueCategories = [...new Set(applicableCategories)];
-          const isCurrentDate = day.toDateString() === new Date().toDateString();
-          const hasCategoryEvents = selectedCategory !== 'All' && uniqueCategories.includes(selectedCategory);
-          const bgColor =
-            isCurrentDate && (!hasEvents || !hasCategoryEvents)
-              ? '#e0f7fa'
-              : selectedCategory !== 'All' && uniqueCategories.includes(selectedCategory)
-              ? `${categoryColors[selectedCategory]}80` || theme.palette.background.paper
-              : theme.palette.background.paper; // Default background color from the theme
+            // Determine the background color based on selected category
+            const applicableCategories = dayEvents.map((event) => event.category);
+            const uniqueCategories = [...new Set(applicableCategories)];
+            const isCurrentDate = day.toDateString() === new Date().toDateString();
+            const hasCategoryEvents = selectedCategory !== 'All' && uniqueCategories.includes(selectedCategory);
+            const bgColor =
+              isCurrentDate && (!hasEvents || !hasCategoryEvents)
+                ? '#e0f7fa'
+                : selectedCategory !== 'All' && uniqueCategories.includes(selectedCategory)
+                ? `${categoryColors[selectedCategory]}` || theme.palette.background.paper
+                : theme.palette.background.paper; // Default background color from the theme
 
-          const displayMore = dayEvents.length > 2;
+            const displayMore = dayEvents.length > 2;
 
-          return (
-            <Grid item xs={12 / 7} key={index}>
-              <Box
-                sx={{
-                  height: 80,
-                  padding: 1,
-                  backgroundColor: bgColor,
-                  border: `1px solid ${theme.palette.grey[300]}`, // Light border using theme colors
-                  borderRadius: 1,
-                  textAlign: 'center',
-                  display: 'flex',
-                  flexDirection: 'column', // Align items in a single column
-                  alignItems: 'center', // Center items horizontally
-                  justifyContent: 'start', // Space between date, dots, and view more
-                  position: 'relative',
-                  cursor: isDifferentMonth ? 'not-allowed' : 'pointer',
-                  '&:hover': {
-                    backgroundColor: isDifferentMonth ? bgColor :theme.palette.action.selected, // Hover color from theme
-                  },
-                  opacity: isDifferentMonth ? 0.5 : 1,
-                }}
-                onClick={() => (isDifferentMonth ? null : openModal(null, day))}
-              >
-                {/* Display the date */}
-                <Typography variant="body2" sx={{ fontWeight: 'bold', marginBottom: 1 }}>
-                  {format(day, 'd')}
-                </Typography>
-
-                {/* Display event dots */}
-                {hasEvents && (
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      width: '100%',
-                      flexWrap: 'nowrap',
-                      overflow: 'hidden',
-                      marginBottom: '2px', // Adds space between dots and "View More"
-                    }}
-                  >
-                    {dayEvents.slice(0, 2).map((event) => (
-                      <Tooltip
-                        title={isDifferentMonth ? '' : `${event.title} (${event.startTime} - ${event.endTime})`}
-                        key={event.id}
-                        disableHoverListener={isDifferentMonth}
-                      >
-                        <Box
-                          sx={{
-                            width: 10,
-                            height: 10,
-                            borderRadius: '50%',
-                            backgroundColor: event.color,
-                            margin: '0 4px 0 0',
-                            cursor: isDifferentMonth ? 'not-allowed' : 'pointer',
-                          }}
-                          onClick={(e) => {
-                            e.stopPropagation(); // Prevents triggering day click when clicking on dot
-                            if (!isDifferentMonth) {
-                              openModal(event, day, 'viewEvent');
-                            }
-                          }}
-                        />
-                      </Tooltip>
-                    ))}
-                  </Box>
-                )}
-
-                {/* Display "View More" if necessary */}
-                {displayMore && (
-                  <Typography
-                    variant="body2"
-                    sx={{ cursor: isDifferentMonth ? 'not-allowed' : 'pointer', color: theme.palette.primary.main, marginTop: 'auto' }} // Use primary color for "View More"
-                    onClick={(e) => {
-                      e.stopPropagation(); // Prevents triggering day click when clicking on "View More"
-                      if (!isDifferentMonth){
-                        openModal(null, day);
+            return (
+              <Grid item xs={12 / 7} key={index} role = 'row'>
+                <DayBox
+                  ref={(el: HTMLDivElement | null) => (dayRefs.current[index] = el)}
+                  theme={theme}
+                  isDifferentMonth={isDifferentMonth}
+                  bgColor={bgColor}
+                  tabIndex={isDifferentMonth ? -1 : 0}
+                  role='cell'
+                  aria-label={`Day ${format(day, 'd')}, ${hasEvents ? dayEvents.length : 0} events`}
+                  onClick={() => {
+                    if (!isDifferentMonth) {
+                      if (!hasEvents) {
+                        openModal(null, day, 'add');
+                      } else {
+                        openModal(null, day, 'view');
                       }
-                    }}
-                  >
-                    View More
+                    }
+                  }}
+                  
+                  onKeyDown={(e) => handleKeyDown(e, index, day, null)}
+                >
+                  <Typography variant="body2"  fontWeight= {'bold'} marginBottom = {1}>
+                    {format(day, 'd')}
                   </Typography>
-                )}
-              </Box>
-            </Grid>
-          );
-        })}
-      </Grid>
+
+                  {/* Display event dots */}
+                  {hasEvents && (
+                    <EventList
+                    >
+                      {dayEvents.slice(0, 2).map((event) => (
+                        <Tooltip
+                          title={isDifferentMonth ? '' : `${event.title} (${event.startTime} - ${event.endTime})`}
+                          key={event.id}
+                          disableHoverListener={isDifferentMonth}
+                        >
+                          <EventDot
+                            color={event.color}
+                            isDifferentMonth={isDifferentMonth}
+                            tabIndex={isDifferentMonth ? -1 : 0}
+                            role="button"
+                            aria-label={`${event.title} (${event.startTime} - ${event.endTime})`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (!isDifferentMonth) {
+                                openModal(event, day, 'viewEvent');
+                              }
+                            }}
+                          />
+                        </Tooltip>
+                      ))}
+                    </EventList>
+                  )}
+
+                  {displayMore && (
+                    <ViewMoreLabel
+                      theme={theme}
+                      isDifferentMonth={isDifferentMonth}
+                      tabIndex={isDifferentMonth ? -1 : 0}
+                      role="button"
+                      aria-label={`View more events for ${format(day, 'd')}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (!isDifferentMonth) {
+                          openModal(null, day, 'view');
+                        }
+                      }}
+                    >
+                    </ViewMoreLabel>
+                  )}
+                </DayBox>
+              </Grid>
+            );
+          })}
+        </Grid>
+      </ScrollableContainer>
     </>
   );
 };
+
+interface DayBoxProps {
+  bgColor: string;
+  isDifferentMonth: boolean;
+  theme: any; // Pass the theme here
+}
+
+const DayBox = styled(Box)<DayBoxProps>`
+  height: 80px;
+  padding: 8px;
+  background-color: ${(props) => props.bgColor};
+  border: 1px solid ${(props) => props.theme.palette.grey[300]}; // Access theme color
+  border-radius: 4px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  cursor: ${(props) => (props.isDifferentMonth ? 'not-allowed' : 'pointer')};
+  &:hover {
+    background-color: ${(props) =>
+      props.isDifferentMonth ? props.bgColor : props.theme.palette.action.selected}; // Hover color from theme
+  }
+  opacity: ${(props) => (props.isDifferentMonth ? 0.7 : 1)};
+  user-select: ${(props) => (props.isDifferentMonth ? 'none' : 'auto')};
+`;
+
+
+const ScrollableContainer = styled(Box)<{ theme: any }>`
+  flex: 1; /* Take up remaining space */
+  overflow-y: auto; /* Scrollable content */
+  padding-right: 10px;
+  margin-top: ${(props) => props.theme.spacing(2)};
+
+  @media (max-width: 600px) {
+    padding: 10px;
+    border-radius: 10px;
+    border-width: 1px;
+  }
+`;
+
+const EventList = styled(Box)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  flex-wrap: nowrap;
+  overflow: hidden;
+  margin-bottom: 2px;
+
+  @media (max-width: 800px) {
+    flex-direction: column; /* Stack event dots vertically on small screens */
+    justify-content: flex-start; /* Align dots at the top for small screens */
+  }
+`;
+
+const EventDot = styled(Box)<{ isDifferentMonth: boolean; color: string }>`
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 4px;
+  background-color: ${(props) => props.color};
+  cursor: ${(props) => (props.isDifferentMonth ? 'not-allowed' : 'pointer')};
+
+  @media (max-width: 800px) {
+    width: 8px;
+    height: 8px;
+    margin-right: 0;
+    margin-bottom: 2px; /* Space between vertically stacked dots */
+  }
+`;
+
+const ViewMoreLabel = styled(Typography)<{ theme: any, isDifferentMonth: boolean }>`
+  cursor: ${(props) => props.isDifferentMonth ? 'not-allowed' : 'pointer'};
+  color: ${(props) => props.isDifferentMonth ? props.theme.palette.text.disabled : props.theme.palette.primary.main};
+  margin-top: auto;
+  font-size: clamp(10px, 2vw, 12px); /* Responsive font size */
+  font-weight: 500;
+  text-align: center;
+
+  @media (max-width: 800px) {
+  &:before {
+      content: "...";
+      display: block;
+    }
+    margin-top: 0;
+    font-size: clamp(8px, 4vw, 8px); /* Smaller font size for small screens */
+  }
+    @media (min-width: 801px) {
+    &:before {
+      content: "View More";
+      display: block;
+    }
+    font-size: clamp(14px, 2vw, 16px);
+  }
+`;
+
 
 export default MonthlyView;

@@ -1,5 +1,5 @@
 // EventModal.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   Modal,
@@ -12,11 +12,12 @@ import { clearScheduledNotification } from '../utils/requestNotificationPermissi
 import { addEvent, updateEvent, deleteEvent } from '../store/eventsSlice';
 import { showSnackbar } from '../store/snackbarSlice';
 import CloseIcon from '@mui/icons-material/Close';
-import { categoryColors } from '../utils/categoryColors';
-import { Event, Category, RootState, modalMode } from '../utils/types';
+import { Event, RootState, modalMode, EventObject} from '../utils/types';
 import EventDetails from './EventDetails';
 import ExistingEventsList from './ExistingEventsList'; // Import your new component
 import {scheduleNotification} from '../utils/requestNotificationPermission';
+import { format, addMinutes } from 'date-fns';
+import {styled} from '@mui/material/styles';
 
 interface EventModalProps {
   open: boolean;
@@ -27,6 +28,12 @@ interface EventModalProps {
   selectedCategory: string;
   mode: modalMode;
   setMode: (mode: modalMode) => void;
+  categoryColors: Record<string, string>;
+  setCategoryColors: (colors: Record<string, string>) => void;
+  intervalStartTime: string | null;
+  setIntervalStartTime: (startTime: string | null) => void;
+  intervalEndTime: string | null;
+  setIntervalEndTime: (endTime: string | null) => void;
 }
 
 const EventModal: React.FC<EventModalProps> = ({
@@ -38,47 +45,92 @@ const EventModal: React.FC<EventModalProps> = ({
   selectedCategory,
   mode,
   setMode,
+  categoryColors,
+  setCategoryColors,
+  intervalStartTime,
+  setIntervalStartTime,
+  intervalEndTime,
+  setIntervalEndTime,
+
 }) => {
+
+  const getCurrentTimeInterval = useCallback((intervalMinutes: number) => {
+    if(!intervalStartTime || !intervalEndTime) {
+    const now = new Date();
+    const minutes = now.getMinutes();
+    
+    // Round down to the nearest interval (e.g., 15 minutes)
+    const roundedMinutes = Math.ceil(minutes / intervalMinutes) * intervalMinutes;
+    const roundedStartTime = new Date(now.setMinutes(roundedMinutes));
+  
+    // Calculate the end time by adding the interval duration
+    const roundedEndTime = addMinutes(roundedStartTime, intervalMinutes);
+  
+    return {
+      startTime: format(roundedStartTime, 'HH:mm'),
+      endTime: format(roundedEndTime, 'HH:mm'),
+    };
+  }
+  else{
+    return {
+      startTime: intervalStartTime,
+      endTime: intervalEndTime,
+    }
+  }
+  }, [intervalStartTime, intervalEndTime]);
+
+
   const dispatch = useDispatch();
   const events = useSelector((state: RootState) => state.events);
 
-  // State variables for the event modal
-  const [title, setTitle] = useState<string>('');
-  const [category, setCategory] = useState<Category>('General');
-  const [color, setColor] = useState<string>(categoryColors.General);
-  const [startTime, setStartTime] = useState<string>('00:00');
-  const [endTime, setEndTime] = useState<string>('00:00');
+  const { startTime, endTime } = getCurrentTimeInterval(30);
 
-  const resetForm = () => {
-    setTitle('');
-    setCategory('General');
-    setColor(categoryColors['General']);
-    setStartTime('00:00');
-    setEndTime('00:00');
-  };
+  // State variables for the event modal
+  const [eventState, setEventState] = useState<EventObject>({
+    title: '',
+    category: 'General',
+    color: categoryColors['General'],
+    startTime: startTime,
+    endTime: endTime,
+  });
+
+  const resetForm = useCallback(() => {
+    const { startTime, endTime } = getCurrentTimeInterval(30);
+    setEventState({
+      title: '',
+      category: 'General',
+      color: categoryColors['General'],
+      startTime: startTime,
+      endTime: endTime,
+    });
+  }, [getCurrentTimeInterval, categoryColors]);
+
+  
 
   useEffect(() => {
     if (selectedEvent) {
-      setTitle(selectedEvent.title);
-      setCategory(selectedEvent.category);
-      setColor(categoryColors[selectedEvent.category]);
-      setStartTime(selectedEvent.startTime || '00:00');
-      setEndTime(selectedEvent.endTime || '00:00');
+      setEventState({
+        title: selectedEvent.title,
+        category: selectedEvent.category,
+        color: selectedEvent.color,
+        startTime: selectedEvent.startTime,
+        endTime: selectedEvent.endTime,
+      });
     } else {
       resetForm();
-      setMode('view');
     }
-  }, [selectedEvent, open]);
+  }, [selectedEvent, open, resetForm]);
 
-  const handleSave = () => {
+  const handleSaveOrEdit = () => {
+    
     const event: Event = {
       id: selectedEvent ? selectedEvent.id : Date.now(),
-      title,
-      category,
-      color: categoryColors[category],
+      title: eventState.title,
+      category: eventState.category,
+      color: eventState.color,
       date: selectedDay?.toISOString() || '',
-      startTime,
-      endTime,
+      startTime: eventState.startTime,
+      endTime: eventState.endTime,
     };
 
     if (mode === 'viewEvent') {
@@ -92,11 +144,11 @@ const EventModal: React.FC<EventModalProps> = ({
         dispatch(addEvent(event));
         dispatch(showSnackbar({ message: 'Event added successfully!', color: 'success' })); // Show success snackbar when a new event is added
       }
+      scheduleNotification(event);
       onClose();
       setMode('view'); // Reset mode after closing
+     
     }
-    // Schedule notification for the event
-    scheduleNotification(event);
   };
 
   const handleDelete = (id: number) => {
@@ -107,10 +159,9 @@ const EventModal: React.FC<EventModalProps> = ({
   };
 
   const handleCategoryChange = (event: SelectChangeEvent<string>) => {
-    const newCategory: Category = event.target.value as Category;
-    setCategory(newCategory);
-    setColor(categoryColors[newCategory]);
-  };
+    const newCategory: string = event.target.value;
+    setEventState({ ...eventState, category: newCategory, color: categoryColors[newCategory] });
+};
 
   const handleAddClick = () => {
     resetForm();
@@ -126,18 +177,11 @@ const EventModal: React.FC<EventModalProps> = ({
         setSelectedEvent(null);
         setMode('view');
       }}
+      aria-labelledby="modal-modal-title"
+      aria-describedby="modal-modal-description"
+
     >
-      <Box
-        sx={{
-          maxWidth: 400,
-          margin: 'auto',
-          mt: 8,
-          padding: 2,
-          backgroundColor: '#fff',
-          borderRadius: 2,
-          position: 'relative',
-        }}
-      >
+      <ModalBox>
         {/* Close Button */}
         <IconButton
           sx={{
@@ -159,17 +203,13 @@ const EventModal: React.FC<EventModalProps> = ({
           <EventDetails
             mode={mode}
             selectedEvent={selectedEvent}
-            title={title}
-            category={category}
-            color={color}
-            startTime={startTime}
-            endTime={endTime}
-            setTitle={setTitle}
-            setStartTime={setStartTime}
-            setEndTime={setEndTime}
-            handleSave={handleSave}
+            eventState={eventState}
+            setEventState={setEventState}
+            handleSaveOrEdit={handleSaveOrEdit}
             handleDelete={handleDelete}
             handleCategoryChange={handleCategoryChange}
+            categoryColors={categoryColors}
+            setCategoryColors={setCategoryColors}
           />
         ) : (
           <ExistingEventsList
@@ -182,9 +222,20 @@ const EventModal: React.FC<EventModalProps> = ({
             handleAddClick={handleAddClick}
           />
         )}
-      </Box>
+      </ModalBox>
     </Modal>
   );
 };
+const ModalBox = styled(Box)(({ theme }) => ({
+  maxWidth: 400,
+  minWidth: Math.min(400, window.innerWidth * 0.7),
+  padding: 16,
+  backgroundColor: '#fff',
+  borderRadius: 8,
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)', 
+}));
 
 export default EventModal;

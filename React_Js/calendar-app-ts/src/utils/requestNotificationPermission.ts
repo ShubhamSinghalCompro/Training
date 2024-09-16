@@ -55,9 +55,12 @@ const showNotification = (event: Event): void => {
 };
 
 export const scheduleNotification = (event: Event): void => {
+  debugger;
   const reminderTime = calculateReminderTime(event.date, event.startTime);
   const now = new Date();
-  const timeUntilReminder = reminderTime.getTime() - now.getTime();
+  const remainderTimecalc = reminderTime.getTime();
+  const nowTime= now.getTime();
+  const timeUntilReminder = remainderTimecalc - nowTime;
 
   if (timeUntilReminder > 0) {
     const timeoutId = setTimeout(() => {

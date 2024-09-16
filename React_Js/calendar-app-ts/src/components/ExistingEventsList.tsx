@@ -5,6 +5,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import { Event } from '../utils/types'; // Adjust the path as needed for your project structure
+import styled from '@emotion/styled';
 
 interface ExistingEventsListProps {
   events: Event[];
@@ -25,56 +26,42 @@ const ExistingEventsList: React.FC<ExistingEventsListProps> = ({
   handleDelete,
   handleAddClick,
 }) => {
+
+   const dailyEvents = (
+    events: Event[],
+    selectedDay: Date | null,
+  ): Event[] => {
+    return events
+      .filter(event => {
+        if (!selectedDay) return false; // If selectedDay is null, skip filtering
+        return format(new Date(event.date), 'yyyy-MM-dd') === format(new Date(selectedDay), 'yyyy-MM-dd');
+      })
+  }
+
+  const categoryEvents : Event[] = dailyEvents(events, selectedDay).filter(event => selectedCategory === 'All' || event.category === selectedCategory);
+
+
   return (
     <>
-     {events
-          .filter(event => {
-            if (!selectedDay) return false; // If selectedDay is null, skip filtering
-            return format(new Date(event.date), 'yyyy-MM-dd') === format(new Date(selectedDay), 'yyyy-MM-dd');
-          })
-          .filter(event => selectedCategory === 'All' || event.category === selectedCategory).length > 0 && (<Typography variant="h6" sx={{ mt: 2 }}>
+     <Typography variant="h6" sx={{ mb: 2 }}>
             Existing Events
           </Typography>
-    )}
       <Grid2 spacing={1}>
-        {events
-          .filter(event => {
-            if (!selectedDay) return false; // If selectedDay is null, skip filtering
-            return format(new Date(event.date), 'yyyy-MM-dd') === format(new Date(selectedDay), 'yyyy-MM-dd');
-          })
-          .filter(event => selectedCategory === 'All' || event.category === selectedCategory)
+        {categoryEvents
           .map(event => (
             <Grid2 spacing={{xs: 12} } key={event.id}>
-              <Box
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  p: 1,
-                  border: '1px solid #ddd',
-                  borderRadius: 1,
-                  cursor: 'pointer',
-                  
-                }}
+              <ExistingEventsListContainer
                 onClick={() => {
                   setSelectedEvent(event);
                   setMode('viewEvent');
                 }}
               >
               <Box
-                sx={{ display: 'flex', alignItems: 'center' }}>
-                 <Box
-                    sx={{
-                      width: 16,
-                      height: 16,
-                      backgroundColor: event.color,
-                      borderRadius: '50%',
-                      mr: 1,
-                    }}
-                  />
+                display = 'flex' alignItems = 'center'>
+                 <ColorDot color={event.color}/>
                 <Typography>{event.title}</Typography>
                 </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Box display = 'flex' alignItems = 'center' >
                  
                   <IconButton
                     size="small"
@@ -98,7 +85,7 @@ const ExistingEventsList: React.FC<ExistingEventsListProps> = ({
                     <DeleteIcon />
                   </IconButton>
                 </Box>
-              </Box>
+              </ExistingEventsListContainer>
             </Grid2>
           ))}
       </Grid2>
@@ -107,14 +94,36 @@ const ExistingEventsList: React.FC<ExistingEventsListProps> = ({
         variant="contained"
         color="primary"
         onClick={handleAddClick}
-        startIcon={<AddIcon />}
-        sx={{ mt: 5 }}
-        fullWidth
+        endIcon={<AddIcon />}
+        sx={{ display: 'flex', justifyContent: 'center',mx : 'auto', mt: 2,}}
       >
-        Add Event
+      Add Event
       </Button>
     </>
   );
 };
 
+interface ColorDotProps {
+  color: string;
+}
+
+const ColorDot = styled(Box)<ColorDotProps>(({ color }) => ({
+  width: 16,
+  height: 16,
+  backgroundColor: color,
+  borderRadius: '50%',
+  marginRight: 8,
+  marginLeft: 8
+}));
+
+const ExistingEventsListContainer = styled(Box)(() => ({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  padding: 8,
+  border: '1px solid #ddd',
+  borderRadius: 8,
+  cursor: 'pointer',
+  marginBottom: 8,
+}));
 export default ExistingEventsList;
