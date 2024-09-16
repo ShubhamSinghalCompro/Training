@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { Box, Typography, Grid2, IconButton, Tooltip, Theme } from '@mui/material';
-import { format, addHours, startOfDay } from 'date-fns';
+import { format, addHours, startOfDay, addMinutes } from 'date-fns';
 import { Event, RootState, modalMode } from '../utils/types';
 import AddIcon from '@mui/icons-material/Add';
 import { calculateEventPositionInInterval, doesEventOverlapWithInterval, sortEventsByIntervals } from '../utils/calendarViewFuncs';
@@ -9,7 +9,7 @@ import {styled} from  '@mui/material/styles';
 
 interface DailyViewProps {
   selectedDate: Date;
-  openModal: (event: Event | null, day: Date | null, mode: modalMode) => void;
+  openModal: (event: Event | null, day: Date | null, mode: modalMode, startTime?: string | null, endTime?: string | null) => void;
   selectedCategory: string;
   theme: Theme;
 }
@@ -40,16 +40,20 @@ const DailyView: React.FC<DailyViewProps> = ({
   // Sort events based on the number of intervals they occupy
   const sortedDayEvents = sortEventsByIntervals(dayEvents, intervals);
 
-  const handleOnClick = (length: number) => {
-    length ===0 ? openModal(null, selectedDate, 'add') : openModal(null, selectedDate, 'view');
+  const handleOnClick = (length: number, interval:Date) => {
+    const startTime = format(interval, 'HH:mm').toString();
+    const endTime = format(addMinutes(interval, 59), 'HH:mm').toString();
+    length ===0 ? openModal(null, selectedDate, 'add', startTime, endTime) : openModal(null, selectedDate, 'view');
   };
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>, index: number) => {
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>, index: number, length: number, interval:Date) => {
     const gridLength = intervals.length;
+    const startTime = format(interval, 'HH:mm').toString();
+    const endTime = format(addMinutes(interval, 59), 'HH:mm').toString();
     
     if (event.key === 'Enter') {
       event.preventDefault();
-      openModal(null, selectedDate, 'view');
+      length ===0 ? openModal(null, selectedDate, 'add', startTime, endTime) : openModal(null, selectedDate, 'view');
     }
     else{
       if(event.key === 'ArrowDown'){
@@ -98,10 +102,10 @@ const DailyView: React.FC<DailyViewProps> = ({
               {/* Time Slot */}
               <AllIntervalContainer 
                 ref={(ref: HTMLDivElement | null) => (slotRefs.current[index] = ref)}
-                onClick={ () => handleOnClick( eventsInInterval.length) }
+                onClick={ () => handleOnClick( eventsInInterval.length, interval) }
                 aria-label={`Time slot at ${format(interval, 'HH:mm')}`}
                 tabIndex={0}
-                onKeyDown={(e) => handleKeyDown(e, index)}
+                onKeyDown={(e) => handleKeyDown(e, index, eventsInInterval.length, interval)}
                 role = 'cell'
               >
                 {/* Time Label */}

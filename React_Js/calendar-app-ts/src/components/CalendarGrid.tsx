@@ -36,6 +36,8 @@ const CalendarGrid: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [mode, setMode] = useState<modalMode>('view');
   const [categoryColors, setCategoryColors] = useState<Record<string, string>>({});
+  const [intervalStartTime, setIntervalStartTime] = useState<string | null>(null);
+  const [intervalEndTime, setIntervalEndTime] = useState<string | null>(null);
 
   useEffect(() => {
     // Save current and viewMode to localStorage whenever they change
@@ -63,11 +65,13 @@ const CalendarGrid: React.FC = () => {
     }
   };
 
-  const handleOpenModal = (event: Event | null = null, day: Date | null = null, mode: 'viewEvent' | 'add' | 'edit' | 'view') => {
+  const handleOpenModal = (event: Event | null = null, day: Date | null = null, mode: 'viewEvent' | 'add' | 'edit' | 'view', intervalStartTime: string | null = null, intervalEndTime: string | null = null) => {
     setSelectedEvent(event);
     setSelectedDay(day);
     setModalOpen(true);
     setMode(mode); // Set the mode based on the parameter
+    setIntervalStartTime(intervalStartTime);
+    setIntervalEndTime(intervalEndTime);
   };
   
 
@@ -207,6 +211,10 @@ const CalendarGrid: React.FC = () => {
         setMode = {setMode}
         categoryColors={categoryColors}
         setCategoryColors={setCategoryColors}
+        intervalStartTime={intervalStartTime}
+        intervalEndTime={intervalEndTime}
+        setIntervalStartTime={setIntervalStartTime}
+        setIntervalEndTime={setIntervalEndTime}
       />
     </CalendarContainer>
   );

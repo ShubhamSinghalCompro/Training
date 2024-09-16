@@ -8,7 +8,7 @@ import styled from 'styled-components';
 interface MonthlyViewProps {
   selectedDate: Date;
   selectedCategory: string;
-  openModal: (event: Event | null, day: Date | null, mode: 'viewEvent' | 'add' | 'edit' | 'view') => void;
+  openModal: (event: Event | null, day: Date | null, mode: 'viewEvent' | 'add' | 'edit' | 'view', startTime?: string | null, endTime?: string | null) => void;
   categoryColors: Record<string, string>;
 }
 

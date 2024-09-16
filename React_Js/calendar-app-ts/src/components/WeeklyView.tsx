@@ -1,7 +1,7 @@
 import React, { useMemo, useCallback, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { Box, Typography, Grid, Tooltip, IconButton, Theme } from '@mui/material';
-import { format, addHours, startOfDay, addDays, startOfWeek } from 'date-fns';
+import { format, addHours, startOfDay, addDays, startOfWeek, addMinutes } from 'date-fns';
 import { Event, RootState, modalMode } from '../utils/types';
 import { calculateEventPositionInInterval, doesEventOverlapWithInterval, sortEventsByIntervals } from '../utils/calendarViewFuncs';
 import AddIcon from '@mui/icons-material/Add';
@@ -10,7 +10,7 @@ import { styled } from 'styled-components';
 
 interface WeeklyViewProps {
   selectedDate: Date;
-  openModal: (event: Event | null, day: Date | null, mode: modalMode) => void;
+  openModal: (event: Event | null, day: Date | null, mode: modalMode, startTime?: string | null, endTime?: string | null) => void;
   selectedCategory: string;
   theme:Theme;
 }
@@ -60,10 +60,12 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
   const calculateIndex = (rowIndex: number, colIndex: number) => rowIndex * weekDays.length + colIndex;
 
   // Handle keyboard navigation between rows and columns
-  const handleKeyDown = (event: React.KeyboardEvent, rowIndex: number, colIndex: number, day: Date, eventsInInterval: Event[]) => {
+  const handleKeyDown = (event: React.KeyboardEvent, rowIndex: number, colIndex: number, day: Date, length: number, interval: Date) => {
     const gridWidth = weekDays.length; // Number of columns (days of the week)
     let nextRowIndex = rowIndex;
     let nextColIndex = colIndex;
+    const startTime = format(interval, 'HH:mm').toString();
+    const endTime = format(addMinutes(interval, 59), 'HH:mm').toString();
 
     switch (event.key) {
       case 'ArrowUp':
@@ -84,7 +86,7 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
         break;
       case 'Enter':
         event.preventDefault();
-        eventsInInterval.length === 0 ? openModal(null, day, 'add') : openModal(null, day, 'view');
+        length === 0 ? openModal(null, day, 'add', startTime, endTime) : openModal(null, day, 'view');
         return;
       default:
         return;
@@ -179,10 +181,14 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
                           cursor: 'pointer',
                         },
                       }}
-                      onClick={() => eventsInInterval.length === 0 ? openModal(null, day, 'add') : openModal(null, day, 'view')}
+                      onClick={() => {
+                        const startTime = format(interval, 'HH:mm').toString();
+                        const endTime = format(addMinutes(interval, 59), 'HH:mm').toString();
+                        eventsInInterval.length === 0 ? openModal(null, day, 'add', startTime, endTime) : openModal(null, day, 'view')}
+                      }
                       aria-label={` ${format(day, 'EEEE, MMMM d, yyyy')} Time slot at ${format(interval, 'HH:mm')}`}
                       tabIndex={0}
-                      onKeyDown={(e) => handleKeyDown(e, rowIndex, colIndex, day, eventsInInterval)}
+                      onKeyDown={(e) => handleKeyDown(e, rowIndex, colIndex, day, eventsInInterval.length, interval)}
                       role = 'cell'
                     >
                       {/* Render events inside the time slot */}

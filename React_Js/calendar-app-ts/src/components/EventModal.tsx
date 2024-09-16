@@ -30,6 +30,10 @@ interface EventModalProps {
   setMode: (mode: modalMode) => void;
   categoryColors: Record<string, string>;
   setCategoryColors: (colors: Record<string, string>) => void;
+  intervalStartTime: string | null;
+  setIntervalStartTime: (startTime: string | null) => void;
+  intervalEndTime: string | null;
+  setIntervalEndTime: (endTime: string | null) => void;
 }
 
 const EventModal: React.FC<EventModalProps> = ({
@@ -43,10 +47,15 @@ const EventModal: React.FC<EventModalProps> = ({
   setMode,
   categoryColors,
   setCategoryColors,
+  intervalStartTime,
+  setIntervalStartTime,
+  intervalEndTime,
+  setIntervalEndTime,
 
 }) => {
 
   const getCurrentTimeInterval = (intervalMinutes: number) => {
+    if(!intervalStartTime || !intervalEndTime) {
     const now = new Date();
     const minutes = now.getMinutes();
     
@@ -61,6 +70,13 @@ const EventModal: React.FC<EventModalProps> = ({
       startTime: format(roundedStartTime, 'HH:mm'),
       endTime: format(roundedEndTime, 'HH:mm'),
     };
+  }
+  else{
+    return {
+      startTime: intervalStartTime,
+      endTime: intervalEndTime,
+    }
+  }
   };
 
 
