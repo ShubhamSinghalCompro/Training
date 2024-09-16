@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Box, Grid, Typography, Tooltip, useTheme } from '@mui/material';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, endOfWeek } from 'date-fns';
 import { useSelector } from 'react-redux';
@@ -18,16 +18,16 @@ const MonthlyView: React.FC<MonthlyViewProps> = ({ selectedDate, selectedCategor
   const [days, setDays] = useState<Date[]>([]);
   const dayRefs = useRef<(HTMLDivElement | null)[]>([]); // ref for day references
 
-  const generateCalendar = () => {
+  const generateCalendar = useCallback(() => {
     const start = startOfWeek(startOfMonth(selectedDate), { weekStartsOn: 1 }); // Week starts on Monday
     const end = endOfWeek(endOfMonth(selectedDate), { weekStartsOn: 1 }); // Week ends on Sunday
     const days = eachDayOfInterval({ start, end });
     setDays(days);
-  };
+  }, [selectedDate]);
 
   useEffect(() => {
     generateCalendar();
-  }, [selectedDate]);
+  }, [selectedDate, generateCalendar]);
 
    // Find first and last day of the month index
    const firstDayofMonthIndex = days.findIndex(
@@ -55,10 +55,8 @@ const MonthlyView: React.FC<MonthlyViewProps> = ({ selectedDate, selectedCategor
         nextIndex = index + 1;
         break;
       case 'Enter':
-        {
-          event.preventDefault();
-          openModal(selectedEvent, day, selectedEvent ? 'viewEvent' : 'view');
-        }
+        event.preventDefault();
+        openModal(selectedEvent, day, selectedEvent ? 'viewEvent' : 'view')
         break;
       default:
         return;
@@ -77,12 +75,11 @@ const MonthlyView: React.FC<MonthlyViewProps> = ({ selectedDate, selectedCategor
       <Grid container spacing={0} >
         {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((dayName, index) => (
           <Grid item xs={12 / 7} key={index}>
-            <WeekdayName 
-            theme={theme}
+            <Typography 
             variant="subtitle2"
             align="center">
               {dayName.substring(0, 3)}
-            </WeekdayName>
+            </Typography>
           </Grid>
         ))}
       </Grid>
@@ -292,18 +289,5 @@ const ViewMoreLabel = styled(Typography)<{ theme: any, isDifferentMonth: boolean
   }
 `;
 
-
-const WeekdayName = styled(Typography)<{ theme: any}>`
-  display: block; // Show full name by default
-
-  @media (max-width: 800px) {
-    
-    font-size: clamp(10px, 2vw, 12px);
-  }
-
-  @media (min-width: 801px) {
-    font-size: clamp(14px, 2vw, 16px);
-  }
-`;
 
 export default MonthlyView;

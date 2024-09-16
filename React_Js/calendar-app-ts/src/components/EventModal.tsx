@@ -1,5 +1,5 @@
 // EventModal.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   Modal,
@@ -54,7 +54,7 @@ const EventModal: React.FC<EventModalProps> = ({
 
 }) => {
 
-  const getCurrentTimeInterval = (intervalMinutes: number) => {
+  const getCurrentTimeInterval = useCallback((intervalMinutes: number) => {
     if(!intervalStartTime || !intervalEndTime) {
     const now = new Date();
     const minutes = now.getMinutes();
@@ -77,7 +77,7 @@ const EventModal: React.FC<EventModalProps> = ({
       endTime: intervalEndTime,
     }
   }
-  };
+  }, [intervalStartTime, intervalEndTime]);
 
 
   const dispatch = useDispatch();
@@ -94,7 +94,7 @@ const EventModal: React.FC<EventModalProps> = ({
     endTime: endTime,
   });
 
-  const resetForm = () => {
+  const resetForm = useCallback(() => {
     const { startTime, endTime } = getCurrentTimeInterval(30);
     setEventState({
       title: '',
@@ -103,7 +103,7 @@ const EventModal: React.FC<EventModalProps> = ({
       startTime: startTime,
       endTime: endTime,
     });
-  };
+  }, [getCurrentTimeInterval, categoryColors]);
 
   
 
@@ -119,7 +119,7 @@ const EventModal: React.FC<EventModalProps> = ({
     } else {
       resetForm();
     }
-  }, [selectedEvent, open]);
+  }, [selectedEvent, open, resetForm]);
 
   const handleSaveOrEdit = () => {
     
