@@ -138,15 +138,17 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
 
       {/* Display Time Intervals and Events */}
       <ScrollableContainer theme={theme}>
-        <Grid container spacing={0}>
+        <Grid container spacing={0} role = 'grid'>
           {intervals.map((interval, rowIndex) => {
             const fullSltoName = format(interval, 'HH:mm');
             const shortSltoName = format(interval, 'h');
             return(
-            <Grid container spacing={0} key={interval.toString()}>
+            <Grid container spacing={0} key={interval.toString()} role = 'row'>
               {/* Time Column */}
               <Grid item xs={1}>
+                <Box role = 'cell'>
                 <IntervalSlotLabel theme={theme} fullName = {fullSltoName} shortName = {shortSltoName}></IntervalSlotLabel>
+                </Box>
               </Grid>
               {/* Days Columns */}
               {weekDays.map((day, colIndex) => {
@@ -157,7 +159,7 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
                 const slotIndex = calculateIndex(rowIndex, colIndex); // Unique index for the slot
 
                 return (
-                  <Grid item xs key={`${day.toDateString()}-${interval.toString()}`}>
+                  <Grid  xs key={`${day.toDateString()}-${interval.toString()}`}>
                     <Box
                       ref={(el: HTMLDivElement | null) => (slotRefs.current[slotIndex] = el)}
                       sx={{
@@ -178,10 +180,10 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
                         },
                       }}
                       onClick={() => eventsInInterval.length === 0 ? openModal(null, day, 'add') : openModal(null, day, 'view')}
-                      aria-label={`Time slot at ${format(interval, 'HH:mm')}`}
-                      role="button"
+                      aria-label={` ${format(day, 'EEEE, MMMM d, yyyy')} Time slot at ${format(interval, 'HH:mm')}`}
                       tabIndex={0}
                       onKeyDown={(e) => handleKeyDown(e, rowIndex, colIndex, day, eventsInInterval)}
+                      role = 'cell'
                     >
                       {/* Render events inside the time slot */}
                       {sortedIntervalEvents.slice(0, 2).map((event, index) => {

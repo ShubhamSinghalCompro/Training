@@ -11,7 +11,7 @@ interface DailyViewProps {
   selectedDate: Date;
   openModal: (event: Event | null, day: Date | null, mode: modalMode) => void;
   selectedCategory: string;
-  theme: Theme
+  theme: Theme;
 }
 
 const DailyView: React.FC<DailyViewProps> = ({
@@ -40,7 +40,7 @@ const DailyView: React.FC<DailyViewProps> = ({
   // Sort events based on the number of intervals they occupy
   const sortedDayEvents = sortEventsByIntervals(dayEvents, intervals);
 
-  const handleOnClick = (event: Event | null, day: Date | null, mode: modalMode, length: number) => {
+  const handleOnClick = (length: number) => {
     length ===0 ? openModal(null, selectedDate, 'add') : openModal(null, selectedDate, 'view');
   };
 
@@ -85,7 +85,7 @@ const DailyView: React.FC<DailyViewProps> = ({
         </IconButton>
       </Box>
       <ScrollableContainer>
-      <Grid2 spacing={0}>
+      <Grid2 spacing={0} role = 'grid'>
         {intervals.map((interval, index) => {
           const eventsInInterval = sortedDayEvents.filter((event) =>
             doesEventOverlapWithInterval(event, interval)
@@ -94,17 +94,18 @@ const DailyView: React.FC<DailyViewProps> = ({
           const displayMore = eventsInInterval.length > 3;
 
           return (
-            <Grid2 key={intervalKey}>
+            <Grid2 key={intervalKey} role = 'row'>
               {/* Time Slot */}
               <AllIntervalContainer 
                 ref={(ref: HTMLDivElement | null) => (slotRefs.current[index] = ref)}
-                onClick={ () => handleOnClick( null, selectedDate, 'view', eventsInInterval.length) }
+                onClick={ () => handleOnClick( eventsInInterval.length) }
                 aria-label={`Time slot at ${format(interval, 'HH:mm')}`}
-                role="button"
                 tabIndex={0}
                 onKeyDown={(e) => handleKeyDown(e, index)}
+                role = 'cell'
               >
                 {/* Time Label */}
+              
                 <Typography position = 'absolute' left = {8} top={8}>{format(interval, 'HH:mm')}</Typography>
 
                 {/* Container for all events in this interval */}
@@ -132,6 +133,7 @@ const DailyView: React.FC<DailyViewProps> = ({
                           onKeyDown={(e) => {
                             if (e.key === 'Enter' || e.key === ' ') {
                               e.preventDefault();
+
                               openModal(event, new Date(event.date), 'viewEvent');
                             }
                           }}
@@ -140,25 +142,23 @@ const DailyView: React.FC<DailyViewProps> = ({
                     );
                   })}
                   {displayMore && (
-                    <Tooltip
-                      title="View more"
-                    >
-                      <ViewMoreBox
-                        
-                        onClick={() => openModal(null, selectedDate, 'view')}
-                        aria-label="View more events"
-                        role="button"
-                        tabIndex={0}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            openModal(null, selectedDate, 'view');
-                          }
-                        }}
-                      >
-                        <Typography color = "white">{`+${eventsInInterval.length - 3}`}</Typography>
-                      </ViewMoreBox>
-                    </Tooltip>
+                     
+                     <ViewMoreBox
+                       // Interactive element inside
+                       onClick={() => openModal(null, selectedDate, 'view')}
+                       aria-label="View more events"
+                       role="button"
+                       tabIndex={0}
+                       onKeyDown={(e) => {
+                         if (e.key === 'Enter' || e.key === ' ') {
+                           e.preventDefault();
+                           openModal(null, selectedDate, 'view');
+                         }
+                       }}
+                     >
+                       <Typography color="white">{`+${eventsInInterval.length - 3}`}</Typography>
+                     </ViewMoreBox>
+                   
                   )}
                 </IntervalBox>
               </AllIntervalContainer>

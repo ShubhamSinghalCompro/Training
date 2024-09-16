@@ -74,7 +74,7 @@ const MonthlyView: React.FC<MonthlyViewProps> = ({ selectedDate, selectedCategor
   return (
     <>
       {/* Render days of the week */}
-      <Grid container spacing={0}>
+      <Grid container spacing={0} >
         {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((dayName, index) => (
           <Grid item xs={12 / 7} key={index}>
             <WeekdayName 
@@ -89,7 +89,7 @@ const MonthlyView: React.FC<MonthlyViewProps> = ({ selectedDate, selectedCategor
       {/* Render days in the calendar */}
       <ScrollableContainer
         theme={theme}>
-        <Grid container spacing={1}>
+        <Grid container spacing={1} role = 'grid'>
           {days.map((day, index) => {
             const dayStr = day.toDateString();
             const isDifferentMonth = selectedDate.getMonth() !== day.getMonth();
@@ -111,20 +111,20 @@ const MonthlyView: React.FC<MonthlyViewProps> = ({ selectedDate, selectedCategor
               isCurrentDate && (!hasEvents || !hasCategoryEvents)
                 ? '#e0f7fa'
                 : selectedCategory !== 'All' && uniqueCategories.includes(selectedCategory)
-                ? `${categoryColors[selectedCategory]}80` || theme.palette.background.paper
+                ? `${categoryColors[selectedCategory]}` || theme.palette.background.paper
                 : theme.palette.background.paper; // Default background color from the theme
 
             const displayMore = dayEvents.length > 2;
 
             return (
-              <Grid item xs={12 / 7} key={index}>
+              <Grid item xs={12 / 7} key={index} role = 'row'>
                 <DayBox
                   ref={(el: HTMLDivElement | null) => (dayRefs.current[index] = el)}
                   theme={theme}
                   isDifferentMonth={isDifferentMonth}
                   bgColor={bgColor}
                   tabIndex={isDifferentMonth ? -1 : 0}
-                  role="button"
+                  role='cell'
                   aria-label={`Day ${format(day, 'd')}, ${hasEvents ? dayEvents.length : 0} events`}
                   onClick={() => {
                     if (!isDifferentMonth) {
@@ -135,9 +135,10 @@ const MonthlyView: React.FC<MonthlyViewProps> = ({ selectedDate, selectedCategor
                       }
                     }
                   }}
+                  
                   onKeyDown={(e) => handleKeyDown(e, index, day, null)}
                 >
-                  <Typography variant="body2" sx={{ fontWeight: 'bold', marginBottom: 1 }}>
+                  <Typography variant="body2"  fontWeight= {'bold'} marginBottom = {1}>
                     {format(day, 'd')}
                   </Typography>
 
@@ -217,7 +218,7 @@ const DayBox = styled(Box)<DayBoxProps>`
     background-color: ${(props) =>
       props.isDifferentMonth ? props.bgColor : props.theme.palette.action.selected}; // Hover color from theme
   }
-  opacity: ${(props) => (props.isDifferentMonth ? 0.5 : 1)};
+  opacity: ${(props) => (props.isDifferentMonth ? 0.7 : 1)};
   user-select: ${(props) => (props.isDifferentMonth ? 'none' : 'auto')};
 `;
 

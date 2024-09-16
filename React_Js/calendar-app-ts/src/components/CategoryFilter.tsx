@@ -18,21 +18,24 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({ categoryColors, onChang
 
   return (
     <Box>
-        <FormControl fullWidth>
-            <InputLabel>Filter Events</InputLabel>
-      <Select
-        value={selectedCategory}
-        onChange={handleCategoryChange}
-        label="Filter Events"
-      >
-        {/* <MenuItem value="All">All</MenuItem> */}
+      <FormControl fullWidth>
+        {/* InputLabel provides an accessible label for the Select component */}
+        <InputLabel id="filter-events-label">Filter Events</InputLabel>
+        
+        {/* The Select is linked to the InputLabel via the labelId */}
+        <Select
+          labelId="filter-events-label"
+          value={selectedCategory}
+          onChange={handleCategoryChange}
+          label="Filter Events by Category"
+        >
           {Object.keys(categoryColors).map((category) => (
             <MenuItem key={category} value={category}>
               {category}
             </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
+          ))}
+        </Select>
+      </FormControl>
     </Box>
   );
 };

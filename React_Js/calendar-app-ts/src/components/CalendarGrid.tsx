@@ -257,7 +257,6 @@ const NavigationBox = styled(Box)`
 `;
 
 const FilterBox = styled(Box)`
-  flex: 1;
   display: 'flex';
   justifyContent: 'flex-end';
   alignItems: 'center';
