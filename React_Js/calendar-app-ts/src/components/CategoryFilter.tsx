@@ -24,12 +24,10 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({ categoryColors, onChang
         
         {/* The Select is linked to the InputLabel via the labelId */}
         <Select
-          id=':r1:'
           labelId="filter-events-label"
           value={selectedCategory}
           onChange={handleCategoryChange}
           label="Filter Events by Category"
-          
         >
           {Object.keys(categoryColors).map((category) => (
             <MenuItem key={category} value={category}>
