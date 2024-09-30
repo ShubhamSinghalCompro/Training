@@ -1,47 +1,74 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
+import { ref } from 'vue'
+import Modal from './components/Modal.vue'
+const title = ref('My First Vue App')
+const isActive = ref(true)
+
+const changeTitle = () => {
+  title.value = title.value === 'My First Vue App' ? 'My Second Vue App' : 'My First Vue App'
+}
+
+const toggleActive = () => {
+  isActive.value = !isActive.value
+}
+
+const showModal = ref(false)
+const toggleModal = () => {
+  showModal.value = !showModal.value
+}
+
+const showModal2 = ref(false)
+const toggleModal2 = () => {
+  showModal2.value = !showModal2.value
+}
 </script>
 
 <template>
   <div>
-    <header>
-      <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-      <div class="wrapper">
-        <HelloWorld msg="You did it!" />
-      </div>
-    </header>
-    <main>
-      <TheWelcome />
-    </main>
+    <h1 :class="isActive ? 'active' : ''">{{ title }}</h1>
+    <button @click="changeTitle">Change Title</button>
+    <button @click="toggleActive">Toggle Active</button>
+    <!-- Conditionally render the modal -->
+    <Teleport to=".modals" v-if="showModal">
+      <Modal :header="title" :theme="'sale'" @close="toggleModal">
+        <template v-slot:links>
+          <a href="#">Sign Up</a>
+          <a href="#">more info</a>
+        </template>
+        <h1>Content</h1>
+        <p>Paragraph</p>
+      </Modal>
+    </Teleport>
+    <button @click="toggleModal">Show Modal</button>
+
+    <Teleport to=".modals" v-if="showModal2">
+      <Modal :header="title" :theme="'sale'" @close="toggleModal2">
+        <template v-slot:links>
+          <a href="#">Sign Up 2</a>
+          <a href="#">more info 2</a>
+        </template>
+        <h1>Content 2</h1>
+        <p>Paragraph 2</p>
+      </Modal>
+    </Teleport>
+    <button @click="toggleModal2">Show Modal 2</button>
   </div>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
+<style>
+.active {
+  color: red;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+#app, .modals {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  margin-top: 60px;
 }
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+h1 {
+  color: green;
 }
 </style>
