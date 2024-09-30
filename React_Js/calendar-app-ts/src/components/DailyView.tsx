@@ -82,7 +82,7 @@ const DailyView: React.FC<DailyViewProps> = ({
             '&:hover': { backgroundColor: theme.palette.grey[300] }
           }}
           onClick={() => openModal(null, selectedDate, 'add')}
-          aria-label="Add event"
+          aria-label={`Add event ${format(selectedDate, 'EEEE, MMMM d, yyyy')}`}
           tabIndex={0}
         >
           <AddIcon />

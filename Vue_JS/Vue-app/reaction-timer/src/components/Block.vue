@@ -33,7 +33,7 @@ const stopTimer = () => {
 </script>
 
 <template>
-  <div class="block" v-if="showBlock" @click="stopTimer">click me</div>
+  <div class="block" v-if="showBlock" @click="stopTimer" aria-label="click block" tabindex="0" >click me</div>
 </template>
 
 <style scoped>
