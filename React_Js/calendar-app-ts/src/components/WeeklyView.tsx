@@ -128,7 +128,7 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
                   '&:hover': { backgroundColor: theme.palette.grey[300] }
                 }}
                 onClick={() => openModal(null, day, 'add')}
-                aria-label="Add event"
+                aria-label= {`Add event ${fullDayName} ${fullDate}`}
                 tabIndex={0}
               >
                 <AddIcon />
