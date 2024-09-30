@@ -158,9 +158,10 @@ const CalendarGrid: React.FC = () => {
         </NavigationBox>
 
         {/* Centered month display */}
-        <Typography variant="h4" textAlign={'center'} flex={2}>
+        <Typography variant="h4" textAlign={'center'}  position={'absolute'} sx={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
           {format(current, 'MMMM yyyy')}
         </Typography>
+
 
         {/* Box for filter */}
         <FilterBox >
@@ -244,6 +245,7 @@ const HeaderBox = styled(Box)`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+  position: relative;
 
 
   @media (max-width: 800px) {
