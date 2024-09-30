@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Vue</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        .box {
+            width: 400px;
+            padding: 100px 0;
+            background-color: #ddd;
+            text-align: center;
+            margin: 20px;
+            display: inline-block;
+        }
+
+        body{
+            background: #eee;
+            max-width: 960px;
+            margin: 20px auto;
+        }
+        p, h3, ul{
+            margin: 0;
+            padding: 0;
+        }
+        li{
+            list-style-type: none;
+            background: #fff;
+            margin: 20px auto;
+            padding: 10px 20px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 1px 3px 5px rgba(0,0,0,0.1);
+        }
+        li.fav{
+            background: #ff9ed2;
+            color: white;
+
+
+        }
+    </style>
+</head>
+<body>
+    <h1>Learning Vue</h1>
+    <div id="app">
+        <p>{{ title }} by {{ author }} is {{ age }}</p>
+        <button v-on:click="age++">Increase Age</button>
+        <button @click="age--">Decrease Age</button> <!-- @ is short form of v-on: -->
+        <div @click="changeTitle('Argument Title')">Change Title</div>
+        <!--conditional rendering-->
+        <!--v-if--> <!--use js and take elememt out of the dom-->
+        <p v-if="age > 50 && showAge">Old</p>
+        <p v-else-if="age < 30 && showAge">Young</p>
+        <p v-else>Normal</p> 
+        <!--v-show--> <!--use css-->
+        <div v-show="showAge">Show Age</div>
+        <br>
+        <!--mouse events-->
+        <div class="box" @mouseover = "handleMouseOver($event, 5)">mouseover (enter)</div>
+        <div class="box" @mouseleave = "handleMouseLeave">mouseleave (leave)</div>
+        <div class="box" @dblclick = "handleMouseDblClick">doubleclick (dblclick)</div>
+        <div class="box"@mouseMove = "handleMouseMove">position: {{ x }} {{ y }}</div>
+        <!--outputting lists v-for-->
+        <ul>
+            <li v-for="book in books">{{ book.title }} by {{ book.author }}</li>
+        </ul>
+        <!--attribute binding using v-bind: or :-->
+        <a v-bind:href="url" target="_blank">Google</a>
+        <a :href="url" target="_blank">Google</a>
+
+        <!--image-->
+        <ul>
+            <li v-for="book in books">
+                <img :src="book.img" :alt="book.title" width="200">
+                <p>{{ book.title }} by {{ book.author }}</p>
+            </li>
+        </ul>
+
+        <!--dynamic classes-->
+        <ul>
+            <li v-for="book in books" :class="{fav: book.isFav}">
+                <img :src="book.img" :alt="book.title" width="200">
+                <p>{{ book.title }} by {{ book.author }}</p>
+                <button @click="toggleFav(book)">Toggle Fav</button>
+            </li>
+        </ul>
+
+        <!-- Computed Properties-- data dependent on other data like filered books array-->
+         <ul>
+            <li v-for="book in filteredBooks">
+                <img :src="book.img" :alt="book.title" width="200">
+                <p>{{ book.title }} by {{ book.author }}</li>
+         </ul>
+
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
