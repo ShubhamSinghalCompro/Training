@@ -25,6 +25,7 @@ const CalendarGrid: React.FC = () => {
     return savedDate ? new Date(savedDate) : new Date();
   });
 
+
   const [viewMode, setViewMode] = useState<ViewMode>(() => {
     const savedViewMode = localStorage.getItem('viewMode');
     return (savedViewMode as ViewMode) || ViewMode.Monthly;
@@ -152,15 +153,15 @@ const CalendarGrid: React.FC = () => {
       <HeaderBox >
         {/* Box for buttons */}
         <NavigationBox display = "flex" alignItems={'center'} flex={1} >
-          <Button variant="contained" onClick={handlePrev} sx={{ mr: 1 }}>Prev</Button>
-          <Button variant="contained" onClick={handleToday} sx={{ mr: 1 }}>Today</Button> {/* Add Today button here */}
-          <Button variant="contained" onClick={handleNext}>Next</Button>
+          <Button variant="contained" onClick={handlePrev} sx={{ mr: 1 }} aria-label= {viewMode===ViewMode.Monthly ?  'Previous Month' : viewMode===ViewMode.Weekly ? 'Previous Week' :  'Previous Day'}>Prev</Button>
+          <Button variant="contained" onClick={handleToday} sx={{ mr: 1 }} aria-label='Today'>Today</Button> {/* Add Today button here */}
+          <Button variant="contained" onClick={handleNext} aria-label= {viewMode===ViewMode.Monthly ?  'Next Month' : viewMode===ViewMode.Weekly ? 'Next Week' :  'Next Day'}>Next</Button>
         </NavigationBox>
 
         {/* Centered month display */}
-        <Typography variant="h4" textAlign={'center'}  position={'absolute'} sx={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+        <CenteredTypography variant="h4" >
           {format(current, 'MMMM yyyy')}
-        </Typography>
+        </CenteredTypography>
 
 
         {/* Box for filter */}
@@ -172,10 +173,11 @@ const CalendarGrid: React.FC = () => {
       </HeaderBox>
 
       <Box display = 'flex' justifyContent = 'center' marginBottom = {2} >
-        <Button variant={viewMode === ViewMode.Monthly ? 'contained' : 'outlined'} onClick={() => handleViewChange(ViewMode.Monthly)} sx={{ mr: 1 }}>Monthly</Button>
-        <Button variant={viewMode === ViewMode.Weekly ? 'contained' : 'outlined'} onClick={() => handleViewChange(ViewMode.Weekly)} sx={{ mr: 1 }}>Weekly</Button>
-        <Button variant={viewMode === ViewMode.Daily ? 'contained' : 'outlined'} onClick={() => handleViewChange(ViewMode.Daily)} sx={{ mr: 1 }}>Daily</Button>
+        <Button variant={viewMode === ViewMode.Monthly ? 'contained' : 'outlined'} onClick={() => handleViewChange(ViewMode.Monthly)} sx={{ mr: 1 }} aria-pressed={viewMode === ViewMode.Monthly} >Monthly</Button>
+        <Button variant={viewMode === ViewMode.Weekly ? 'contained' : 'outlined'} onClick={() => handleViewChange(ViewMode.Weekly)} sx={{ mr: 1 }}aria-pressed={viewMode === ViewMode.Weekly}>Weekly</Button>
+        <Button variant={viewMode === ViewMode.Daily ? 'contained' : 'outlined'} onClick={() => handleViewChange(ViewMode.Daily)} sx={{ mr: 1 }}aria-pressed={viewMode === ViewMode.Daily}>Daily</Button>
       </Box>
+      
 
       {viewMode === ViewMode.Monthly && (
         <MonthlyView
@@ -253,6 +255,21 @@ const HeaderBox = styled(Box)`
     align-items: center;
     margin-bottom: 10px;
     justify-content: space-between;
+  }
+`;
+const CenteredTypography = styled(Typography)`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+
+  @media (max-width: 800px) {
+    // delete styling so that it behaves as normal child
+    position: unset;
+    transform: unset;
+    top: unset;
+    left: unset;
   }
 `;
 
