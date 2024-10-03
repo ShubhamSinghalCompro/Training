@@ -137,6 +137,7 @@ const CalendarGrid: React.FC = () => {
 
   return (
     <CalendarContainer theme={theme}>
+      
       <Typography
         variant="h3"
         gutterBottom
@@ -173,9 +174,9 @@ const CalendarGrid: React.FC = () => {
       </HeaderBox>
 
       <Box display = 'flex' justifyContent = 'center' marginBottom = {2} >
-        <Button variant={viewMode === ViewMode.Monthly ? 'contained' : 'outlined'} onClick={() => handleViewChange(ViewMode.Monthly)} sx={{ mr: 1 }} aria-pressed={viewMode === ViewMode.Monthly} >Monthly</Button>
-        <Button variant={viewMode === ViewMode.Weekly ? 'contained' : 'outlined'} onClick={() => handleViewChange(ViewMode.Weekly)} sx={{ mr: 1 }}aria-pressed={viewMode === ViewMode.Weekly}>Weekly</Button>
-        <Button variant={viewMode === ViewMode.Daily ? 'contained' : 'outlined'} onClick={() => handleViewChange(ViewMode.Daily)} sx={{ mr: 1 }}aria-pressed={viewMode === ViewMode.Daily}>Daily</Button>
+        <Button variant={viewMode === ViewMode.Monthly ? 'contained' : 'outlined'} onClick={() => handleViewChange(ViewMode.Monthly)} sx={{ mr: 1 }} aria-pressed = {viewMode===ViewMode.Monthly}  >Monthly</Button>
+        <Button variant={viewMode === ViewMode.Weekly ? 'contained' : 'outlined'} onClick={() => handleViewChange(ViewMode.Weekly)} sx={{ mr: 1 }}  aria-pressed = {viewMode===ViewMode.Weekly}>Weekly</Button>
+        <Button variant={viewMode === ViewMode.Daily ? 'contained' : 'outlined'} onClick={() => handleViewChange(ViewMode.Daily)} sx={{ mr: 1 }} aria-pressed = {viewMode===ViewMode.Daily} >Daily</Button>
       </Box>
       
 
