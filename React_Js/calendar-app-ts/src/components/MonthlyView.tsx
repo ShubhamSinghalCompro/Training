@@ -37,7 +37,7 @@ const MonthlyView: React.FC<MonthlyViewProps> = ({ selectedDate, selectedCategor
     (day) => format(day, 'd') === format(endOfMonth(selectedDate), 'd') && day.getMonth() === selectedDate.getMonth()
   );
 
-  const handleKeyDown = (event: React.KeyboardEvent, index: number, day: Date, selectedEvent: Event | null) => {
+  const handleKeyDown = (event: React.KeyboardEvent, index: number, day: Date, selectedEvent: Event | null, hasEvents: boolean) => {
     const gridWidth = 7; // Number of columns (days of the week)
     let nextIndex = index;
 
@@ -56,7 +56,13 @@ const MonthlyView: React.FC<MonthlyViewProps> = ({ selectedDate, selectedCategor
         break;
       case 'Enter':
         event.preventDefault();
+        // check if day has events or not
+        if (!hasEvents) {
+          openModal(null, day, 'add');
+        }
+        else{
         openModal(selectedEvent, day, selectedEvent ? 'viewEvent' : 'view')
+        }
         break;
       default:
         return;
@@ -133,7 +139,7 @@ const MonthlyView: React.FC<MonthlyViewProps> = ({ selectedDate, selectedCategor
                     }
                   }}
                   
-                  onKeyDown={(e) => handleKeyDown(e, index, day, null)}
+                  onKeyDown={(e) => handleKeyDown(e, index, day, null, hasEvents )}
                 >
                   <Typography variant="body2"  fontWeight= {'bold'} marginBottom = {1}>
                     {format(day, 'd')}

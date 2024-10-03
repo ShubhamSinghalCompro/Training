@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Button, Typography, TextField, Select, MenuItem, FormControl, InputLabel, SelectChangeEvent } from '@mui/material';
+import React, { useState, useEffect, useRef } from 'react';
+import { Box, Button, TextField, Select, MenuItem, FormControl, InputLabel, SelectChangeEvent } from '@mui/material';
 import { Event, modalMode, EventObject } from '../utils/types';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
@@ -35,6 +35,13 @@ const EventDetails: React.FC<EventDetailsProps> = ({ mode, selectedEvent, eventS
   });
 
   const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
+  
+  // Refs for the input fields
+  const titleRef = useRef<HTMLDivElement>(null);
+  const startTimeRef = useRef<HTMLDivElement>(null);
+  const endTimeRef = useRef<HTMLDivElement>(null);
+  const categoryRef = useRef<HTMLDivElement>(null);
+  const colorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setFormErrors({
@@ -44,6 +51,21 @@ const EventDetails: React.FC<EventDetailsProps> = ({ mode, selectedEvent, eventS
       color: '',
     });
   }, [mode]);
+
+  useEffect(() => {
+    // Focus the first error field if there are errors
+    if (Object.values(formErrors).some(error => error !== '')) {
+      if (formErrors.title) {
+        titleRef.current?.focus();
+      } else if (formErrors.time) {
+        startTimeRef.current?.focus();
+      } else if (formErrors.category) {
+        categoryRef.current?.focus();
+      } else if (formErrors.color) {
+        colorRef.current?.focus();
+      }
+    }
+  }, [formErrors]);
 
   const handleAddCategory = () => {
     const { category, color } = eventState;
@@ -56,17 +78,17 @@ const EventDetails: React.FC<EventDetailsProps> = ({ mode, selectedEvent, eventS
   const validateForm = (): boolean => {
     let errors: FormErrors = { title: '', time: '', category: '', color: '' };
     let isValid = true;
-  
+
     if (eventState.title.trim() === '') {
       errors.title = 'Title is required';
       isValid = false;
     }
-  
+
     if (eventState.endTime <= eventState.startTime) {
       errors.time = 'End time should be greater than start time';
       isValid = false;
     }
-  
+
     // Validate the category if the user is adding a new category
     if (showNewCategoryInput) {
       if (eventState.category.trim() === '') {
@@ -76,7 +98,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({ mode, selectedEvent, eventS
         errors.category = 'Category already exists';
         isValid = false;
       }
-  
+
       if (eventState.color.trim() === '') {
         errors.color = 'Category color is required';
         isValid = false;
@@ -85,13 +107,13 @@ const EventDetails: React.FC<EventDetailsProps> = ({ mode, selectedEvent, eventS
         isValid = false;
       }
     }
-  
+
     // Validate the selected category if not adding a new one
     if (!showNewCategoryInput && eventState.category.trim() === '') {
       errors.category = 'Category is required';
       isValid = false;
     }
-  
+
     setFormErrors(errors);
     return isValid;
   };
@@ -99,11 +121,8 @@ const EventDetails: React.FC<EventDetailsProps> = ({ mode, selectedEvent, eventS
 
   return (
     <>
-      <Typography variant="h6">
-        {mode === 'add' ? 'Add Event' : (mode === 'edit' ? 'Edit Event' : 'Event')}
-      </Typography>
-      <ColorBar eventState={eventState} categoryColors={categoryColors} showNewCategoryInput={showNewCategoryInput}/>
-
+      <ColorBar eventState={eventState} categoryColors={categoryColors} showNewCategoryInput={showNewCategoryInput} />
+      
       <TextField
         label="Title"
         value={eventState.title}
@@ -113,6 +132,9 @@ const EventDetails: React.FC<EventDetailsProps> = ({ mode, selectedEvent, eventS
         disabled={mode === 'viewEvent'}
         error={!!formErrors.title}
         helperText={formErrors.title}
+        inputRef={titleRef} // Set the ref here
+        aria-invalid={!!formErrors.title} // Indicate if the field is invalid
+        aria-describedby="title-error" // Reference the error message
       />
       <TextField
         label="Start Time"
@@ -125,6 +147,9 @@ const EventDetails: React.FC<EventDetailsProps> = ({ mode, selectedEvent, eventS
         disabled={mode === 'viewEvent'}
         error={!!formErrors.time}
         helperText={formErrors.time}
+        inputRef={startTimeRef} // Set the ref here
+        aria-invalid={!!formErrors.time} // Indicate if the field is invalid
+        aria-describedby="start-time-error" // Reference the error message
       />
       <TextField
         label="End Time"
@@ -137,6 +162,9 @@ const EventDetails: React.FC<EventDetailsProps> = ({ mode, selectedEvent, eventS
         disabled={mode === 'viewEvent'}
         error={!!formErrors.time}
         helperText={formErrors.time}
+        inputRef={endTimeRef} // Set the ref here
+        aria-invalid={!!formErrors.time} // Indicate if the field is invalid
+        aria-describedby="end-time-error" // Reference the error message
       />
       <FormControl fullWidth sx={{ mb: 2 }}>
         <InputLabel>Category</InputLabel>
@@ -153,6 +181,9 @@ const EventDetails: React.FC<EventDetailsProps> = ({ mode, selectedEvent, eventS
           }}
           label="Category"
           disabled={mode === 'viewEvent'}
+          inputRef={categoryRef} // Set the ref here
+          aria-invalid={!!formErrors.category} // Indicate if the field is invalid
+          aria-describedby="category-error" // Reference the error message
         >
           {Object.keys(categoryColors).filter(cat => cat !== 'All').map(cat => (
             <MenuItem key={cat} value={cat}>{cat}</MenuItem>
@@ -173,6 +204,9 @@ const EventDetails: React.FC<EventDetailsProps> = ({ mode, selectedEvent, eventS
             sx={{ mb: 2 }}
             error={!!formErrors.category}
             helperText={formErrors.category}
+            inputRef={categoryRef} // Set the ref here
+            aria-invalid={!!formErrors.category} // Indicate if the field is invalid
+            aria-describedby="new-category-error" // Reference the error message
           />
           <TextField
             type="color"
@@ -182,15 +216,18 @@ const EventDetails: React.FC<EventDetailsProps> = ({ mode, selectedEvent, eventS
             fullWidth
             error={!!formErrors.color}
             helperText={formErrors.color}
+            inputRef={colorRef} // Set the ref here
+            aria-invalid={!!formErrors.color} // Indicate if the field is invalid
+            aria-describedby="color-error" // Reference the error message
           />
         </Box>
       )}
       <Button
         variant="contained"
         color="primary"
+        aria-label={mode === 'viewEvent' ? `Edit ${selectedEvent?.title} Event` : (selectedEvent ? `Update ${selectedEvent.title} Event` : 'Add Event')}
         onClick={() => {
           if (showNewCategoryInput) {
-            
             if (validateForm()) {
               handleAddCategory();
               handleSaveOrEdit();
@@ -201,7 +238,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({ mode, selectedEvent, eventS
           }
         }}
         endIcon={mode === 'viewEvent' ? <EditIcon /> : selectedEvent ? <SaveIcon /> : <AddIcon />}
-        sx= {mode !== 'add' ? {} : { display: 'flex', justifyContent: 'center', mx: 'auto',}}
+        sx={mode !== 'add' ? {} : { display: 'flex', justifyContent: 'center', mx: 'auto' }}
       >
         {mode === 'viewEvent' ? 'Edit Event' : (selectedEvent ? 'Update Event' : 'Add Event')}
       </Button>
@@ -212,10 +249,12 @@ const EventDetails: React.FC<EventDetailsProps> = ({ mode, selectedEvent, eventS
           onClick={() => handleDelete(selectedEvent.id)}
           sx={{ ml: 2 }}
           endIcon={<DeleteIcon />}
+          aria-label={`Delete ${selectedEvent.title} Event`}
         >
           Delete Event
         </Button>
       )}
+
     </>
   );
 };

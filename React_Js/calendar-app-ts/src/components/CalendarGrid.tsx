@@ -25,6 +25,7 @@ const CalendarGrid: React.FC = () => {
     return savedDate ? new Date(savedDate) : new Date();
   });
 
+
   const [viewMode, setViewMode] = useState<ViewMode>(() => {
     const savedViewMode = localStorage.getItem('viewMode');
     return (savedViewMode as ViewMode) || ViewMode.Monthly;
@@ -38,6 +39,9 @@ const CalendarGrid: React.FC = () => {
   const [categoryColors, setCategoryColors] = useState<Record<string, string>>({});
   const [intervalStartTime, setIntervalStartTime] = useState<string | null>(null);
   const [intervalEndTime, setIntervalEndTime] = useState<string | null>(null);
+  const [headerAriaLabel, setHeaderAriaLabel] = useState<string>('');
+
+  
 
   useEffect(() => {
     // Save current and viewMode to localStorage whenever they change
@@ -53,6 +57,7 @@ const CalendarGrid: React.FC = () => {
     } else {
       setCurrent(new Date(current.setMonth(current.getMonth() - 1))); // Subtract one month
     }
+    viewMode === ViewMode.Daily? setHeaderAriaLabel(`${viewMode} View - ${format(current, 'MMMM d, yyyy')}`) : setHeaderAriaLabel(`${viewMode} View' - ${format(current, 'MMMM yyyy')}`);
   };
 
   const handleNext = () => {
@@ -63,6 +68,7 @@ const CalendarGrid: React.FC = () => {
     } else {
       setCurrent(new Date(current.setMonth(current.getMonth() + 1))); // Add one month
     }
+    viewMode === ViewMode.Daily? setHeaderAriaLabel(`${viewMode} View - ${format(current, 'MMMM d, yyyy')}`) : setHeaderAriaLabel(`${viewMode} View' - ${format(current, 'MMMM yyyy')}`);
   };
 
   const handleOpenModal = (event: Event | null = null, day: Date | null = null, mode: 'viewEvent' | 'add' | 'edit' | 'view', intervalStartTime: string | null = null, intervalEndTime: string | null = null) => {
@@ -86,10 +92,17 @@ const CalendarGrid: React.FC = () => {
 
   const handleViewChange = (mode: ViewMode) => {
     setViewMode(mode);
-  };
+    if (mode === ViewMode.Daily) {
+        setHeaderAriaLabel(`Daily View - ${format(current, 'MMMM d, yyyy')}`); // Include the full date for Daily View
+    } else {
+        setHeaderAriaLabel(`${mode === ViewMode.Monthly ? 'Monthly View' : 'Weekly View'} - ${format(current, 'MMMM yyyy')}`); // Month and year for Monthly and Weekly Views
+    }
+};
+
 
   const handleToday = () => {
     setCurrent(new Date()); // Set the current date to today's date
+    setHeaderAriaLabel(`${viewMode} View - ${format(current, 'MMMM d, yyyy')}`);
   };
 
   useEffect(() => {
@@ -136,31 +149,41 @@ const CalendarGrid: React.FC = () => {
 
   return (
     <CalendarContainer theme={theme}>
+      
       <Typography
         variant="h3"
-        gutterBottom
         align="center"
         sx={{
           backgroundColor: theme.palette.primary.main, // Primary color from theme
           color: theme.palette.primary.contrastText, // Contrast text color for readability
           padding: '10px', // Padding around the text
           borderRadius: '4px', // Optional: rounded corners for the background
+          marginBottom: '10px',
         }}
+        
       >
         Event Scheduler
       </Typography>
+      {/* Hidden aria-live region for screen reader announcements */}
+      <div 
+        aria-live="polite" 
+        style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden' }} 
+        //role="alert"
+      >
+        {headerAriaLabel}
+      </div>
       <HeaderBox >
         {/* Box for buttons */}
         <NavigationBox display = "flex" alignItems={'center'} flex={1} >
-          <Button variant="contained" onClick={handlePrev} sx={{ mr: 1 }}>Prev</Button>
-          <Button variant="contained" onClick={handleToday} sx={{ mr: 1 }}>Today</Button> {/* Add Today button here */}
-          <Button variant="contained" onClick={handleNext}>Next</Button>
+          <Button variant="contained" onClick={handlePrev} sx={{ mr: 1 }} aria-label= {viewMode===ViewMode.Monthly ?  'Previous Month' : viewMode===ViewMode.Weekly ? 'Previous Week' :  'Previous Day'}>Prev</Button>
+          <Button variant="contained" onClick={handleToday} sx={{ mr: 1 }} aria-label='Today'>Today</Button> {/* Add Today button here */}
+          <Button variant="contained" onClick={handleNext} aria-label= {viewMode===ViewMode.Monthly ?  'Next Month' : viewMode===ViewMode.Weekly ? 'Next Week' :  'Next Day'}>Next</Button>
         </NavigationBox>
 
         {/* Centered month display */}
-        <Typography variant="h4" textAlign={'center'}  position={'absolute'} sx={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+        <CenteredTypography variant="h4" >
           {format(current, 'MMMM yyyy')}
-        </Typography>
+        </CenteredTypography>
 
 
         {/* Box for filter */}
@@ -172,10 +195,11 @@ const CalendarGrid: React.FC = () => {
       </HeaderBox>
 
       <Box display = 'flex' justifyContent = 'center' marginBottom = {2} >
-        <Button variant={viewMode === ViewMode.Monthly ? 'contained' : 'outlined'} onClick={() => handleViewChange(ViewMode.Monthly)} sx={{ mr: 1 }}>Monthly</Button>
-        <Button variant={viewMode === ViewMode.Weekly ? 'contained' : 'outlined'} onClick={() => handleViewChange(ViewMode.Weekly)} sx={{ mr: 1 }}>Weekly</Button>
-        <Button variant={viewMode === ViewMode.Daily ? 'contained' : 'outlined'} onClick={() => handleViewChange(ViewMode.Daily)} sx={{ mr: 1 }}>Daily</Button>
+        <Button variant={viewMode === ViewMode.Monthly ? 'contained' : 'outlined'} onClick={() => handleViewChange(ViewMode.Monthly)} sx={{ mr: 1 }} aria-pressed = {viewMode===ViewMode.Monthly}  >Monthly</Button>
+        <Button variant={viewMode === ViewMode.Weekly ? 'contained' : 'outlined'} onClick={() => handleViewChange(ViewMode.Weekly)} sx={{ mr: 1 }}  aria-pressed = {viewMode===ViewMode.Weekly}>Weekly</Button>
+        <Button variant={viewMode === ViewMode.Daily ? 'contained' : 'outlined'} onClick={() => handleViewChange(ViewMode.Daily)} sx={{ mr: 1 }} aria-pressed = {viewMode===ViewMode.Daily} >Daily</Button>
       </Box>
+      
 
       {viewMode === ViewMode.Monthly && (
         <MonthlyView
@@ -253,6 +277,21 @@ const HeaderBox = styled(Box)`
     align-items: center;
     margin-bottom: 10px;
     justify-content: space-between;
+  }
+`;
+const CenteredTypography = styled(Typography)`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+
+  @media (max-width: 800px) {
+    // delete styling so that it behaves as normal child
+    position: unset;
+    transform: unset;
+    top: unset;
+    left: unset;
   }
 `;
 

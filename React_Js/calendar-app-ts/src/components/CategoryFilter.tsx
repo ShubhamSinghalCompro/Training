@@ -30,7 +30,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({ categoryColors, onChang
           label="Filter Events by Category"
         >
           {Object.keys(categoryColors).map((category) => (
-            <MenuItem key={category} value={category}>
+            <MenuItem key={category} value={category} aria-label={`Filter by ${category}`}>
               {category}
             </MenuItem>
           ))}
