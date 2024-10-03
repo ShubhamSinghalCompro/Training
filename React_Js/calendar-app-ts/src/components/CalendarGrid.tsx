@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Button, Typography, useTheme } from '@mui/material';
 import { format, addDays, subDays, subWeeks, addWeeks } from 'date-fns';
 import EventModal from './EventModal';
@@ -41,6 +41,8 @@ const CalendarGrid: React.FC = () => {
   const [intervalEndTime, setIntervalEndTime] = useState<string | null>(null);
   const [headerAriaLabel, setHeaderAriaLabel] = useState<string>('');
 
+  
+
   useEffect(() => {
     // Save current and viewMode to localStorage whenever they change
     localStorage.setItem('current', current.toISOString());
@@ -55,7 +57,7 @@ const CalendarGrid: React.FC = () => {
     } else {
       setCurrent(new Date(current.setMonth(current.getMonth() - 1))); // Subtract one month
     }
-    setHeaderAriaLabel(`Event Scheduler - ${viewMode} View' - ${format(current, 'MMMM yyyy')}`);
+    viewMode === ViewMode.Daily? setHeaderAriaLabel(`${viewMode} View - ${format(current, 'MMMM d, yyyy')}`) : setHeaderAriaLabel(`${viewMode} View' - ${format(current, 'MMMM yyyy')}`);
   };
 
   const handleNext = () => {
@@ -66,7 +68,7 @@ const CalendarGrid: React.FC = () => {
     } else {
       setCurrent(new Date(current.setMonth(current.getMonth() + 1))); // Add one month
     }
-    setHeaderAriaLabel(`Event Scheduler - ${viewMode} View' - ${format(current, 'MMMM yyyy')}`);
+    viewMode === ViewMode.Daily? setHeaderAriaLabel(`${viewMode} View - ${format(current, 'MMMM d, yyyy')}`) : setHeaderAriaLabel(`${viewMode} View' - ${format(current, 'MMMM yyyy')}`);
   };
 
   const handleOpenModal = (event: Event | null = null, day: Date | null = null, mode: 'viewEvent' | 'add' | 'edit' | 'view', intervalStartTime: string | null = null, intervalEndTime: string | null = null) => {
@@ -90,12 +92,17 @@ const CalendarGrid: React.FC = () => {
 
   const handleViewChange = (mode: ViewMode) => {
     setViewMode(mode);
-    setHeaderAriaLabel(`Event Scheduler - ${mode === ViewMode.Monthly ? 'Monthly View' : mode === ViewMode.Weekly ? 'Weekly View' : 'Daily View'} - ${format(current, 'MMMM yyyy')}`);
-  };
+    if (mode === ViewMode.Daily) {
+        setHeaderAriaLabel(`Daily View - ${format(current, 'MMMM d, yyyy')}`); // Include the full date for Daily View
+    } else {
+        setHeaderAriaLabel(`${mode === ViewMode.Monthly ? 'Monthly View' : 'Weekly View'} - ${format(current, 'MMMM yyyy')}`); // Month and year for Monthly and Weekly Views
+    }
+};
+
 
   const handleToday = () => {
     setCurrent(new Date()); // Set the current date to today's date
-    setHeaderAriaLabel(`Event Scheduler - ${viewMode} View' - ${format(current, 'MMMM yyyy')}`);
+    setHeaderAriaLabel(`${viewMode} View - ${format(current, 'MMMM d, yyyy')}`);
   };
 
   useEffect(() => {
@@ -140,23 +147,20 @@ const CalendarGrid: React.FC = () => {
     };
   }, []);
 
-
-
   return (
     <CalendarContainer theme={theme}>
       
       <Typography
         variant="h3"
-        gutterBottom
         align="center"
         sx={{
           backgroundColor: theme.palette.primary.main, // Primary color from theme
           color: theme.palette.primary.contrastText, // Contrast text color for readability
           padding: '10px', // Padding around the text
           borderRadius: '4px', // Optional: rounded corners for the background
+          marginBottom: '10px',
         }}
-        // aria-live="polite"
-        // aria-label = {headerAriaLabel}
+        
       >
         Event Scheduler
       </Typography>
@@ -164,7 +168,7 @@ const CalendarGrid: React.FC = () => {
       <div 
         aria-live="polite" 
         style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden' }} 
-        role="alert"
+        //role="alert"
       >
         {headerAriaLabel}
       </div>
