@@ -41,7 +41,8 @@ const CalendarGrid: React.FC = () => {
   const [intervalEndTime, setIntervalEndTime] = useState<string | null>(null);
   const [headerAriaLabel, setHeaderAriaLabel] = useState<string>('');
 
-  
+  // State to manage aria-hidden
+  const [isAriaHidden, setIsAriaHidden] = useState<boolean>(true);
 
   useEffect(() => {
     // Save current and viewMode to localStorage whenever they change
@@ -148,8 +149,11 @@ const CalendarGrid: React.FC = () => {
   }, []);
 
   return (
-    <CalendarContainer theme={theme}>
-      
+    <CalendarContainer theme={theme} 
+    aria-hidden={isAriaHidden} // Set aria-hidden based on state
+    onMouseEnter={() => setIsAriaHidden(false)} // Set aria-hidden to false on hover
+    onMouseLeave={() => setIsAriaHidden(true)} // Reset aria-hidden>
+      >
       <Typography
         variant="h3"
         align="center"
