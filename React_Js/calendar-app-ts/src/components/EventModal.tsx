@@ -1,4 +1,3 @@
-// EventModal.tsx
 import React, { useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -6,6 +5,7 @@ import {
   Box,
   IconButton,
   SelectChangeEvent,
+  Typography,
 } from '@mui/material';
 
 import { clearScheduledNotification } from '../utils/requestNotificationPermission';
@@ -14,10 +14,10 @@ import { showSnackbar } from '../store/snackbarSlice';
 import CloseIcon from '@mui/icons-material/Close';
 import { Event, RootState, modalMode, EventObject} from '../utils/types';
 import EventDetails from './EventDetails';
-import ExistingEventsList from './ExistingEventsList'; // Import your new component
-import {scheduleNotification} from '../utils/requestNotificationPermission';
+import ExistingEventsList from './ExistingEventsList'; 
+import { scheduleNotification } from '../utils/requestNotificationPermission';
 import { format, addMinutes } from 'date-fns';
-import {styled} from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 
 interface EventModalProps {
   open: boolean;
@@ -55,37 +55,30 @@ const EventModal: React.FC<EventModalProps> = ({
 }) => {
 
   const getCurrentTimeInterval = useCallback((intervalMinutes: number) => {
-    if(!intervalStartTime || !intervalEndTime) {
-    const now = new Date();
-    const minutes = now.getMinutes();
-    
-    // Round down to the nearest interval (e.g., 15 minutes)
-    const roundedMinutes = Math.ceil(minutes / intervalMinutes) * intervalMinutes;
-    const roundedStartTime = new Date(now.setMinutes(roundedMinutes));
+    if (!intervalStartTime || !intervalEndTime) {
+      const now = new Date();
+      const minutes = now.getMinutes();
+      
+      const roundedMinutes = Math.ceil(minutes / intervalMinutes) * intervalMinutes;
+      const roundedStartTime = new Date(now.setMinutes(roundedMinutes));
+      const roundedEndTime = addMinutes(roundedStartTime, intervalMinutes);
   
-    // Calculate the end time by adding the interval duration
-    const roundedEndTime = addMinutes(roundedStartTime, intervalMinutes);
-  
-    return {
-      startTime: format(roundedStartTime, 'HH:mm'),
-      endTime: format(roundedEndTime, 'HH:mm'),
-    };
-  }
-  else{
-    return {
-      startTime: intervalStartTime,
-      endTime: intervalEndTime,
+      return {
+        startTime: format(roundedStartTime, 'HH:mm'),
+        endTime: format(roundedEndTime, 'HH:mm'),
+      };
+    } else {
+      return {
+        startTime: intervalStartTime,
+        endTime: intervalEndTime,
+      }
     }
-  }
   }, [intervalStartTime, intervalEndTime]);
-
 
   const dispatch = useDispatch();
   const events = useSelector((state: RootState) => state.events);
-
   const { startTime, endTime } = getCurrentTimeInterval(30);
 
-  // State variables for the event modal
   const [eventState, setEventState] = useState<EventObject>({
     title: '',
     category: 'General',
@@ -105,8 +98,6 @@ const EventModal: React.FC<EventModalProps> = ({
     });
   }, [getCurrentTimeInterval, categoryColors]);
 
-  
-
   useEffect(() => {
     if (selectedEvent) {
       setEventState({
@@ -122,7 +113,6 @@ const EventModal: React.FC<EventModalProps> = ({
   }, [selectedEvent, open, resetForm]);
 
   const handleSaveOrEdit = () => {
-    
     const event: Event = {
       id: selectedEvent ? selectedEvent.id : Date.now(),
       title: eventState.title,
@@ -142,30 +132,29 @@ const EventModal: React.FC<EventModalProps> = ({
         clearScheduledNotification(selectedEvent.id);
       } else {
         dispatch(addEvent(event));
-        dispatch(showSnackbar({ message: 'Event added successfully!', color: 'success' })); // Show success snackbar when a new event is added
+        dispatch(showSnackbar({ message: 'Event added successfully!', color: 'success' }));
       }
       scheduleNotification(event);
       onClose();
-      setMode('view'); // Reset mode after closing
-     
+      setMode('view'); 
     }
   };
 
   const handleDelete = (id: number) => {
     dispatch(deleteEvent(id));
-    dispatch(showSnackbar({ message: 'Event deleted successfully!', color: 'error' })); // Show error snackbar when an event is deleted
+    dispatch(showSnackbar({ message: 'Event deleted successfully!', color: 'error' }));
     clearScheduledNotification(id);
-    setMode('view'); // Reset mode after closing
+    setMode('view');
   };
 
   const handleCategoryChange = (event: SelectChangeEvent<string>) => {
     const newCategory: string = event.target.value;
     setEventState({ ...eventState, category: newCategory, color: categoryColors[newCategory] });
-};
+  };
 
   const handleAddClick = () => {
     resetForm();
-    setMode('add'); // Set mode to 'add' when the "Add Event" button is clicked
+    setMode('add');
     setSelectedEvent(null);
   };
 
@@ -177,12 +166,12 @@ const EventModal: React.FC<EventModalProps> = ({
         setSelectedEvent(null);
         setMode('view');
       }}
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
-
+      aria-labelledby="event-modal-title"
+      aria-describedby="event-modal-description"
+      aria-modal="true"
+      role="dialog"
     >
       <ModalBox>
-        {/* Close Button */}
         <IconButton
           sx={{
             position: 'absolute',
@@ -194,11 +183,22 @@ const EventModal: React.FC<EventModalProps> = ({
             setSelectedEvent(null);
             setMode('view');
           }}
+          aria-label="Close modal"
         >
           <CloseIcon />
         </IconButton>
 
-        {/* Event Details or Existing Events List */}
+        {mode !== 'view' && (
+          <Typography id="event-modal-title" variant="h6">
+          {mode === 'add' ? 'Add Event' : (mode === 'edit' ? 'Edit Event' : 'Event')}
+        </Typography>)}
+        {mode === 'view' && (
+          <Typography id="event-modal-title" variant="h6" sx={{ mb: 2 }}>
+          Existing Events
+        </Typography>
+        )
+        } 
+
         {mode !== 'view' ? (
           <EventDetails
             mode={mode}
@@ -226,6 +226,7 @@ const EventModal: React.FC<EventModalProps> = ({
     </Modal>
   );
 };
+
 const ModalBox = styled(Box)(({ theme }) => ({
   maxWidth: 400,
   minWidth: Math.min(400, window.innerWidth * 0.7),
@@ -235,7 +236,8 @@ const ModalBox = styled(Box)(({ theme }) => ({
   position: 'absolute',
   top: '50%',
   left: '50%',
-  transform: 'translate(-50%, -50%)', 
+  transform: 'translate(-50%, -50%)',
+  outline: 0, // To remove the default focus outline from browsers
 }));
 
 export default EventModal;
