@@ -62,6 +62,7 @@ const EventModal: React.FC<EventModalProps> = ({
       const roundedMinutes = Math.ceil(minutes / intervalMinutes) * intervalMinutes;
       const roundedStartTime = new Date(now.setMinutes(roundedMinutes));
       const roundedEndTime = addMinutes(roundedStartTime, intervalMinutes);
+
   
       return {
         startTime: format(roundedStartTime, 'HH:mm'),
@@ -78,6 +79,8 @@ const EventModal: React.FC<EventModalProps> = ({
   const dispatch = useDispatch();
   const events = useSelector((state: RootState) => state.events);
   const { startTime, endTime } = getCurrentTimeInterval(30);
+
+  const [isAriaHidden, setIsAriaHidden] = useState<boolean>(true);
 
   const [eventState, setEventState] = useState<EventObject>({
     title: '',
@@ -170,6 +173,9 @@ const EventModal: React.FC<EventModalProps> = ({
       aria-describedby="event-modal-description"
       aria-modal="true"
       role="dialog"
+      aria-hidden={isAriaHidden} // Set aria-hidden based on state
+    onMouseEnter={() => setIsAriaHidden(false)} // Set aria-hidden to false on hover
+    onMouseLeave={() => setIsAriaHidden(true)} // Reset aria-hidden>
     >
       <ModalBox>
         <IconButton
