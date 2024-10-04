@@ -74,7 +74,7 @@ const DailyView: React.FC<DailyViewProps> = ({
   return (
     <>
       <Box display = 'flex' justifyContent = 'start' alignItems = 'center' padding={1}>
-        <Typography variant="h5">{format(selectedDate, 'EEEE, MMMM d, yyyy')}</Typography>
+        <Typography variant="h5" tabIndex={0} aria-label= {`${format(selectedDate, 'EEEE, MMMM d, yyyy')} contains ${sortedDayEvents.length > 1 ? `${sortedDayEvents.length} events` : `${sortedDayEvents.length} event`}`}>{format(selectedDate, 'EEEE, MMMM d, yyyy')}</Typography>
         <IconButton
           color="primary"
           sx={{
@@ -103,7 +103,7 @@ const DailyView: React.FC<DailyViewProps> = ({
               <AllIntervalContainer 
                 ref={(ref: HTMLDivElement | null) => (slotRefs.current[index] = ref)}
                 onClick={ () => handleOnClick( eventsInInterval.length, interval) }
-                aria-label={`Time slot at ${format(interval, 'HH:mm')}`}
+                aria-label={`Time slot at ${format(interval, 'HH:mm')}, containing ${eventsInInterval.length > 1 ? `${eventsInInterval.length} events` : `${eventsInInterval.length} event`}`}
                 tabIndex={0}
                 onKeyDown={(e) => handleKeyDown(e, index, eventsInInterval.length, interval)}
                 role = 'cell'
@@ -131,7 +131,7 @@ const DailyView: React.FC<DailyViewProps> = ({
                             e.stopPropagation();
                             openModal(event, new Date(event.date), 'viewEvent');
                           }}
-                          aria-label={`${event.title} (${event.startTime} - ${event.endTime})`}
+                          aria-label={`${event.title} (${event.startTime} - ${event.endTime}) - Event Category : ${event.category}`}
                           role="button"
                           tabIndex={0}
                           onKeyDown={(e) => {

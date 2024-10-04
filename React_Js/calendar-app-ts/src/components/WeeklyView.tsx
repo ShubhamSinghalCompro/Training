@@ -111,13 +111,15 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
           const fullDayName = format(day, 'EEE') + ','; // Full day name with 3 letters, e.g., 'Mon'
           const fullDate = format(day, 'MMM d'); // Full date, e.g., 'Monday, September 13, 2024'
           const shortDate = format(day, 'd'); // Short date, e.g., 'Sep 13'
+          const dayEvents = weeklyEvents.filter(event => new Date(event.date).toDateString() === day.toDateString());
           return (
           <Grid item xs key={day.toDateString()}>
             <Box alignItems={'center'}>
-              <CustBox>
-              <WeekDayLabel theme={theme} fullName = {fullDayName} shortName = {shortDayName} >
+            {/* say date, day and if it has any events */}
+              <CustBox tabIndex={0} aria-label= {`${fullDayName} ${fullDate} contains ${dayEvents.length > 1 ? `${dayEvents.length} events` : `${dayEvents.length} event`}`}>  
+              <WeekDayLabel theme={theme} fullName = {fullDayName} shortName = {shortDayName} aria-hidden = 'true'>
               </WeekDayLabel>
-              <WeekDayLabel theme={theme} fullName = {fullDate} shortName = {shortDate} ></WeekDayLabel>
+              <WeekDayLabel theme={theme} fullName = {fullDate} shortName = {shortDate}  aria-hidden = 'true'></WeekDayLabel>
               </CustBox>
               
               <CustomIconButton
@@ -186,7 +188,7 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
                         const endTime = format(addMinutes(interval, 59), 'HH:mm').toString();
                         eventsInInterval.length === 0 ? openModal(null, day, 'add', startTime, endTime) : openModal(null, day, 'view')}
                       }
-                      aria-label={` ${format(day, 'EEEE, MMMM d, yyyy')} Time slot at ${format(interval, 'HH:mm')}`}
+                      aria-label={` ${format(day, 'EEEE, MMMM d, yyyy')} Time slot at ${format(interval, 'HH:mm')} , containing ${eventsInInterval.length > 1 ? `${eventsInInterval.length} events` : `${eventsInInterval.length} event`}`}
                       tabIndex={0}
                       onKeyDown={(e) => handleKeyDown(e, rowIndex, colIndex, day, eventsInInterval.length, interval)}
                       role = 'cell'
@@ -216,7 +218,7 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({
                                 e.stopPropagation();
                                 openModal(event, new Date(event.date), 'viewEvent');
                               }}
-                              aria-label={`${event.title} (${event.startTime} - ${event.endTime})`}
+                              aria-label={`${event.title} (${event.startTime} - ${event.endTime}) - Event Category : ${event.category}`}
                               role="button"
                               tabIndex={0}
                               onKeyDown={(e) => {

@@ -128,7 +128,7 @@ const MonthlyView: React.FC<MonthlyViewProps> = ({ selectedDate, selectedCategor
                   bgColor={bgColor}
                   tabIndex={isDifferentMonth ? -1 : 0}
                   role='cell'
-                  aria-label={`Day ${format(day, 'd')}, ${hasEvents ? dayEvents.length : 0} events`}
+                  aria-label={`Day ${format(day, 'd')}, ${hasEvents ? (dayEvents.length > 1 ? dayEvents.length + ' events' : dayEvents.length + ' event' ) : 'no event'} `}
                   onClick={() => {
                     if (!isDifferentMonth) {
                       if (!hasEvents) {
@@ -160,7 +160,7 @@ const MonthlyView: React.FC<MonthlyViewProps> = ({ selectedDate, selectedCategor
                             isDifferentMonth={isDifferentMonth}
                             tabIndex={isDifferentMonth ? -1 : 0}
                             role="button"
-                            aria-label={`${event.title} (${event.startTime} - ${event.endTime})`}
+                            aria-label={`${event.title} (${event.startTime} - ${event.endTime}) - Event Category : ${event.category}`}
                             onClick={(e) => {
                               e.stopPropagation();
                               if (!isDifferentMonth) {

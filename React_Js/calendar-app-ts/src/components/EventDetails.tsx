@@ -42,6 +42,8 @@ const EventDetails: React.FC<EventDetailsProps> = ({ mode, selectedEvent, eventS
   const endTimeRef = useRef<HTMLDivElement>(null);
   const categoryRef = useRef<HTMLDivElement>(null);
   const colorRef = useRef<HTMLDivElement>(null);
+  const editButtonRef = useRef<HTMLButtonElement>(null);
+
 
   useEffect(() => {
     setFormErrors({
@@ -50,6 +52,14 @@ const EventDetails: React.FC<EventDetailsProps> = ({ mode, selectedEvent, eventS
       category: '',
       color: '',
     });
+
+    // Focus on the first input (title) when modal opens in add/edit mode
+    if (mode !== 'viewEvent') {
+      titleRef.current?.focus();
+    }
+    else{
+      editButtonRef.current?.focus();
+    }
   }, [mode]);
 
   useEffect(() => {
@@ -124,6 +134,8 @@ const EventDetails: React.FC<EventDetailsProps> = ({ mode, selectedEvent, eventS
       <ColorBar eventState={eventState} categoryColors={categoryColors} showNewCategoryInput={showNewCategoryInput} />
       
       <TextField
+      // need * in UI
+
         label="Title"
         value={eventState.title}
         onChange={(event) => setEventState({ ...eventState, title: event.target.value })}
@@ -135,6 +147,9 @@ const EventDetails: React.FC<EventDetailsProps> = ({ mode, selectedEvent, eventS
         inputRef={titleRef} // Set the ref here
         aria-invalid={!!formErrors.title} // Indicate if the field is invalid
         aria-describedby="title-error" // Reference the error message
+        required
+       
+        
       />
       <TextField
         label="Start Time"
@@ -207,6 +222,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({ mode, selectedEvent, eventS
             inputRef={categoryRef} // Set the ref here
             aria-invalid={!!formErrors.category} // Indicate if the field is invalid
             aria-describedby="new-category-error" // Reference the error message
+            required
           />
           <TextField
             type="color"
@@ -239,6 +255,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({ mode, selectedEvent, eventS
         }}
         endIcon={mode === 'viewEvent' ? <EditIcon /> : selectedEvent ? <SaveIcon /> : <AddIcon />}
         sx={mode !== 'add' ? {} : { display: 'flex', justifyContent: 'center', mx: 'auto' }}
+        ref = {mode === 'viewEvent' ? editButtonRef : null}
       >
         {mode === 'viewEvent' ? 'Edit Event' : (selectedEvent ? 'Update Event' : 'Add Event')}
       </Button>
