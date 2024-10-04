@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Box, Grid2, Typography, IconButton, Button } from '@mui/material';
 import { format } from 'date-fns';
 import EditIcon from '@mui/icons-material/Edit';
@@ -34,13 +34,20 @@ const ExistingEventsList: React.FC<ExistingEventsListProps> = ({
   };
 
   const categoryEvents : Event[] = dailyEvents(events, selectedDay).filter(event => selectedCategory === 'All' || event.category === selectedCategory);
+  const existingEventsListContainerRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    if (existingEventsListContainerRef.current) {
+      existingEventsListContainerRef.current.focus();
+    }
+  }, [categoryEvents]);
 
   return (
     <>
       <Grid2 spacing={1} aria-label="Event list for selected day and category">
-        {categoryEvents.map(event => (
+        {categoryEvents.map((event, index )=> (
           <Grid2  spacing={{ xs: 12 }} key={event.id}>
+            {/* for first element in grid autofocus should be there */}
             <ExistingEventsListContainer
               onClick={() => {
                 setSelectedEvent(event);
@@ -49,6 +56,7 @@ const ExistingEventsList: React.FC<ExistingEventsListProps> = ({
               aria-label={`View details for ${event.title} event`}
               role="button"
               tabIndex={0}
+              ref={index === 0 ? existingEventsListContainerRef : null}
             >
               <Box display="flex" alignItems="center">
                 <ColorDot color={event.color} aria-hidden="true" />
