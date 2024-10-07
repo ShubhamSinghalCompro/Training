@@ -82,7 +82,8 @@ const MonthlyView: React.FC<MonthlyViewProps> = ({ selectedDate, selectedCategor
         {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((dayName, index) => (
           <Grid item xs={12 / 7} key={index}>
             <Typography 
-            variant="subtitle2"
+            variant="h5"
+            fontSize={16}
             align="center">
               {dayName.substring(0, 3)}
             </Typography>
