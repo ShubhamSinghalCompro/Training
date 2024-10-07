@@ -20,7 +20,7 @@ const SnackbarNotification: React.FC = () => {
       onClose={handleClose}
       anchorOrigin={{ vertical: 'top', horizontal: 'center' }} // Set to top center
     >
-      <Alert onClose={handleClose} severity={color} sx={{ width: '100%' }}>
+      <Alert severity={color} sx={{ width: '100%' }}>
         {message}
       </Alert>
     </Snackbar>
