@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+</head>
+
+<body>
+    <h1>Url Shortener</h1>
+    <% if (locals.result) { %>
+        <div>
+            <p>Short Url: <a href="<%= locals.result.redirectUrl %>">http://localhost:8001/<%= locals.id %></a></p>
+        </div>
+    <% } %>
+    <div>
+        <form method="POST" action="/url">
+            <label>Enter Your Original Url</label>
+            <input type="text" name="url" placeholder="https://www.example.com"/>
+            <button type="submit">Generate</button>
+        </form>
+    </div>
+</body>
+</html>
